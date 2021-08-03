@@ -1,0 +1,283 @@
+#pragma once
+#include <BluePrint.h>
+#include <Pin.h>
+#include <imgui_logger.h>
+#include <imgui_node_editor.h>
+#include <ImGuiVariousControls.h>
+#include <inttypes.h>
+#include <DynObjectLoader.h>
+
+namespace ed = ax::NodeEditor;
+using namespace imgui_logger;
+
+namespace BluePrint
+{
+enum class NodeType:int32_t 
+{
+    Internal = 0,
+    External,
+    Dummy,          // In case load failed extra node
+};
+
+enum class NodeStyle:int32_t 
+{
+    Dummy = 0,
+    Default, 
+    Simple, 
+    Comment,
+    Group,
+    Custom
+};
+
+struct LinkQueryResult
+{
+    LinkQueryResult(bool result, std::string reason = "")
+        : m_Result(result)
+        , m_Reason(reason)
+    {}
+
+    explicit operator bool() const { return m_Result; }
+
+    bool Result() const { return m_Result; }
+    const string& Reason() const { return m_Reason; }
+
+private:
+    bool    m_Result = false;
+    string  m_Reason;
+};
+
+struct BP;
+struct Node;
+struct Pin;
+struct Context;
+struct NodeTypeInfo
+{
+    using Factory = Node*(*)(BP& blueprint);
+
+    ID_TYPE         m_ID;
+    std::string     m_NodeTypeName;
+    std::string     m_Name;
+    VERSION_TYPE    m_Version;
+    NodeType        m_Type;
+    NodeStyle       m_Style;
+    std::string     m_Catalog;
+    Factory         m_Factory;
+};
+
+struct Node
+{
+    Node(BP& blueprint);
+    virtual ~Node() = default;
+
+    template <typename T>
+    unique_ptr<T> CreatePin(std::string name = "");
+    unique_ptr<Pin> CreatePin(PinType pinType, std::string name = "");
+    
+    virtual void Reset(Context& context) // Reset state of the node before execution. Allows to set initial state for the specified execution context.
+    {
+        m_Tick = 0;
+        m_Hits = 0;
+    }
+
+    virtual void Update() {}; // Update Node
+
+    virtual void OnPause(Context& context) {}
+    virtual void OnResume(Context& context) {}
+    virtual void OnStepNext(Context& context) {}
+    virtual void OnStepCurrent(Context& context) {}
+    virtual void OnStop(Context& context) {}
+
+    virtual void OnDragStart(const Context& context) {}
+    virtual void OnDragEnd(const Context& context) {}
+    virtual void OnResize(const Context& context) {}
+    virtual void OnSelect(const Context& context) {}
+    virtual void OnDeselect(const Context& context) {}
+
+
+    virtual FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) // Executes node logic from specified entry point. Returns exit point (flow pin on output side) or nothing.
+    {
+        return {};
+    }
+
+    virtual PinValue EvaluatePin(const Context& context, const Pin& pin, bool threading = false) const // Evaluates pin in node in specified execution context.
+    {
+        return pin.GetValue();
+    }
+
+    virtual Pin* FindPin(std::string name)
+    {
+        auto inpins = GetInputPins();
+        for (auto pin : inpins)
+        {
+            if (pin->m_Name.compare(name) == 0)
+                return pin;
+        }
+        auto outpins = GetOutputPins();
+        for (auto pin : outpins)
+        {
+            if (pin->m_Name.compare(name) == 0)
+                return pin;
+        }
+        return nullptr;
+    }
+
+    virtual bool Link(std::string outpin, Node* node, std::string inpin)
+    {
+        auto link_pin = FindPin(outpin);
+        auto linked_pin = node->FindPin(inpin);
+        if (link_pin && linked_pin) 
+            return link_pin->LinkTo(*linked_pin);
+        else
+            return false;
+    }
+
+    virtual bool Link(Pin & outpin, Node* node, std::string inpin)
+    {
+        auto linked_pin = node->FindPin(inpin);
+        if (linked_pin) 
+            return outpin.LinkTo(*linked_pin);
+        else
+            return false;
+    }
+
+    virtual bool Link(std::string inpin, Pin & outpin)
+    {
+        auto link_pin = FindPin(inpin);
+        if (link_pin) 
+            return link_pin->LinkTo(outpin);
+        else
+            return false;
+    }
+
+    virtual bool SetPinValue(std::string pin, PinValue value)
+    {
+        auto need_pin = FindPin(pin);
+        if (need_pin)
+            return need_pin->SetValue(value);
+        else
+            return false;
+    }
+
+    virtual NodeTypeInfo    GetTypeInfo() const { return {}; }
+
+    virtual NodeType        GetType() const;
+    virtual VERSION_TYPE    GetVersion() const;
+    virtual ID_TYPE         GetTypeID() const;
+    virtual NodeStyle       GetStyle() const;
+    virtual std::string     GetCatalog() const;
+    virtual bool            HasSetting() const;
+    virtual bool            CustomLayout() const;
+    virtual bool            NeedOverlayLogger() const;
+    virtual std::string     GetName() const;
+    virtual void            SetName(std::string name);
+    virtual void            SetBreakPoint(bool breaken);
+    virtual void            SetLogger(OverlayLogger* instance);
+
+    virtual LinkQueryResult AcceptLink(const Pin& receiver, const Pin& provider) const; // Checks if node accept link between these two pins. There node can filter out unsupported link types.
+    virtual void            WasLinked(const Pin& receiver, const Pin& provider); // Notifies node that link involving one of its pins has been made.
+    virtual void            WasUnlinked(const Pin& receiver, const Pin& provider); // Notifies node that link involving one of its pins has been broken.
+
+    virtual span<Pin*>      GetInputPins() { return {}; } // Returns list of input pins of the node
+    virtual span<Pin*>      GetOutputPins() { return {}; } // Returns list of output pins of the node
+
+    virtual void            OnNodeDelete(Node * node = nullptr) {};
+
+    virtual int  Load(const imgui_json::value& value);
+    virtual void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const;
+
+    virtual void DrawSettingLayout(ImGuiContext * ctx);
+    virtual void DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin);
+
+    ID_TYPE         m_ID                {0};
+    string          m_Name              {""};
+    BP*             m_Blueprint         {nullptr};
+    int             m_IconHovered       {-1};
+    OverlayLogger*  m_logger            {nullptr};
+    bool            m_HasSetting        {false};
+    bool            m_HasCustomLayout   {false};
+    bool            m_NeedOverlayLogger {false};
+    bool            m_BreakPoint        {false};
+    ID_TYPE         m_GroupID           {0};
+
+    // for Node banchmark
+    uint64_t        m_Tick {0};
+    uint64_t        m_Hits {0};
+
+	// for dynamic loading of the object
+	typedef int32_t version_t();
+	typedef Node* create_t(BP*);
+	typedef void destroy_t(Node*);
+};
+
+struct ClipNode
+{
+    ClipNode(Node* node)
+    {
+        m_NodeInfo = node->GetTypeInfo();
+        m_Name = node->m_Name;
+        m_Pos = ed::GetNodePosition(node->m_ID);
+        m_Size = ed::GetNodeSize(node->m_ID);
+        m_GroupSize = ed::GetGroupSize(node->m_ID);
+        m_HasSetting = node->m_HasSetting;
+        m_HasCustomLayout = node->m_HasCustomLayout;
+        m_NeedOverlayLogger = node->m_NeedOverlayLogger;
+    }
+
+    NodeTypeInfo    m_NodeInfo;
+    ImVec2          m_Pos               {ImVec2{0, 0}};
+    ImVec2          m_Size              {ImVec2{0, 0}};
+    ImVec2          m_GroupSize         {ImVec2{0, 0}};
+    string          m_Name              {""};
+    bool            m_HasSetting        {false};
+    bool            m_HasCustomLayout   {false};
+    bool            m_NeedOverlayLogger {false};
+};
+
+struct NodeRegistry
+{
+    NodeRegistry();
+    ~NodeRegistry();
+    ID_TYPE RegisterNodeType(const NodeTypeInfo& info);
+    ID_TYPE RegisterNodeType(std::string Path, BP& blueprint);
+    void UnregisterNodeType(std::string name);
+    Node* Create(ID_TYPE typeId, BP& blueprint);
+    Node* Create(std::string typeName, BP& blueprint);
+    span<const NodeTypeInfo* const> GetTypes() const;
+    span<const std::string> GetCatalogs() const;
+    const NodeTypeInfo* GetTypeInfo(ID_TYPE typeId) const;
+
+private:
+    void RebuildTypes();
+    std::vector<NodeTypeInfo>   m_BuildInNodes;
+    std::vector<NodeTypeInfo>   m_CustomNodes;
+    std::vector<NodeTypeInfo*>  m_Types;
+    std::vector<std::string>    m_Catalogs;
+    std::vector<DLClass<Node>*> m_ExternalObject;
+};
+
+} // namespace BluePrint
+
+namespace BluePrint
+{
+    ID_TYPE NodeTypeIDFromName(string type, string catalog);
+    string NodeTypeToString(NodeType type);
+    bool NodeTypeFromString(string str, NodeType& type);
+    string NodeStyleToString(NodeStyle style);
+    bool NodeStyleFromString(string str, NodeStyle& style);
+    string NodeVersionToString(VERSION_TYPE version);
+    bool NodeVersionFromString(string str, VERSION_TYPE& version);
+
+} // namespace BluePrint
+
+namespace BluePrint
+{
+    template <typename T>
+    inline unique_ptr<T> Node::CreatePin(std::string name /*= ""*/)
+    {
+        if (auto pin = CreatePin(T::TypeId, name))
+            return unique_ptr<T>(static_cast<T*>(pin.release()));
+        else
+            return nullptr;
+    }
+}// namespace BluePrint
+

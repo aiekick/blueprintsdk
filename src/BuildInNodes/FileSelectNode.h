@@ -1,0 +1,265 @@
+#pragma once
+#include <imgui.h>
+#if IMGUI_ICONS
+#include <icons.h>
+#endif
+#define USE_BOOKMARK
+#include <ImGuiFileDialog.h>
+namespace BluePrint
+{
+struct FileSelectNode final : Node
+{
+    enum FILESELECT_FLAGS : int32_t
+    {
+        FILESELECT_PATH      =      0,
+        FILESELECT_FOLDER    = 1 << 0,
+        FILESELECT_NAME      = 1 << 1,
+        FILESELECT_SURFIX    = 1 << 2,
+    };
+    BP_NODE(FileSelectNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "System")
+    FileSelectNode(BP& blueprint): Node(blueprint) { m_Name = "FileSelect"; }
+    
+    FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
+    {
+        if (m_needReload)
+        {
+            m_needReload = false;
+            context.PushReturnPoint(entryPoint);
+            return m_Set;
+        }
+        return m_Exit;
+    }
+
+    void DrawSettingLayout(ImGuiContext * ctx) override
+    {
+        // Draw default setting
+        Node::DrawSettingLayout(ctx);
+        ImGui::Separator();
+
+        // Draw Custom setting
+        ImGui::Checkbox(ICON_IGFD_BOOKMARK " Bookmark", &m_isShowBookmark);
+        ImGui::SameLine(0);
+        ImGui::Checkbox(ICON_IGFD_THUMBAILS_LIST " ShowHide", &m_isShowHiddenFiles);
+        ImGui::SameLine(0);
+        // file filter setting
+        if (ImGui::InputText("Filters", (char*)m_filters.data(), m_filters.size() + 1, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data) -> int
+        {
+            if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
+            {
+                auto& stringValue = *static_cast<string*>(data->UserData);
+                ImVector<char>* my_str = (ImVector<char>*)data->UserData;
+                IM_ASSERT(stringValue.data() == data->Buf);
+                stringValue.resize(data->BufSize);
+                data->Buf = (char*)stringValue.data();
+            }
+            else if (data->EventFlag == ImGuiInputTextFlags_CallbackEdit)
+            {
+                auto& stringValue = *static_cast<string*>(data->UserData);
+                stringValue = std::string(data->Buf);
+            }
+            return 0;
+        }, &m_filters))
+        {
+            m_filters.resize(strlen(m_filters.c_str()));
+        }
+        ImGui::Separator();
+        bool flag_folder        = m_out_flags & FILESELECT_FOLDER;
+        bool flag_name          = m_out_flags & FILESELECT_NAME;
+        bool flag_surfix        = m_out_flags & FILESELECT_SURFIX;
+        ImGui::TextUnformatted("  Folder Name"); ImGui::SameLine(0.f, 100.f); ImGui::ToggleButton("##toggle_path", &flag_folder);
+        ImGui::TextUnformatted("    File Name"); ImGui::SameLine(0.f, 100.f); ImGui::ToggleButton("##toggle_name", &flag_name);
+        ImGui::TextUnformatted("  File Surfix"); ImGui::SameLine(0.f, 100.f); ImGui::ToggleButton("##toggle_surfix", &flag_surfix);
+        m_out_flags = 0;
+        if (flag_folder)    m_out_flags |= FILESELECT_FOLDER;
+        if (flag_name)      m_out_flags |= FILESELECT_NAME;
+        if (flag_surfix)    m_out_flags |= FILESELECT_SURFIX;
+        BuildOutputPin();
+
+        ImGui::Separator();
+        // open file dialog
+        ImGuiFileDialogFlags vflags = 0;
+        if (m_isShowBookmark)       vflags |= ImGuiFileDialogFlags_ShowBookmark;
+        if (!m_isShowHiddenFiles)   vflags |= ImGuiFileDialogFlags_DontShowHiddenFiles;
+        if (!m_bookmark.empty())    ImGuiFileDialog::Instance()->DeserializeBookmarks(m_bookmark);
+        if (m_Blueprint->GetStyleLight())
+            ImGuiFileDialog::Instance()->SetLightStyle();
+        else
+            ImGuiFileDialog::Instance()->SetDarkStyle();
+        if (ImGui::Button(ICON_IGFD_FOLDER_OPEN " Choose File"))
+            ImGuiFileDialog::Instance()->OpenModal("##NodeChooseFileDlgKey", "Choose File", 
+                                                    m_filters.c_str(), 
+                                                    m_file_path.empty() ? "." : m_file_path,
+                                                    1, this, vflags);
+        if (ImGuiFileDialog::Instance()->Display("##NodeChooseFileDlgKey"))
+        {
+	        // action if OK
+            if (ImGuiFileDialog::Instance()->IsOk() == true)
+            {
+                m_file_path_name = ImGuiFileDialog::Instance()->GetFilePathName();
+                m_file_path = ImGuiFileDialog::Instance()->GetCurrentPath();
+                m_file_name = ImGuiFileDialog::Instance()->GetCurrentFileName();
+                auto found = m_file_name.find_last_of(".");
+                if (found != std::string::npos)
+                    m_file_surfix = m_file_name.substr(found + 1);
+                else
+                    m_file_surfix = "";
+                m_FileSurfix.SetValue(m_file_surfix);
+                m_FileName.SetValue(m_file_name);
+                m_FilePath.SetValue(m_file_path);
+                m_FullPath.SetValue(m_file_path_name);
+                m_needReload = true;
+            }
+            // close
+            ImGuiFileDialog::Instance()->Close();
+        }
+        ImGui::SameLine(0);
+        ImGui::TextUnformatted(m_file_name.c_str());
+        m_bookmark = ImGuiFileDialog::Instance()->SerializeBookmarks();
+    }
+
+    void DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
+    {
+        ImGui::SetCurrentContext(ctx);
+        ImGui::Dummy(ImVec2(0, 32));
+        ImGui::Text("%s", m_file_name.c_str());
+    }
+
+    int Load(const imgui_json::value& value) override
+    {
+        int ret = BP_ERR_NONE;
+        if (!value.contains("out_flags"))
+            return BP_ERR_NODE_LOAD;
+
+        auto& flags = value["out_flags"];
+        if (!flags.is_number())
+            return BP_ERR_NODE_LOAD;
+
+        m_out_flags = flags.get<imgui_json::number>();
+
+        BuildOutputPin();
+
+        if ((ret = Node::Load(value)) != BP_ERR_NONE)
+            return ret;
+
+        if (value.contains("file_path_name"))
+        {
+            auto& val = value["file_path_name"];
+            if (val.is_string())
+            {
+                m_file_path_name = val.get<imgui_json::string>();
+                m_FullPath.SetValue(m_file_path_name);
+            }
+        }
+        if (value.contains("file_path"))
+        {
+            auto& val = value["file_path"];
+            if (val.is_string())
+            {
+                m_file_path = val.get<imgui_json::string>();
+                m_FilePath.SetValue(m_file_path);
+            }
+        }
+        if (value.contains("file_name"))
+        {
+            auto& val = value["file_name"];
+            if (val.is_string())
+            {
+                m_file_name = val.get<imgui_json::string>();
+                m_FileName.SetValue(m_file_name);
+            }
+        }
+        if (value.contains("file_surfix"))
+        {
+            auto& val = value["file_surfix"];
+            if (val.is_string())
+            {
+                m_file_surfix = val.get<imgui_json::string>();
+                m_FileSurfix.SetValue(m_file_surfix);
+            }
+        }
+        if (value.contains("filter"))
+        {
+            auto& val = value["filter"];
+            if (val.is_string())
+            {
+                m_filters = val.get<imgui_json::string>();
+            }
+        }
+        if (value.contains("bookmark"))
+        {
+            auto& val = value["bookmark"];
+            if (val.is_string())
+            {
+                m_bookmark = val.get<imgui_json::string>();
+            }
+        }
+        if (value.contains("show_bookmark"))
+        {
+            auto& val = value["show_bookmark"];
+            if (val.is_boolean()) m_isShowBookmark = val.get<imgui_json::boolean>();
+        }
+        if (value.contains("show_hidden"))
+        {
+            auto& val = value["show_hidden"];
+            if (val.is_boolean()) m_isShowHiddenFiles = val.get<imgui_json::boolean>();
+        }
+        return ret;
+    }
+
+    void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const override
+    {
+        Node::Save(value, MapID);
+        value["out_flags"] = imgui_json::number(m_out_flags);
+        value["file_path_name"] = m_file_path_name;
+        value["file_path"] = m_file_path;
+        value["file_name"] = m_file_name;
+        value["file_surfix"] = m_file_surfix;
+        value["show_bookmark"] = m_isShowBookmark;
+        value["show_hidden"] = m_isShowHiddenFiles;
+        value["filter"] = m_filters;
+        value["bookmark"] = m_bookmark;
+    }
+
+    bool CustomLayout() const override { return true; }
+    void BuildOutputPin()
+    {
+        m_OutputPins.clear();
+        m_OutputPins.push_back(&m_Exit);
+        m_OutputPins.push_back(&m_Set);
+        m_OutputPins.push_back(&m_FullPath);
+        if (m_out_flags & FILESELECT_FOLDER)    { m_OutputPins.push_back(&m_FilePath); }
+        if (m_out_flags & FILESELECT_NAME)      { m_OutputPins.push_back(&m_FileName); }
+        if (m_out_flags & FILESELECT_SURFIX)    { m_OutputPins.push_back(&m_FileSurfix); }
+    }
+
+    span<Pin*> GetInputPins() override { return m_InputPins; }
+    span<Pin*> GetOutputPins() override
+    { 
+        if (m_OutputPins.size() == 0) 
+            BuildOutputPin();
+        return m_OutputPins; 
+    }
+
+    FlowPin   m_Enter       = { this, "Enter" };
+    FlowPin   m_Exit        = { this, "Exit" };
+    FlowPin   m_Set         = { this, "Set" };
+    StringPin m_FullPath    = { this, "PathName", "" };
+    StringPin m_FilePath    = { this, "Path", "" };
+    StringPin m_FileName    = { this, "Name", "" };
+    StringPin m_FileSurfix  = { this, "Surfix", "" };
+    Pin* m_InputPins[1] = { &m_Enter };
+    //Pin* m_OutputPins[5] = { &m_Exit, &m_Set, &m_FullPath, &m_FilePath, &m_FileName };
+    string m_filters {".*"};
+    string m_file_path_name;
+    string m_file_path;
+    string m_file_name;
+    string m_file_surfix;
+    string m_bookmark {""};
+    bool m_isShowBookmark {false};
+    bool m_isShowHiddenFiles {true};
+    bool m_needReload {false};
+
+    std::vector<Pin *> m_OutputPins;
+    int32_t m_out_flags = 0;
+};
+} // namespace BluePrint
