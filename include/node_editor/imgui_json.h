@@ -26,7 +26,6 @@ using string  = std::string;
 using object  = std::map<string, value>;
 using array   = std::vector<value>;
 using number  = double;
-using integer = int;
 using boolean = bool;
 using null    = std::nullptr_t;
 using point   = std::intptr_t;
@@ -39,7 +38,6 @@ enum class type_t
     string,
     boolean,
     number,
-    integer,
     point,
     discarded
 };
@@ -61,7 +59,6 @@ struct IMGUI_API value
     value(const point    v): m_Type(construct(m_Storage,           v))  {}
     value(      boolean  v): m_Type(construct(m_Storage,           v))  {}
     value(      number   v): m_Type(construct(m_Storage,           v))  {}
-    value(      integer  v): m_Type(construct(m_Storage,           v))  {}
     ~value() { destruct(m_Storage, m_Type); }
 
     value& operator=(value&& other)      { if (this != &other) { value(std::move(other)).swap(*this); } return *this; }
@@ -78,7 +75,6 @@ struct IMGUI_API value
     value& operator=(const point    v) { auto other = value(          v);  swap(other); return *this; }
     value& operator=(      boolean  v) { auto other = value(          v);  swap(other); return *this; }
     value& operator=(      number   v) { auto other = value(          v);  swap(other); return *this; }
-    value& operator=(      integer  v) { auto other = value(          v);  swap(other); return *this; }
 
     type_t type() const { return m_Type; }
 
@@ -96,7 +92,7 @@ struct IMGUI_API value
 
     size_t erase(const string& key);
 
-    bool is_primitive()  const { return is_string() || is_number() || is_integer() || is_boolean() || is_null() || is_point(); }
+    bool is_primitive()  const { return is_string() || is_number() || is_boolean() || is_null() || is_point(); }
     bool is_structured() const { return is_object() || is_array();   }
     bool is_null()       const { return m_Type == type_t::null;      }
     bool is_object()     const { return m_Type == type_t::object;    }
@@ -104,7 +100,6 @@ struct IMGUI_API value
     bool is_string()     const { return m_Type == type_t::string;    }
     bool is_boolean()    const { return m_Type == type_t::boolean;   }
     bool is_number()     const { return m_Type == type_t::number;    }
-    bool is_integer()    const { return m_Type == type_t::integer;   }
     bool is_point()      const { return m_Type == type_t::point;     }
     bool is_discarded()  const { return m_Type == type_t::discarded; }
 
@@ -139,8 +134,8 @@ private:
 # define JSON_MAX6(a, b, c, d, e, f)    JSON_MAX2(JSON_MAX5(a, b, c, d, e), f)
     enum
     {
-        max_size  = JSON_MAX6( sizeof(string),  sizeof(object),  sizeof(array),  sizeof(number),  sizeof(integer), sizeof(boolean)),
-        max_align = JSON_MAX6(alignof(string), alignof(object), alignof(array), alignof(number), alignof(integer), alignof(boolean))
+        max_size  = JSON_MAX5( sizeof(string),  sizeof(object),  sizeof(array),  sizeof(number),  sizeof(boolean)),
+        max_align = JSON_MAX5(alignof(string), alignof(object), alignof(array), alignof(number), alignof(boolean))
     };
 # undef JSON_MAX6
 # undef JSON_MAX5
@@ -159,8 +154,6 @@ private:
     static const boolean* boolean_ptr(const storage_t& storage) { return reinterpret_cast<const boolean*>(&storage); }
     static       number*   number_ptr(      storage_t& storage) { return reinterpret_cast<       number*>(&storage); }
     static const number*   number_ptr(const storage_t& storage) { return reinterpret_cast<const  number*>(&storage); }
-    static       integer* integer_ptr(      storage_t& storage) { return reinterpret_cast<      integer*>(&storage); }
-    static const integer* integer_ptr(const storage_t& storage) { return reinterpret_cast<const integer*>(&storage); }
     static       point*     point_ptr(      storage_t& storage) { return reinterpret_cast<        point*>(&storage); }
     static const point*     point_ptr(const storage_t& storage) { return reinterpret_cast<const   point*>(&storage); }
 
@@ -173,7 +166,6 @@ private:
             case type_t::string:    new (&storage) string();  break;
             case type_t::boolean:   new (&storage) boolean(); break;
             case type_t::number:    new (&storage) number();  break;
-            case type_t::integer:   new (&storage) integer(); break;
             case type_t::point:     new (&storage) point();   break;
             default: break;
         }
@@ -191,7 +183,6 @@ private:
     static type_t construct(storage_t& storage, const char*    value) { new (&storage)  string(value);                        return type_t::string;  }
     static type_t construct(storage_t& storage,       boolean  value) { new (&storage) boolean(value);                        return type_t::boolean; }
     static type_t construct(storage_t& storage,       number   value) { new (&storage)  number(value);                        return type_t::number;  }
-    static type_t construct(storage_t& storage,       integer  value) { new (&storage) integer(value);                        return type_t::integer; }
     static type_t construct(storage_t& storage,       point    value) { new (&storage)   point(value);                        return type_t::point;   }
 
     static void destruct(storage_t& storage, type_t type)
@@ -234,7 +225,6 @@ template <> inline const array&   value::get<array>()   const { JSON_ASSERT(m_Ty
 template <> inline const string&  value::get<string>()  const { JSON_ASSERT(m_Type == type_t::string);  return *string_ptr(m_Storage);  }
 template <> inline const boolean& value::get<boolean>() const { JSON_ASSERT(m_Type == type_t::boolean); return *boolean_ptr(m_Storage); }
 template <> inline const number&  value::get<number>()  const { JSON_ASSERT(m_Type == type_t::number);  return *number_ptr(m_Storage);  }
-template <> inline const integer& value::get<integer>() const { JSON_ASSERT(m_Type == type_t::integer); return *integer_ptr(m_Storage); }
 template <> inline const point&   value::get<point>()   const { JSON_ASSERT(m_Type == type_t::point);   return *point_ptr(m_Storage);   }
 
 template <> inline       object&  value::get<object>()        { JSON_ASSERT(m_Type == type_t::object);  return *object_ptr(m_Storage);  }
@@ -242,7 +232,6 @@ template <> inline       array&   value::get<array>()         { JSON_ASSERT(m_Ty
 template <> inline       string&  value::get<string>()        { JSON_ASSERT(m_Type == type_t::string);  return *string_ptr(m_Storage);  }
 template <> inline       boolean& value::get<boolean>()       { JSON_ASSERT(m_Type == type_t::boolean); return *boolean_ptr(m_Storage); }
 template <> inline       number&  value::get<number>()        { JSON_ASSERT(m_Type == type_t::number);  return *number_ptr(m_Storage);  }
-template <> inline       integer& value::get<integer>()       { JSON_ASSERT(m_Type == type_t::integer); return *integer_ptr(m_Storage); }
 template <> inline       point&   value::get<point>()         { JSON_ASSERT(m_Type == type_t::point);   return *point_ptr(m_Storage);   }
 
 template <> inline const object*  value::get_ptr<object>()  const { if (m_Type == type_t::object)  return object_ptr(m_Storage);  else return nullptr; }
@@ -250,7 +239,6 @@ template <> inline const array*   value::get_ptr<array>()   const { if (m_Type =
 template <> inline const string*  value::get_ptr<string>()  const { if (m_Type == type_t::string)  return string_ptr(m_Storage);  else return nullptr; }
 template <> inline const boolean* value::get_ptr<boolean>() const { if (m_Type == type_t::boolean) return boolean_ptr(m_Storage); else return nullptr; }
 template <> inline const number*  value::get_ptr<number>()  const { if (m_Type == type_t::number)  return number_ptr(m_Storage);  else return nullptr; }
-template <> inline const integer* value::get_ptr<integer>() const { if (m_Type == type_t::integer) return integer_ptr(m_Storage); else return nullptr; }
 template <> inline const point*   value::get_ptr<point>()   const { if (m_Type == type_t::point)   return point_ptr(m_Storage);   else return nullptr; }
 
 template <> inline       object*  value::get_ptr<object>()        { if (m_Type == type_t::object)  return object_ptr(m_Storage);  else return nullptr; }
@@ -258,7 +246,6 @@ template <> inline       array*   value::get_ptr<array>()         { if (m_Type =
 template <> inline       string*  value::get_ptr<string>()        { if (m_Type == type_t::string)  return string_ptr(m_Storage);  else return nullptr; }
 template <> inline       boolean* value::get_ptr<boolean>()       { if (m_Type == type_t::boolean) return boolean_ptr(m_Storage); else return nullptr; }
 template <> inline       number*  value::get_ptr<number>()        { if (m_Type == type_t::number)  return number_ptr(m_Storage);  else return nullptr; }
-template <> inline       integer* value::get_ptr<integer>()       { if (m_Type == type_t::integer) return integer_ptr(m_Storage); else return nullptr; }
 template <> inline       point*   value::get_ptr<point>()         { if (m_Type == type_t::point)   return point_ptr(m_Storage);   else return nullptr; }
 
 } // namespace imgui_json

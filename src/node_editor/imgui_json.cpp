@@ -22,7 +22,6 @@ value::value(value&& other)
         case type_t::string:    construct(m_Storage, std::move( *string_ptr(other.m_Storage))); break;
         case type_t::boolean:   construct(m_Storage, std::move(*boolean_ptr(other.m_Storage))); break;
         case type_t::number:    construct(m_Storage, std::move( *number_ptr(other.m_Storage))); break;
-        case type_t::integer:   construct(m_Storage, std::move(*integer_ptr(other.m_Storage))); break;
         case type_t::point:     construct(m_Storage, std::move(  *point_ptr(other.m_Storage))); break;
         default: break;
     }
@@ -40,7 +39,6 @@ value::value(const value& other)
         case type_t::string:    construct(m_Storage,  *string_ptr(other.m_Storage)); break;
         case type_t::boolean:   construct(m_Storage, *boolean_ptr(other.m_Storage)); break;
         case type_t::number:    construct(m_Storage,  *number_ptr(other.m_Storage)); break;
-        case type_t::integer:   construct(m_Storage, *integer_ptr(other.m_Storage)); break;
         case type_t::point:     construct(m_Storage,   *point_ptr(other.m_Storage)); break;
         default: break;
     }
@@ -174,7 +172,6 @@ void value::swap(value& other)
             case type_t::string:    swap(*string_ptr(m_Storage),  *string_ptr(other.m_Storage));  break;
             case type_t::boolean:   swap(*boolean_ptr(m_Storage), *boolean_ptr(other.m_Storage)); break;
             case type_t::number:    swap(*number_ptr(m_Storage),  *number_ptr(other.m_Storage));  break;
-            case type_t::integer:   swap(*integer_ptr(m_Storage),*integer_ptr(other.m_Storage));  break;
             case type_t::point:     swap(*point_ptr(m_Storage),   *point_ptr(other.m_Storage));   break;
             default: break;
         }
@@ -324,10 +321,6 @@ void value::dump(dump_context_t& context, int level) const
 
         case type_t::number:
             context.out << *number_ptr(m_Storage);
-            break;
-
-        case type_t::integer:
-            context.out << *integer_ptr(m_Storage);
             break;
 
         case type_t::point:

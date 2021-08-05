@@ -160,7 +160,7 @@ struct ComparatorNode final : Node
     {
         Node::Save(value, MapID);
         value["datatype"] = PinTypeToString(m_Type);
-        value["comparetype"] = m_CompareType;
+        value["comparetype"] = imgui_json::number(m_CompareType);
     }
 
     void SetType(PinType type)
