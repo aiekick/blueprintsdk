@@ -3,7 +3,7 @@ project(BluePrintSDK)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_SKIP_RPATH ON)
-set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_MACOSX_RPATH 0)
 if (POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
@@ -13,6 +13,8 @@ endif()
 if (POLICY CMP0068)
     cmake_policy(SET CMP0068 NEW)
 endif()
+
+option(IMGUI_BP_SDK_STATIC                "Build BluePrint as static library" OFF)
 
 set(IMGUI_BP_SDK_SRC
     src/BluePrint.cpp
@@ -74,14 +76,24 @@ file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/BuildInNodes.h ${incls})
 
 include_directories(${IMGUI_BP_SDK_INC_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 
+if(IMGUI_BP_SDK_STATIC)
+set(LIBRARY STATIC)
+else(IMGUI_BP_SDK_STATIC)
+set(LIBRARY SHARED)
+endif(IMGUI_BP_SDK_STATIC)
+
 add_library(
     BluePrintSDK
-    STATIC
+    ${LIBRARY}
     ${IMGUI_BP_SDK_SRC}
     ${IMGUI_BP_NODE_LIST}
     ${IMGUI_BP_SDK_INC}
 )
 set_property(TARGET BluePrintSDK PROPERTY POSITION_INDEPENDENT_CODE ON)
+
+if(NOT IMGUI_BP_SDK_STATIC)
+target_link_libraries(BluePrintSDK imgui)
+endif(NOT IMGUI_BP_SDK_STATIC)
 
 get_directory_property(hasParent PARENT_DIRECTORY)
 if(hasParent)
