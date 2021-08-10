@@ -111,7 +111,7 @@ enum class BluePrintStyle:int32_t
 BluePrintStyle BPStyleFromName(string name);
 string BPStyleToString(BluePrintStyle style);
 
-struct BluePrintUI;
+struct IMGUI_API BluePrintUI;
 # pragma region Popup
 struct ContextMenu
 {

@@ -33,7 +33,7 @@ enum class PinType: int32_t
     Custom
 };
 
-class PinTypeEx
+class IMGUI_API PinTypeEx
 {
 public:
     PinTypeEx(const std::string& name) :
@@ -125,7 +125,7 @@ private:
 
 struct Node;
 struct BP;
-struct Pin
+struct IMGUI_API Pin
 {
     Pin(Node* node, PinType type, std::string name = "");
     virtual ~Pin();
@@ -232,7 +232,7 @@ private:
     std::shared_ptr<T>  m_Shptr;
 };
 
-class PinEx
+class IMGUI_API PinEx
 {
 public:
     PinEx() {}
@@ -300,7 +300,7 @@ protected:
 // ---[Internal Pin Define]----
 // ----------------------------
 // FlowPin represent execution flow
-struct FlowPin final : Pin
+struct IMGUI_API FlowPin final : Pin
 {
     static constexpr auto TypeId = PinType::Flow;
 
@@ -312,7 +312,7 @@ struct FlowPin final : Pin
 };
 
 // AnyPin can morph into any other data pin while creating a link
-struct AnyPin final : Pin
+struct IMGUI_API AnyPin final : Pin
 {
     static constexpr auto TypeId = PinType::Any;
 
@@ -330,7 +330,7 @@ struct AnyPin final : Pin
 };
 
 // Boolean type pin
-struct BoolPin final : Pin
+struct IMGUI_API BoolPin final : Pin
 {
     static constexpr auto TypeId = PinType::Bool;
 
@@ -369,7 +369,7 @@ struct BoolPin final : Pin
 };
 
 // Integer 32bit type pin
-struct Int32Pin final : Pin
+struct IMGUI_API Int32Pin final : Pin
 {
     static constexpr auto TypeId = PinType::Int32;
 
@@ -393,7 +393,7 @@ struct Int32Pin final : Pin
 };
 
 // Integer 64bit type pin
-struct Int64Pin final : Pin
+struct IMGUI_API Int64Pin final : Pin
 {
     static constexpr auto TypeId = PinType::Int64;
 
@@ -417,7 +417,7 @@ struct Int64Pin final : Pin
 };
 
 // Floating point 32bit type pin
-struct FloatPin final : Pin
+struct IMGUI_API FloatPin final : Pin
 {
     static constexpr auto TypeId = PinType::Float;
     FloatPin(Node* node, float value = 0.0f): Pin(node, PinType::Float), m_Value(value) {}
@@ -440,7 +440,7 @@ struct FloatPin final : Pin
 };
 
 // Floating point 64bit type pin
-struct DoublePin final : Pin
+struct IMGUI_API DoublePin final : Pin
 {
     static constexpr auto TypeId = PinType::Double;
     DoublePin(Node* node, double value = 0.0f): Pin(node, PinType::Double), m_Value(value) {}
@@ -463,7 +463,7 @@ struct DoublePin final : Pin
 };
 
 // String type pin
-struct StringPin final : Pin
+struct IMGUI_API StringPin final : Pin
 {
     static constexpr auto TypeId = PinType::String;
 
@@ -487,7 +487,7 @@ struct StringPin final : Pin
 };
 
 // Point type pin
-struct PointPin final : Pin
+struct IMGUI_API PointPin final : Pin
 {
     static constexpr auto TypeId = PinType::Point;
 
@@ -511,7 +511,7 @@ struct PointPin final : Pin
 };
 
 // Vec2 ImVec2 type pin
-struct Vec2Pin final : Pin
+struct IMGUI_API Vec2Pin final : Pin
 {
     static constexpr auto TypeId = PinType::Vec2;
     Vec2Pin(Node* node, ImVec2 value = {}): Pin(node, PinType::Vec2), m_Value(value) {}
@@ -534,7 +534,7 @@ struct Vec2Pin final : Pin
 };
 
 // Vec2 ImVec2 type pin
-struct Vec4Pin final : Pin
+struct IMGUI_API Vec4Pin final : Pin
 {
     static constexpr auto TypeId = PinType::Vec4;
     Vec4Pin(Node* node, ImVec4 value = {}): Pin(node, PinType::Vec4), m_Value(value) {}
@@ -557,7 +557,7 @@ struct Vec4Pin final : Pin
 };
 
 // Mat ImMat type pin
-struct MatPin final : Pin
+struct IMGUI_API MatPin final : Pin
 {
     static constexpr auto TypeId = PinType::Mat;
     MatPin(Node* node, ImGui::ImMat value = {}): Pin(node, PinType::Mat), m_Value(value) {}
@@ -578,7 +578,7 @@ struct MatPin final : Pin
 
     ImGui::ImMat m_Value = {};
 };
-struct CustomPin final : Pin
+struct IMGUI_API CustomPin final : Pin
 {
     static constexpr auto TypeId = PinType::Custom;
 

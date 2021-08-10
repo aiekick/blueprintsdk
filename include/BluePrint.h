@@ -145,7 +145,7 @@ struct ContextMonitor
     virtual void OnPostStep(Context& context) {}
 };
 
-struct Context
+struct IMGUI_API Context
 {
     void SetContextMonitor(ContextMonitor* monitor);
             ContextMonitor* GetContextMonitor();

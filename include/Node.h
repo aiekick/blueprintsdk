@@ -64,7 +64,7 @@ struct NodeTypeInfo
     Factory         m_Factory;
 };
 
-struct Node
+struct IMGUI_API Node
 {
     Node(BP& blueprint);
     virtual ~Node() = default;
