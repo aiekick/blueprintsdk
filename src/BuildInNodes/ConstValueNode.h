@@ -101,7 +101,7 @@ struct ConstValueNode final : Node
         }
     }
 
-    void DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
+    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         auto type = m_Value.GetValueType();
@@ -135,6 +135,7 @@ struct ConstValueNode final : Node
             default:
             break;
         }
+        return false;
     }
 
     bool HasSetting() const override { return true; }

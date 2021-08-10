@@ -117,11 +117,12 @@ struct FileSelectNode final : Node
         m_bookmark = ImGuiFileDialog::Instance()->SerializeBookmarks();
     }
 
-    void DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
+    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         ImGui::Dummy(ImVec2(0, 32));
         ImGui::Text("%s", m_file_name.c_str());
+        return false;
     }
 
     int Load(const imgui_json::value& value) override

@@ -107,7 +107,7 @@ struct ComparatorNode final : Node
 
     bool CustomLayout() const override { return true; }
 
-    void DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
+    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         std::string title_str;
@@ -125,6 +125,7 @@ struct ComparatorNode final : Node
         draw_size.x *= 2;
         ImGui::Dummy(draw_size);
         ImGui::TextUnformatted(title_str.data());
+        return false;
     }
 
     int Load(const imgui_json::value& value) override

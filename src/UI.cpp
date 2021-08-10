@@ -1409,7 +1409,8 @@ void BluePrintUI::DrawNodes()
             layout.NextColumn();
             float zoom = ed::GetCurrentZoom();
             ImVec2 origin = ed::GetCurrentOrigin();
-            node->DrawCustomLayout(ImGui::GetCurrentContext(), zoom, origin);
+            if (node->DrawCustomLayout(ImGui::GetCurrentContext(), zoom, origin))
+                ed::SetNodeChanged(node->m_ID);
         }
         layout.SetColumnAlignment(1.0f);
         layout.NextColumn();

@@ -401,9 +401,9 @@ void Node::DrawSettingLayout(ImGuiContext * ctx)
     }
 }
 
-void Node::DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin)
+bool Node::DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin)
 {
-
+    return false;
 }
 
 LinkQueryResult Node::AcceptLink(const Pin& receiver, const Pin& provider) const

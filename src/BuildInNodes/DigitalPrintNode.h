@@ -161,7 +161,7 @@ struct PrintNode final : Node
         return result;
     }
 
-    void DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
+    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
 
@@ -177,6 +177,7 @@ struct PrintNode final : Node
         auto draw_size = ImGui::CalcTextSize(show_text.data()) * 2;
         ImGui::Dummy(draw_size);
         drawList->AddText(ctx->Font, ctx->FontSize * 2, cursorPos, color, show_text.data(), text_end);
+        return false;
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
