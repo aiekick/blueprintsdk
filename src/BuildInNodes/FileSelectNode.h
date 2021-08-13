@@ -249,7 +249,6 @@ struct FileSelectNode final : Node
     StringPin m_FileName    = { this, "Name", "" };
     StringPin m_FileSurfix  = { this, "Surfix", "" };
     Pin* m_InputPins[1] = { &m_Enter };
-    //Pin* m_OutputPins[5] = { &m_Exit, &m_Set, &m_FullPath, &m_FilePath, &m_FileName };
     string m_filters {".*"};
     string m_file_path_name;
     string m_file_path;

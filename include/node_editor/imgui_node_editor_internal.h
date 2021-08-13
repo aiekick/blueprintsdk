@@ -1024,8 +1024,8 @@ private:
     float MatchZoom(int steps, float fallbackZoom);
     int MatchZoomIndex(int direction);
 
-    static const float s_ZoomLevels[];
-    static const int   s_ZoomLevelCount;
+    //static const float s_ZoomLevels[];
+    //static const int   s_ZoomLevelCount;
 };
 
 struct SizeAction final: EditorAction

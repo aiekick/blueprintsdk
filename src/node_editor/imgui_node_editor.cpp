@@ -19,18 +19,18 @@
 # include <type_traits>
 
 // https://stackoverflow.com/a/8597498
-# define DECLARE_HAS_NESTED(Name, Member)                                          \
-                                                                                   \
-    template<class T>                                                              \
-    struct has_nested_ ## Name                                                     \
-    {                                                                              \
-        typedef char yes;                                                          \
-        typedef yes(&no)[2];                                                       \
-                                                                                   \
-        template<class U> static yes test(decltype(U::Member)*);                   \
-        template<class U> static no  test(...);                                    \
-                                                                                   \
-        static bool const value = sizeof(test<T>(0)) == sizeof(yes);               \
+# define DECLARE_HAS_NESTED(Name, Member)                                           \
+                                                                                    \
+    template<class T>                                                               \
+    struct has_nested_ ## Name                                                      \
+    {                                                                               \
+        typedef char yes;                                                           \
+        typedef yes(&no)[2];                                                        \
+                                                                                    \
+        template<class U> static yes test(decltype(U::Member)*);                    \
+        template<class U> static no  test(...);                                     \
+                                                                                    \
+        static bool const value = sizeof(test<T>(0)) == sizeof(yes);                \
     };
 
 
@@ -3288,12 +3288,17 @@ void ed::FlowAnimationController::Release(FlowAnimation* animation)
 // Navigate Action
 //
 //------------------------------------------------------------------------------
+/*
 const float ed::NavigateAction::s_ZoomLevels[] =
 {
     0.02f, 0.05f, 0.1f, 0.15f, 0.20f, 0.25f, 0.33f, 0.5f, 0.75f, 1.0f, 1.25f, 1.50f, 2.0f, 2.5f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f
 };
 
 const int ed::NavigateAction::s_ZoomLevelCount = sizeof(s_ZoomLevels) / sizeof(*s_ZoomLevels);
+*/
+#define ZOOM_LEVELCOUNT 100
+static int s_ZoomLevelCount = ZOOM_LEVELCOUNT;
+static float s_ZoomLevels[ZOOM_LEVELCOUNT];
 
 ed::NavigateAction::NavigateAction(EditorContext* editor, ImGuiEx::Canvas& canvas):
     EditorAction(editor),
@@ -3313,6 +3318,11 @@ ed::NavigateAction::NavigateAction(EditorContext* editor, ImGuiEx::Canvas& canva
     m_MovingOverEdge(false),
     m_MoveScreenOffset(0, 0)
 {
+    for (int i = 0; i < ZOOM_LEVELCOUNT; i++)
+    {
+        s_ZoomLevels[i] = pow(2, i / 10.f) / 100.f;
+    }
+    s_ZoomLevels[0] = 0.01f;
 }
 
 ed::EditorAction::AcceptResult ed::NavigateAction::Accept(const Control& control)

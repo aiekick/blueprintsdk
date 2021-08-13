@@ -397,7 +397,11 @@ void Node::DrawSettingLayout(ImGuiContext * ctx)
     }, &value))
     {
         value.resize(strlen(value.c_str()));
-        m_Name = value;
+        if (m_Name.compare(value) != 0)
+        {
+            m_Name = value;
+            ed::SetNodeChanged(m_ID);
+        }
     }
 }
 
