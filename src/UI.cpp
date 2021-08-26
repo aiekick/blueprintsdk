@@ -1579,6 +1579,47 @@ void BluePrintUI::DrawInfoTooltip()
         }
         ImGui::Bullet(); ImGui::Text("      Type: %s", PinTypeToString(pin.GetType()).c_str());
         ImGui::Bullet(); ImGui::Text("Value Type: %s", PinTypeToString(pin.GetValueType()).c_str());
+        if (pin.GetValueType() == PinType::Mat && !pin.m_MappedPin && !pin.IsInput())
+        {
+            ImGui::TextUnformatted("=============ImMat===========");
+            auto pinValue = pin.GetValue();
+            auto mat = pinValue.As<ImGui::ImMat>();
+            if (!mat.empty())
+            {
+                ImGui::Text("        Width:%d", mat.w);
+                ImGui::Text("       Height:%d", mat.h);
+                ImGui::Text("     Channels:%d", mat.c);
+                ImGui::Text("       Device:%s", mat.device == IM_DD_CPU ? "CPU" : 
+                                                mat.device == IM_DD_VULKAN ? "Vulkan" :
+                                                mat.device == IM_DD_VULKAN_IMAGE ? "Vulkan Image" : "Cuda");
+                if (mat.device != 0)
+                    ImGui::Text("          GPU:%d", mat.device_number);
+                ImGui::Text("    Data type:%s", mat.type == IM_DT_INT8 ? "Int8" :
+                                                mat.type == IM_DT_INT16 ? "Int16" :
+                                                mat.type == IM_DT_INT32 ? "Int32" :
+                                                mat.type == IM_DT_INT64 ? "Int64" :
+                                                mat.type == IM_DT_FLOAT16 ? "Float 16" : 
+                                                mat.type == IM_DT_FLOAT32 ? "Float" :
+                                                mat.type == IM_DT_FLOAT64 ? "Double" : "Unknown");
+                ImGui::Text("       Format:%s", mat.color_format == IM_CF_GRAY ? "Gray/Mono" :
+                                                mat.color_format == IM_CF_BGR ? "BGR" :
+                                                mat.color_format == IM_CF_ABGR ? "ABGR" :
+                                                mat.color_format == IM_CF_BGRA ? "BGRA" :
+                                                mat.color_format == IM_CF_RGB ? "RGB" :
+                                                mat.color_format == IM_CF_ARGB ? "ARGB" :
+                                                mat.color_format == IM_CF_RGBA ? "RGBA" :
+                                                mat.color_format == IM_CF_YUV420 ? "YUV420" :
+                                                mat.color_format == IM_CF_YUV422 ? "YUV422" :
+                                                mat.color_format == IM_CF_YUV444 ? "YUV444" :
+                                                mat.color_format == IM_CF_YUVA ? "YUVA" :
+                                                mat.color_format == IM_CF_NV12 ? "NV12" : "Unknown");
+            }
+            else
+            {
+                ImGui::TextUnformatted("      *Empty*");
+            }
+            ImGui::TextUnformatted("=============================");
+        }
         string flags;
         if (pin.IsMappedPin())
             flags += "mapped, ";
@@ -1598,7 +1639,7 @@ void BluePrintUI::DrawInfoTooltip()
             flags += "receiver, ";
         if (!flags.empty())
             flags = flags.substr(0, flags.size() - 2);
-        ImGui::Bullet(); ImGui::Text("     Flags: %s", flags.c_str());
+        ImGui::Bullet(); ImGui::Text("   Flags: %s", flags.c_str());
     };
 
     ImGui::SetNextWindowBgAlpha(0.75f);
