@@ -1550,6 +1550,7 @@ void BluePrintUI::DrawInfoTooltip()
     
     auto pinTooltip = [](const char* label, const Pin& pin, bool showNode)
     {
+        auto isDummy = pin.m_Node->GetStyle() == NodeStyle::Dummy;
         ImGui::Text("%s %s", label, !pin.m_Name.empty() ? pin.m_Name.c_str() : "");
         ImGui::Bullet(); ImGui::Text("        ID: 0x%08" PRIX32, pin.m_ID);
         if (pin.m_Link)
@@ -1579,7 +1580,7 @@ void BluePrintUI::DrawInfoTooltip()
         }
         ImGui::Bullet(); ImGui::Text("      Type: %s", PinTypeToString(pin.GetType()).c_str());
         ImGui::Bullet(); ImGui::Text("Value Type: %s", PinTypeToString(pin.GetValueType()).c_str());
-        if (pin.GetValueType() == PinType::Mat && !pin.m_MappedPin && !pin.IsInput())
+        if (!isDummy && !pin.m_MappedPin && !pin.IsInput() && pin.GetValueType() == PinType::Mat)
         {
             ImGui::TextUnformatted("=============ImMat===========");
             auto pinValue = pin.GetValue();
