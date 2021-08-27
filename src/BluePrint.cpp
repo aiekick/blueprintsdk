@@ -439,6 +439,8 @@ const Node* BP::NextNode() const
 
 FlowPin BP::CurrentFlowPin() const
 {
+    if (!m_Context.m_Monitor)
+        return {};
     return m_Context.CurrentFlowPin();
 }
 

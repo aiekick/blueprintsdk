@@ -58,11 +58,11 @@ void DebugOverlay::Begin()
         return;
 
     m_CurrentNode = m_Blueprint->CurrentNode();
-    m_NextNode = m_Blueprint->NextNode();
-    m_CurrentFlowPin = m_Blueprint->CurrentFlowPin();
-
     if (nullptr == m_CurrentNode)
         return;
+
+    m_NextNode = m_Blueprint->NextNode();
+    m_CurrentFlowPin = m_Blueprint->CurrentFlowPin();
 
     // Use splitter to draw pin values on top of nodes
     m_DrawList = ImGui::GetWindowDrawList();
@@ -127,13 +127,15 @@ void DebugOverlay::DrawInputPin(BluePrintUI* ui, const Pin& pin)
 {
     if (!m_Blueprint)
         return;
+    if (nullptr == m_CurrentNode)
+        return;
 
     auto flowPinValue = m_Blueprint->GetContext().GetPinValue(m_CurrentFlowPin);
     auto flowPin = flowPinValue.GetType() == PinType::Flow ? flowPinValue.As<FlowPin*>() : nullptr;
 
     const auto isCurrentFlowPin = flowPin && flowPin->m_ID== pin.m_ID;
 
-    if (nullptr == m_CurrentNode || (!pin.m_Link && !isCurrentFlowPin))
+    if (!pin.m_Link && !isCurrentFlowPin)
         return;
 
     // Draw to layer over nodes
