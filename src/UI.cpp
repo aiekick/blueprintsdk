@@ -177,16 +177,18 @@ void NodeContextMenu::Show(BluePrintUI& UI)
         menuAction(UI.m_Edit_Duplicate);
         ImGui::Separator();
         menuAction(UI.m_Edit_Delete);
-        if (node->HasSetting())
-        {
-            ImGui::Separator();
-            menuAction(UI.m_Edit_Setting);
-        }
+        //if (node->HasSetting())
+        //{
+        //    ImGui::Separator();
+        //    menuAction(UI.m_Edit_Setting);
+        //}
         if (node->GetStyle() == NodeStyle::Default)
         {
             ImGui::Separator();
             menuAction(UI.m_Blueprint_BreakPoint);
         }
+        ImGui::Separator();
+        node->DrawMenuLayout(ImGui::GetCurrentContext());
         ImGui::EndPopup();
     }
 }
@@ -2110,7 +2112,7 @@ void BluePrintUI::HandleContextMenuAction()
     if (!m_Document)
         return;
     
-    if (m_Document->m_Blueprint.IsExecuting())
+    if (m_Document->m_Blueprint.IsExecuting() && !m_Document->m_Blueprint.IsPaused())
         return;
 
     if (ed::ShowBackgroundContextMenu())

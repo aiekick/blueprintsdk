@@ -186,6 +186,7 @@ struct IMGUI_API Node
     virtual void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const;
 
     virtual void DrawSettingLayout(ImGuiContext * ctx);
+    virtual void DrawMenuLayout(ImGuiContext * ctx);
     virtual bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin);
 
     ID_TYPE         m_ID                {0};

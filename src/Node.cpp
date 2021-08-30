@@ -405,6 +405,10 @@ void Node::DrawSettingLayout(ImGuiContext * ctx)
     }
 }
 
+void Node::DrawMenuLayout(ImGuiContext * ctx)
+{
+}
+
 bool Node::DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin)
 {
     return false;
