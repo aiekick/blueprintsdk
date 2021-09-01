@@ -939,6 +939,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, m_StyleColors[BluePrintStyleColor_ToolButtonActive]);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0,0));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0,0));
+    ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
     if (ImGui::Button((titlebar_icons[0] + "##" + std::to_string(node->m_ID)).c_str())) 
     {
         *need_clone_node = node;
@@ -981,7 +982,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
         if (ImGui::IsItemHovered()) node->m_IconHovered = 3;
     }
 
-    ImGui::PopStyleVar(2);
+    ImGui::PopStyleVar(3);
     ImGui::PopStyleColor(3);
     return textSizeButton * (icons + 2);
 }
@@ -1050,6 +1051,9 @@ void BluePrintUI::DrawNodes()
             const float titleTextHeight = ImGui::CalcTextSize(nodeName.c_str()).y;
             const float textSizeButton = ImGui::CalcTextSize(titlebar_icons[0].c_str()).x;
             const float dummyWidth = titleTextWidth + textSizeButton * 5 + 10;
+            ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
+            ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphOutlineWidth, 1.0);
+            ImGui::PushStyleColor(ImGuiCol_TexGlyphOutline, ImVec4(0.5, 0.5, 1.0, 1.0));
             ImGui::Dummy(ImVec2(dummyWidth, 10));
             ImGui::BeginHorizontal("horizontal");
             ImGui::Spring(1);
@@ -1062,6 +1066,8 @@ void BluePrintUI::DrawNodes()
             ImGui::Dummy(ImVec2(dummyWidth, 10));
             title_height = titleTextHeight + 20;
             title_width = dummyWidth;
+            ImGui::PopStyleVar(2);
+            ImGui::PopStyleColor(1);
         }
         ImGui::EndVertical();
         if (!isDummy) title_width += DrawNodeToolBar(node, &need_clone_node);
@@ -1324,11 +1330,16 @@ void BluePrintUI::DrawNodes()
                 }
                 //ImGui::Debug_DrawItemRect();
             });
+            ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
+            ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphOutlineWidth, 1.0);
+            ImGui::PushStyleColor(ImGuiCol_TexGlyphOutline, ImVec4(0.5, 0.5, 1.0, 1.0));
             ImGui::Dummy(ImVec2(0.1f, 0.f)); ImGui::SameLine(0);
             ImFont* font = HeaderFont();
             if (font) ImGui::PushFont(font);
             ImGui::TextUnformatted(nodeName.data(), nodeName.data() + nodeName.size());
             if (font) ImGui::PopFont();
+            ImGui::PopStyleColor(1);
+            ImGui::PopStyleVar(2);
             const float titleTextSize = ImGui::CalcTextSize(nodeName.c_str()).x;
             if (!isDummy)
             {
@@ -2747,6 +2758,7 @@ void BluePrintUI::ShowToolbar(bool* show)
     ImGui::PushStyleColor(ImGuiCol_Button, m_StyleColors[BluePrintStyleColor_ToolButton]);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, m_StyleColors[BluePrintStyleColor_ToolButtonHovered]);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, m_StyleColors[BluePrintStyleColor_ToolButtonActive]);
+    ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
     if (ImGui::Begin("##floating_toolbar", show, window_flags))
     {
         auto toolbarAction = [](Action& action)
@@ -2836,6 +2848,7 @@ void BluePrintUI::ShowToolbar(bool* show)
         if (ImGui::MenuItem("Bottom-right", NULL, corner == 3)) corner = 3;
         ImGui::EndPopup();
     }
+    ImGui::PopStyleVar(1);
     ImGui::PopStyleColor(3);
     ImGui::End();
 }
