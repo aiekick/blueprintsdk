@@ -14,11 +14,16 @@ struct GroupNode final : Node
     GroupNode(BP& blueprint): Node(blueprint) { m_Name = "Group"; }
     ~GroupNode()
     {
+        /*
+        // we don't clean GroupNode here, if we remove Group node, clear will be done at OnNodeDeleted
+        m_mutex.lock();
         for (auto node : m_GroupNodes) { node->m_GroupID = 0; ed::SetNodeGroupID(m_ID, ed::NodeId::Invalid); }
         for (auto pin : m_InputBridgePins)  { delete pin; }
         for (auto pin : m_InputShadowPins)  { delete pin; }
         for (auto pin : m_OutputBridgePins) { delete pin; }
-        for (auto pin : m_OutputShadowPins) { delete pin; } 
+        for (auto pin : m_OutputShadowPins) { delete pin; }
+        m_mutex.unlock();
+        */
     }
 
     inline bool PinIsBridgeIn(const Pin& pin)
@@ -360,6 +365,7 @@ struct GroupNode final : Node
 
     void ScanAllPins()
     {
+        m_mutex.lock();
         auto nodes = m_Dragging ? m_GroupNodes : GetGroupedNodes(*this);
         for (auto node : nodes)
         {
@@ -1013,10 +1019,12 @@ struct GroupNode final : Node
             auto node = *iter;
             ed::SetNodeZPosition(node->m_ID, m_ZPos + 1);
         }
+        m_mutex.unlock();
     }
 
     void OnNodeDelete(Node * node) override
     {
+        m_mutex.lock();
         if (node)
         {
             // delete node inside group
@@ -1069,6 +1077,7 @@ struct GroupNode final : Node
                 ed::SetNodeZPosition(node->m_ID, 0);
             }
         }
+        m_mutex.unlock();
     }
     
     void Update() override
@@ -1490,5 +1499,6 @@ struct GroupNode final : Node
 
     bool m_Dragging {false};
     float m_ZPos {1.f};
+    std::mutex m_mutex;
 };
 } // namespace BluePrint
