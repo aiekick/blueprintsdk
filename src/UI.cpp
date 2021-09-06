@@ -542,12 +542,12 @@ void BluePrintUI::Finalize()
 {
     ed::SetCurrentEditor(m_Editor);
     m_Document->Save();
+    if (m_OverlayLogger) { delete m_OverlayLogger; m_OverlayLogger = nullptr; }
+    if (m_DebugOverlay) { delete m_DebugOverlay; m_DebugOverlay = nullptr; }
     ed::SetCurrentEditor(nullptr);
     ed::DestroyEditor(m_Editor);
     m_Editor = nullptr;
     m_Document = nullptr;
-    if (m_OverlayLogger) delete m_OverlayLogger;
-    if (m_DebugOverlay) delete m_DebugOverlay;
 #ifdef USE_BOOKMARK
 	// save bookmarks
 	std::ofstream configFileWriter(m_BookMarkPath, std::ios::out);
