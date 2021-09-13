@@ -42,7 +42,9 @@ DebugOverlay::DebugOverlay(BP* blueprint)
 
 DebugOverlay::~DebugOverlay()
 {
-    if (m_Blueprint) m_Blueprint->SetContextMonitor(nullptr);
+    // m_Blueprint may already released, so we can't using dirty point here,
+    // we may need set m_Blueprint to nullptr before we release DebugOverlay
+    //if (m_Blueprint) m_Blueprint->SetContextMonitor(nullptr);
 }
 
 void DebugOverlay::Init(BP* blueprint)

@@ -546,9 +546,8 @@ void BluePrintUI::Finalize()
     ed::SetCurrentEditor(nullptr);
     ed::DestroyEditor(m_Editor);
     m_Editor = nullptr;
-    // TODO::Dicky Don't know why release those resource will cause App fail at end.
-    //if (m_OverlayLogger) { delete m_OverlayLogger; m_OverlayLogger = nullptr; }
-    //if (m_DebugOverlay) { delete m_DebugOverlay; m_DebugOverlay = nullptr; }
+    if (m_OverlayLogger) { delete m_OverlayLogger; m_OverlayLogger = nullptr; }
+    if (m_DebugOverlay) { delete m_DebugOverlay; m_DebugOverlay = nullptr; }
 #ifdef USE_BOOKMARK
 	// save bookmarks
 	std::ofstream configFileWriter(m_BookMarkPath, std::ios::out);
