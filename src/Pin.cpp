@@ -25,6 +25,7 @@ string PinTypeToString(PinType type)
         case PinType::Vec2:     return "ImVec2";
         case PinType::Vec4:     return "ImVec4";
         case PinType::Mat:      return "ImMat";
+        case PinType::Array:    return "Array";
         case PinType::Custom:   return "Custom";
     }
 }
@@ -57,6 +58,8 @@ bool PinTypeFromString(string str, PinType& type)
         type = PinType::Vec4;
     else if (str.compare("ImMat") == 0)
         type = PinType::Mat;
+    else if (str.compare("Array") == 0)
+        type = PinType::Array;
     else if (str.compare("Custom") == 0)
         type = PinType::Custom;
     else
@@ -532,6 +535,23 @@ void PointPin::Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) 
     // do we need load/save point value into json?
     //value["value"] = imgui_json::point(m_Value); // required
     // do we need save point type ?
+}
+
+// ArrayPin
+bool ArrayPin::Load(const imgui_json::value& value)
+{
+    if (!Pin::Load(value))
+        return false;
+    // TODO::Dicky
+    // do we need load/save array value into json?
+    return true;
+}
+
+void ArrayPin::Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) const
+{
+    Pin::Save(value, MapID);
+    // TODO::Dicky
+    // do we need load/save array value into json?
 }
 
 // Vec2Pin

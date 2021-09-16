@@ -306,6 +306,8 @@ inline string Serialization::ToString(const json::type_t& type)
         case json::type_t::boolean:     return "boolean";
         case json::type_t::number:      return "number";
         case json::type_t::point:       return "point";
+        case json::type_t::vec2:        return "vec2";
+        case json::type_t::vec4:        return "vec4";
         case json::type_t::discarded:   return "discarded";
     }
 

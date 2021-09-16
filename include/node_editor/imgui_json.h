@@ -29,6 +29,8 @@ using number  = double;
 using boolean = bool;
 using null    = std::nullptr_t;
 using point   = std::intptr_t;
+using vec2    = ImVec2;
+using vec4    = ImVec4;
 
 enum class type_t
 {
@@ -39,6 +41,8 @@ enum class type_t
     boolean,
     number,
     point,
+    vec2,
+    vec4,
     discarded
 };
 
@@ -59,6 +63,10 @@ struct IMGUI_API value
     value(const point    v): m_Type(construct(m_Storage,           v))  {}
     value(      boolean  v): m_Type(construct(m_Storage,           v))  {}
     value(      number   v): m_Type(construct(m_Storage,           v))  {}
+    value(      vec2&&   v): m_Type(construct(m_Storage, std::move(v))) {}
+    value(const vec2&    v): m_Type(construct(m_Storage,           v))  {}
+    value(      vec4&&   v): m_Type(construct(m_Storage, std::move(v))) {}
+    value(const vec4&    v): m_Type(construct(m_Storage,           v))  {}
     ~value() { destruct(m_Storage, m_Type); }
 
     value& operator=(value&& other)      { if (this != &other) { value(std::move(other)).swap(*this); } return *this; }
@@ -75,6 +83,10 @@ struct IMGUI_API value
     value& operator=(const point    v) { auto other = value(          v);  swap(other); return *this; }
     value& operator=(      boolean  v) { auto other = value(          v);  swap(other); return *this; }
     value& operator=(      number   v) { auto other = value(          v);  swap(other); return *this; }
+    value& operator=(      vec2&&   v) { auto other = value(std::move(v)); swap(other); return *this; }
+    value& operator=(const vec2&    v) { auto other = value(          v);  swap(other); return *this; }
+    value& operator=(      vec4&&   v) { auto other = value(std::move(v)); swap(other); return *this; }
+    value& operator=(const vec4&    v) { auto other = value(          v);  swap(other); return *this; }
 
     type_t type() const { return m_Type; }
 
@@ -102,6 +114,8 @@ struct IMGUI_API value
     bool is_number()     const { return m_Type == type_t::number;    }
     bool is_point()      const { return m_Type == type_t::point;     }
     bool is_discarded()  const { return m_Type == type_t::discarded; }
+    bool is_vec2()       const { return m_Type == type_t::vec2;      }
+    bool is_vec4()       const { return m_Type == type_t::vec4;      }
 
     template <typename T> const T& get() const;
     template <typename T>       T& get();
@@ -156,6 +170,10 @@ private:
     static const number*   number_ptr(const storage_t& storage) { return reinterpret_cast<const  number*>(&storage); }
     static       point*     point_ptr(      storage_t& storage) { return reinterpret_cast<        point*>(&storage); }
     static const point*     point_ptr(const storage_t& storage) { return reinterpret_cast<const   point*>(&storage); }
+    static       vec2*       vec2_ptr(      storage_t& storage) { return reinterpret_cast<         vec2*>(&storage); }
+    static const vec2*       vec2_ptr(const storage_t& storage) { return reinterpret_cast<const    vec2*>(&storage); }
+    static       vec4*       vec4_ptr(      storage_t& storage) { return reinterpret_cast<         vec4*>(&storage); }
+    static const vec4*       vec4_ptr(const storage_t& storage) { return reinterpret_cast<const    vec4*>(&storage); }
 
     static type_t construct(storage_t& storage, type_t type)
     {
@@ -167,6 +185,8 @@ private:
             case type_t::boolean:   new (&storage) boolean(); break;
             case type_t::number:    new (&storage) number();  break;
             case type_t::point:     new (&storage) point();   break;
+            case type_t::vec2:      new (&storage) vec2();    break;
+            case type_t::vec4:      new (&storage) vec4();    break;
             default: break;
         }
 
@@ -184,6 +204,10 @@ private:
     static type_t construct(storage_t& storage,       boolean  value) { new (&storage) boolean(value);                        return type_t::boolean; }
     static type_t construct(storage_t& storage,       number   value) { new (&storage)  number(value);                        return type_t::number;  }
     static type_t construct(storage_t& storage,       point    value) { new (&storage)   point(value);                        return type_t::point;   }
+    static type_t construct(storage_t& storage,       vec2&&   value) { new (&storage)    vec2(std::forward<vec2>(value));    return type_t::vec2;    }
+    static type_t construct(storage_t& storage, const vec2&    value) { new (&storage)    vec2(value);                        return type_t::vec2;    }
+    static type_t construct(storage_t& storage,       vec4&&   value) { new (&storage)    vec4(std::forward<vec4>(value));    return type_t::vec4;    }
+    static type_t construct(storage_t& storage, const vec4&    value) { new (&storage)    vec4(value);                        return type_t::vec4;    }
 
     static void destruct(storage_t& storage, type_t type)
     {
@@ -192,6 +216,8 @@ private:
             case type_t::object: object_ptr(storage)->~object(); break;
             case type_t::array:   array_ptr(storage)->~array();  break;
             case type_t::string: string_ptr(storage)->~string(); break;
+            case type_t::vec2:     vec2_ptr(storage)->~vec2(); break;
+            case type_t::vec4:     vec4_ptr(storage)->~vec4(); break;
             default: break;
         }
     }
@@ -226,6 +252,8 @@ template <> inline const string&  value::get<string>()  const { JSON_ASSERT(m_Ty
 template <> inline const boolean& value::get<boolean>() const { JSON_ASSERT(m_Type == type_t::boolean); return *boolean_ptr(m_Storage); }
 template <> inline const number&  value::get<number>()  const { JSON_ASSERT(m_Type == type_t::number);  return *number_ptr(m_Storage);  }
 template <> inline const point&   value::get<point>()   const { JSON_ASSERT(m_Type == type_t::point);   return *point_ptr(m_Storage);   }
+template <> inline const vec2&    value::get<vec2>()    const { JSON_ASSERT(m_Type == type_t::vec2);    return *vec2_ptr(m_Storage);    }
+template <> inline const vec4&    value::get<vec4>()    const { JSON_ASSERT(m_Type == type_t::vec4);    return *vec4_ptr(m_Storage);    }
 
 template <> inline       object&  value::get<object>()        { JSON_ASSERT(m_Type == type_t::object);  return *object_ptr(m_Storage);  }
 template <> inline       array&   value::get<array>()         { JSON_ASSERT(m_Type == type_t::array);   return *array_ptr(m_Storage);   }
@@ -233,6 +261,8 @@ template <> inline       string&  value::get<string>()        { JSON_ASSERT(m_Ty
 template <> inline       boolean& value::get<boolean>()       { JSON_ASSERT(m_Type == type_t::boolean); return *boolean_ptr(m_Storage); }
 template <> inline       number&  value::get<number>()        { JSON_ASSERT(m_Type == type_t::number);  return *number_ptr(m_Storage);  }
 template <> inline       point&   value::get<point>()         { JSON_ASSERT(m_Type == type_t::point);   return *point_ptr(m_Storage);   }
+template <> inline       vec2&    value::get<vec2>()          { JSON_ASSERT(m_Type == type_t::vec2);    return *vec2_ptr(m_Storage);    }
+template <> inline       vec4&    value::get<vec4>()          { JSON_ASSERT(m_Type == type_t::vec4);    return *vec4_ptr(m_Storage);    }
 
 template <> inline const object*  value::get_ptr<object>()  const { if (m_Type == type_t::object)  return object_ptr(m_Storage);  else return nullptr; }
 template <> inline const array*   value::get_ptr<array>()   const { if (m_Type == type_t::array)   return array_ptr(m_Storage);   else return nullptr; }
@@ -240,6 +270,8 @@ template <> inline const string*  value::get_ptr<string>()  const { if (m_Type =
 template <> inline const boolean* value::get_ptr<boolean>() const { if (m_Type == type_t::boolean) return boolean_ptr(m_Storage); else return nullptr; }
 template <> inline const number*  value::get_ptr<number>()  const { if (m_Type == type_t::number)  return number_ptr(m_Storage);  else return nullptr; }
 template <> inline const point*   value::get_ptr<point>()   const { if (m_Type == type_t::point)   return point_ptr(m_Storage);   else return nullptr; }
+template <> inline const vec2*    value::get_ptr<vec2>()    const { if (m_Type == type_t::vec2)    return vec2_ptr(m_Storage);    else return nullptr; }
+template <> inline const vec4*    value::get_ptr<vec4>()    const { if (m_Type == type_t::vec4)    return vec4_ptr(m_Storage);    else return nullptr; }
 
 template <> inline       object*  value::get_ptr<object>()        { if (m_Type == type_t::object)  return object_ptr(m_Storage);  else return nullptr; }
 template <> inline       array*   value::get_ptr<array>()         { if (m_Type == type_t::array)   return array_ptr(m_Storage);   else return nullptr; }
@@ -247,6 +279,8 @@ template <> inline       string*  value::get_ptr<string>()        { if (m_Type =
 template <> inline       boolean* value::get_ptr<boolean>()       { if (m_Type == type_t::boolean) return boolean_ptr(m_Storage); else return nullptr; }
 template <> inline       number*  value::get_ptr<number>()        { if (m_Type == type_t::number)  return number_ptr(m_Storage);  else return nullptr; }
 template <> inline       point*   value::get_ptr<point>()         { if (m_Type == type_t::point)   return point_ptr(m_Storage);   else return nullptr; }
+template <> inline       vec2*    value::get_ptr<vec2>()          { if (m_Type == type_t::vec2)    return vec2_ptr(m_Storage);    else return nullptr; }
+template <> inline       vec4*    value::get_ptr<vec4>()          { if (m_Type == type_t::vec4)    return vec4_ptr(m_Storage);    else return nullptr; }
 
 } // namespace imgui_json
 

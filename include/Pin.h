@@ -30,6 +30,7 @@ enum class PinType: int32_t
     Vec2,
     Vec4,
     Mat,
+    Array,
     Custom
 };
 
@@ -66,7 +67,7 @@ struct LinkQueryResult;
 struct FlowPin;
 struct PinValue
 {
-    using ValueType = nonstd::variant<monostate, FlowPin*, bool, int32_t, int64_t, float, double, string, uintptr_t, ImVec2, ImVec4, ImGui::ImMat, PinValueEx*>;
+    using ValueType = nonstd::variant<monostate, FlowPin*, bool, int32_t, int64_t, float, double, string, uintptr_t, ImVec2, ImVec4, ImGui::ImMat, imgui_json::array, PinValueEx*>;
 
     PinValue() = default;
     PinValue(const PinValue&) = default;
@@ -87,6 +88,7 @@ struct PinValue
     PinValue(const ImVec2 value): m_Value(value) {}
     PinValue(const ImVec4 value): m_Value(value) {}
     PinValue(ImGui::ImMat value): m_Value(value) {}
+    PinValue(imgui_json::array value): m_Value(value) {}
     PinValue(PinValueEx* valex)
     {
         if (valex)
@@ -533,7 +535,7 @@ struct IMGUI_API Vec2Pin final : Pin
     ImVec2 m_Value {0.f, 0.f};
 };
 
-// Vec2 ImVec2 type pin
+// Vec4 ImVec4 type pin
 struct IMGUI_API Vec4Pin final : Pin
 {
     static constexpr auto TypeId = PinType::Vec4;
@@ -554,6 +556,29 @@ struct IMGUI_API Vec4Pin final : Pin
     void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const override;
 
     ImVec4 m_Value {0.f, 0.f, 0.f, 0.f};
+};
+
+// Array type pin
+struct IMGUI_API ArrayPin final : Pin
+{
+    static constexpr auto TypeId = PinType::Array;
+    ArrayPin(Node* node, imgui_json::array value = {}): Pin(node, PinType::Array), m_Value(value) {}
+    ArrayPin(Node* node, std::string name, imgui_json::array value = {}): Pin(node, PinType::Array, name), m_Value(value) {}
+
+    bool SetValue(const PinValue& value) override
+    {
+        if (value.GetType() != TypeId)
+            return false;
+        m_Value = value.As<imgui_json::array>();
+        return true;
+    }
+
+    PinValue GetValue() const override { return m_Value; }
+
+    bool Load(const imgui_json::value& value) override;
+    void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const override;
+
+    imgui_json::array m_Value;
 };
 
 // Mat ImMat type pin

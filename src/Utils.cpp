@@ -70,6 +70,7 @@ IconType PinTypeToIconType(PinType pinType)
         case PinType::Vec2:     return IconType::Bracket;
         case PinType::Vec4:     return IconType::Bracket;
         case PinType::Mat:      return IconType::Grid;
+        case PinType::Array:    return IconType::BracketSquare;
         case PinType::Custom:   return IconType::Square;
     }
 
@@ -94,6 +95,7 @@ ImVec4 PinTypeToColor(BluePrintUI* ui, PinType pinType)
         case PinType::Vec2:     return ui->m_StyleColors[BluePrintStyleColor_PinVector];
         case PinType::Vec4:     return ui->m_StyleColors[BluePrintStyleColor_PinVector];
         case PinType::Mat:      return ui->m_StyleColors[BluePrintStyleColor_PinMat];
+        case PinType::Array:    return ui->m_StyleColors[BluePrintStyleColor_PinPoint];
         case PinType::Custom:   return ui->m_StyleColors[BluePrintStyleColor_PinCustom];
     }
 

@@ -23,6 +23,8 @@ value::value(value&& other)
         case type_t::boolean:   construct(m_Storage, std::move(*boolean_ptr(other.m_Storage))); break;
         case type_t::number:    construct(m_Storage, std::move( *number_ptr(other.m_Storage))); break;
         case type_t::point:     construct(m_Storage, std::move(  *point_ptr(other.m_Storage))); break;
+        case type_t::vec2:      construct(m_Storage, std::move(   *vec2_ptr(other.m_Storage))); break;
+        case type_t::vec4:      construct(m_Storage, std::move(   *vec4_ptr(other.m_Storage))); break;
         default: break;
     }
     destruct(other.m_Storage, other.m_Type);
@@ -40,6 +42,8 @@ value::value(const value& other)
         case type_t::boolean:   construct(m_Storage, *boolean_ptr(other.m_Storage)); break;
         case type_t::number:    construct(m_Storage,  *number_ptr(other.m_Storage)); break;
         case type_t::point:     construct(m_Storage,   *point_ptr(other.m_Storage)); break;
+        case type_t::vec2:      construct(m_Storage,    *vec2_ptr(other.m_Storage)); break;
+        case type_t::vec4:      construct(m_Storage,    *vec4_ptr(other.m_Storage)); break;
         default: break;
     }
 }
@@ -173,6 +177,8 @@ void value::swap(value& other)
             case type_t::boolean:   swap(*boolean_ptr(m_Storage), *boolean_ptr(other.m_Storage)); break;
             case type_t::number:    swap(*number_ptr(m_Storage),  *number_ptr(other.m_Storage));  break;
             case type_t::point:     swap(*point_ptr(m_Storage),   *point_ptr(other.m_Storage));   break;
+            case type_t::vec2:      swap(*vec2_ptr(m_Storage),    *vec2_ptr(other.m_Storage));    break;
+            case type_t::vec4:      swap(*vec4_ptr(m_Storage),    *vec4_ptr(other.m_Storage));    break;
             default: break;
         }
     }
@@ -327,6 +333,30 @@ void value::dump(dump_context_t& context, int level) const
             context.out << *point_ptr(m_Storage);
             break;
 
+        case type_t::vec2:
+            context.out << '[';
+            {
+                context.out << (*vec2_ptr(m_Storage)).x;
+                context.out << ',' << ' ';
+                context.out << (*vec2_ptr(m_Storage)).y;
+            }
+            context.out << ']';
+            break;
+
+        case type_t::vec4:
+            context.out << '[';
+            {
+                context.out << (*vec4_ptr(m_Storage)).x;
+                context.out << ',' << ' ';
+                context.out << (*vec4_ptr(m_Storage)).y;
+                context.out << ',' << ' ';
+                context.out << (*vec4_ptr(m_Storage)).z;
+                context.out << ',' << ' ';
+                context.out << (*vec4_ptr(m_Storage)).w;
+            }
+            context.out << ']';
+            break;
+
         default:
             break;
     }
@@ -398,6 +428,8 @@ private:
             || accept_number(result)
             || accept_boolean(result)
             || accept_point(result)
+            || accept_vec2(result)
+            || accept_vec4(result)
             || accept_null(result);
     }
 
@@ -755,6 +787,32 @@ private:
         if (accept("point"))
         {
             result = nullptr;
+            return true;
+        }
+
+        return false;
+    }
+
+    bool accept_vec2(value& result)
+    {
+        auto s = state();
+
+        if (s(accept('[') && accept_ws() && accept(']')))
+        {
+            result = vec2();
+            return true;
+        }
+
+        return false;
+    }
+
+    bool accept_vec4(value& result)
+    {
+        auto s = state();
+
+        if (s(accept('[') && accept_ws() && accept(']')))
+        {
+            result = vec4();
             return true;
         }
 

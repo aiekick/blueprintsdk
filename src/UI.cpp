@@ -427,7 +427,7 @@ BluePrintUI::BluePrintUI()
     m_StyleColors[BluePrintStyleColor_PinString]            = ImColor(124,  21, 153, 255);
     m_StyleColors[BluePrintStyleColor_PinPoint]             = ImColor(220, 110,  10, 255);
     m_StyleColors[BluePrintStyleColor_PinVector]            = ImColor( 72, 110, 220, 255);
-    m_StyleColors[BluePrintStyleColor_PinMat]               = ImColor(220, 220, 110, 255);
+    m_StyleColors[BluePrintStyleColor_PinMat]               = ImColor(220,  21,  21, 255);
     m_StyleColors[BluePrintStyleColor_PinCustom]            = ImColor(208,  64,  64, 255);
 }
 
@@ -587,7 +587,7 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
             m_StyleColors[BluePrintStyleColor_PinString]    = ImColor( 124,  21, 153, 255);
             m_StyleColors[BluePrintStyleColor_PinPoint]     = ImColor( 220, 110,  10, 255);
             m_StyleColors[BluePrintStyleColor_PinVector]    = ImColor(  72, 110, 220, 255);
-            m_StyleColors[BluePrintStyleColor_PinMat]       = ImColor( 110, 180,  10, 255);
+            m_StyleColors[BluePrintStyleColor_PinMat]       = ImColor( 220,  10,  10, 255);
             m_StyleColors[BluePrintStyleColor_PinCustom]    = ImColor( 208,  64,  64, 255);
             auto& editorStyle = ed::GetStyle();
             editorStyle.Colors[ed::StyleColor_Bg]           = ImColor( 220, 220, 252,  72);
@@ -641,7 +641,7 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
             m_StyleColors[BluePrintStyleColor_PinString]            = ImColor(124,  21, 153, 255);
             m_StyleColors[BluePrintStyleColor_PinPoint]             = ImColor(220, 110,  10, 255);
             m_StyleColors[BluePrintStyleColor_PinVector]            = ImColor( 72, 110, 220, 255);
-            m_StyleColors[BluePrintStyleColor_PinMat]               = ImColor(220, 220, 110, 255);
+            m_StyleColors[BluePrintStyleColor_PinMat]               = ImColor(220,  64,  64, 255);
             m_StyleColors[BluePrintStyleColor_PinCustom]            = ImColor(208,  64,  64, 255);
             auto& editorStyle = ed::GetStyle();
             editorStyle.Colors[ed::StyleColor_Bg]           = ImColor( 60,  60,  70,  50);

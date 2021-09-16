@@ -162,7 +162,7 @@ void DebugOverlay::DrawInputPin(BluePrintUI* ui, const Pin& pin)
                                 ui->m_StyleColors[BluePrintStyleColor_DebugNextNode];
 
     // Actual drawing
-    if (!pin.IsMappedPin() && pin.m_Type != PinType::Mat)
+    if (!pin.IsMappedPin() && pin.m_Type != PinType::Mat && pin.m_Type != PinType::Array)
     {
         PinValueBackgroundRenderer bg(color, 0.5f);
         if (!DrawPinValue(m_Blueprint->GetContext().GetPinValue(pin)))
@@ -210,7 +210,7 @@ void DebugOverlay::DrawOutputPin(BluePrintUI* ui, const Pin& pin)
                                 ui->m_StyleColors[BluePrintStyleColor_DebugNextNode];
     
     // Actual drawing
-    if (!pin.IsMappedPin() && pin.m_Type != PinType::Mat)
+    if (!pin.IsMappedPin() && pin.m_Type != PinType::Mat && pin.m_Type != PinType::Array)
     {
         PinValueBackgroundRenderer bg(color, 0.5f);
         if (!DrawPinValue(m_Blueprint->GetContext().GetPinValue(pin)))
