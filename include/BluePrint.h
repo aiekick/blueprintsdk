@@ -16,7 +16,11 @@
 # define span_FEATURE_MAKE_SPAN 1
 #include <span.hpp>
 #include <imgui.h>
+#include <imgui_helper.h>
 #include <imgui_mat.h>
+#undef IMGUI_DEFINE_MATH_OPERATORS
+#define IMGUI_DEFINE_MATH_OPERATORS
+#include <imgui_internal.h>
 
 #define BP_ERR_NONE          0
 #define BP_ERR_GENERAL      -1
