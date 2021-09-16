@@ -1634,6 +1634,23 @@ void BluePrintUI::DrawInfoTooltip()
             }
             ImGui::TextUnformatted("=============================");
         }
+        if (!isDummy && !pin.m_MappedPin && !pin.IsInput() && pin.GetValueType() == PinType::Array)
+        {
+            ImGui::TextUnformatted("=============Array===========");
+            auto pinValue = pin.GetValue();
+            auto array = pinValue.As<imgui_json::array>();
+            if (array.size() > 0)
+            {
+                auto type = array[0].type();
+                ImGui::Text("        Element Size:%lu", array.size());
+                ImGui::Text("        Element Type:%s", edd::Serialization::ToString(type).c_str());
+            }
+            else
+            {
+                ImGui::TextUnformatted("      *Empty*");
+            }
+            ImGui::TextUnformatted("=============================");
+        }
         string flags;
         if (pin.IsMappedPin())
             flags += "mapped, ";
