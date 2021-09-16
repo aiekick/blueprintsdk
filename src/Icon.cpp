@@ -51,6 +51,7 @@ void DrawIcon(ImDrawList* drawList, const ImVec2& a, const ImVec2& b, IconType t
             auto rect_center_x  = (rect.Min.x + rect.Max.x) * 0.5f;
             auto rect_center_y  = (rect.Min.y + rect.Max.y) * 0.5f;
             auto rect_center    = ImVec2(rect_center_x, rect_center_y);
+            auto rect_center_l  = ImVec2(rect_center_x - 2.0f, rect_center_y);
     const   auto outline_scale  = ImMin(rect_w, rect_h) / 24.0f;
     const   auto extra_segments = static_cast<int>(2 * outline_scale); // for full circle
 
@@ -189,6 +190,35 @@ void DrawIcon(ImDrawList* drawList, const ImVec2& a, const ImVec2& b, IconType t
 
                 drawList->AddRect(p0, p1, color, 0, extra_segments, 2.0f * outline_scale);
             }
+        }
+
+        if (type == IconType::BracketSquare)
+        {
+            const auto r  = 0.5f * rect_w / 2.0f;
+            const auto w = ceilf(r / 3.0f);
+            const auto s = r / 1.5f;
+            const auto p00 = rect_center - ImVec2(r, r);
+            const auto p00w = p00 + ImVec2(s, 0);
+            const auto p01 = p00 + ImVec2(0, 2 * r);
+            const auto p01w = p01 + ImVec2(s, 0);
+            const auto p10 = p00 + ImVec2(2 * r, 0);
+            const auto p10w = p10 - ImVec2(s, 0);
+            const auto p11 = rect_center + ImVec2(r, r);
+            const auto p11w = p11 - ImVec2(s, 0);
+            drawList->AddLine(p00, p01, color, 2.0f * outline_scale);
+            drawList->AddLine(p10, p11, color, 2.0f * outline_scale);
+            drawList->AddLine(p00, p00w, color, 2.0f * outline_scale);
+            drawList->AddLine(p01, p01w, color, 2.0f * outline_scale);
+            drawList->AddLine(p10, p10w, color, 2.0f * outline_scale);
+            drawList->AddLine(p11, p11w, color, 2.0f * outline_scale);
+            if (filled)
+            {
+                const auto pc0 = rect_center - ImVec2(1, 1);
+                const auto pc1 = rect_center + ImVec2(2, 2);
+                drawList->AddRectFilled(pc0, pc1, color, 0, ImDrawFlags_RoundCornersAll);
+            }
+
+            triangleStart = p11.x + w + 1.0f / 24.0f * rect_w;
         }
 
         if (type == IconType::Grid)
