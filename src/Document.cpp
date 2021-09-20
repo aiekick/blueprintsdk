@@ -397,7 +397,8 @@ void Document::ApplyState(const NavigationState& state)
 
 void Document::ApplyState(const DocumentState& state)
 {
-    m_Blueprint.Load(state.m_BlueprintState);
+    //m_Blueprint.Load(state.m_BlueprintState);
+    // TODO::Dicky do we need load bp again since we already load on document
 
     m_DocumentState = state;
     ed::ApplyState(ed::StateType::Nodes, m_DocumentState.m_NodesState);

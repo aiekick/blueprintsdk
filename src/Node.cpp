@@ -127,10 +127,10 @@ NodeRegistry::~NodeRegistry()
     }
 }
 
-ID_TYPE NodeRegistry::RegisterNodeType(const NodeTypeInfo& info)
+ID_TYPE NodeRegistry::RegisterNodeType(shared_ptr<NodeTypeInfo> info)
 {
     // regiester static node which has NodeTypeInfo
-    auto id = info.m_ID;
+    auto id = info->m_ID;
 
     auto it = std::find_if(m_CustomNodes.begin(), m_CustomNodes.end(), [id](const NodeTypeInfo& typeInfo)
     {
@@ -142,13 +142,13 @@ ID_TYPE NodeRegistry::RegisterNodeType(const NodeTypeInfo& info)
 
     NodeTypeInfo typeInfo;
     typeInfo.m_ID               = id;
-    typeInfo.m_Name             = info.m_Name;
-    typeInfo.m_NodeTypeName     = info.m_NodeTypeName;
-    typeInfo.m_Version          = info.m_Version;
-    typeInfo.m_Type             = info.m_Type;
-    typeInfo.m_Style            = info.m_Style;
-    typeInfo.m_Catalog          = info.m_Catalog;
-    typeInfo.m_Factory          = info.m_Factory;
+    typeInfo.m_Name             = info->m_Name;
+    typeInfo.m_NodeTypeName     = info->m_NodeTypeName;
+    typeInfo.m_Version          = info->m_Version;
+    typeInfo.m_Type             = info->m_Type;
+    typeInfo.m_Style            = info->m_Style;
+    typeInfo.m_Catalog          = info->m_Catalog;
+    typeInfo.m_Factory          = info->m_Factory;
 
     m_CustomNodes.push_back(std::move(typeInfo));
 
@@ -159,13 +159,13 @@ ID_TYPE NodeRegistry::RegisterNodeType(const NodeTypeInfo& info)
 
 ID_TYPE NodeRegistry::RegisterNodeType(std::string Path, BP& blueprint)
 {
-    auto dlobject = new DLClass<Node>(Path.c_str());
+    auto dlobject = new DLClass<NodeTypeInfo>(Path.c_str());
     if (!dlobject)
     {
         return 0;
     }
-    auto node = dlobject->make_obj(&blueprint);
-    if (!node)
+    auto info = dlobject->make_obj();
+    if (!info)
     {
         delete dlobject;
         return 0;
@@ -179,7 +179,7 @@ ID_TYPE NodeRegistry::RegisterNodeType(std::string Path, BP& blueprint)
                 VERSION_MAJOR(VERSION_BLUEPRINT), VERSION_MINOR(VERSION_BLUEPRINT), VERSION_PATCH(VERSION_BLUEPRINT), VERSION_BUILT(VERSION_BLUEPRINT));
     }
     m_ExternalObject.push_back(dlobject);
-    return RegisterNodeType(node->GetTypeInfo());
+    return RegisterNodeType(info);
 }
 
 void NodeRegistry::UnregisterNodeType(std::string name)

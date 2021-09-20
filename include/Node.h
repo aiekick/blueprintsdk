@@ -53,6 +53,12 @@ struct NodeTypeInfo
 {
     using Factory = Node*(*)(BP& blueprint);
 
+    NodeTypeInfo() = default;
+    NodeTypeInfo(ID_TYPE id, std::string type_name, std::string name, VERSION_TYPE version, NodeType type, NodeStyle style, std::string catalog, Factory factory)
+    {
+        m_ID = id; m_NodeTypeName = type_name; m_Name = name; m_Version = version; m_Type = type; m_Style = style; m_Catalog = catalog; m_Factory = factory;
+    }
+
     ID_TYPE         m_ID;
     std::string     m_NodeTypeName;
     std::string     m_Name;
@@ -61,6 +67,11 @@ struct NodeTypeInfo
     NodeStyle       m_Style;
     std::string     m_Catalog;
     Factory         m_Factory;
+
+	// for dynamic loading of the object
+	typedef int32_t version_t();
+	typedef NodeTypeInfo* create_t();
+	typedef void destroy_t(NodeTypeInfo*);
 };
 
 struct IMGUI_API Node
@@ -202,11 +213,6 @@ struct IMGUI_API Node
     // for Node banchmark
     uint64_t        m_Tick {0};
     uint64_t        m_Hits {0};
-
-	// for dynamic loading of the object
-	typedef int32_t version_t();
-	typedef Node* create_t(BP*);
-	typedef void destroy_t(Node*);
 };
 
 struct ClipNode
@@ -237,7 +243,7 @@ struct NodeRegistry
 {
     NodeRegistry();
     ~NodeRegistry();
-    ID_TYPE RegisterNodeType(const NodeTypeInfo& info);
+    ID_TYPE RegisterNodeType(shared_ptr<NodeTypeInfo> info);
     ID_TYPE RegisterNodeType(std::string Path, BP& blueprint);
     void UnregisterNodeType(std::string name);
     Node* Create(ID_TYPE typeId, BP& blueprint);
@@ -252,7 +258,7 @@ private:
     std::vector<NodeTypeInfo>   m_CustomNodes;
     std::vector<NodeTypeInfo*>  m_Types;
     std::vector<std::string>    m_Catalogs;
-    std::vector<DLClass<Node>*> m_ExternalObject;
+    std::vector<DLClass<NodeTypeInfo>*> m_ExternalObject;
 };
 
 } // namespace BluePrint

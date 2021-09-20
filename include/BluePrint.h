@@ -451,16 +451,26 @@ private:
 #define EXPORT
 #endif
 
-# define BP_NODE_DYNAMIC(T) \
+# define BP_NODE_DYNAMIC(type, node_version, node_type, node_style, node_catalog) \
     extern "C" EXPORT int32_t version() { \
         return VERSION_BLUEPRINT; \
     } \
     \
-    extern "C" EXPORT T* create(BluePrint::BP* blueprint) { \
-	return new T(*blueprint); \
+    extern "C" EXPORT BluePrint::NodeTypeInfo* create(BluePrint::BP* blueprint) { \
+        return new BluePrint::NodeTypeInfo\
+        ( \
+            BluePrint::fnv1a_hash_32(#type + string("*") + node_catalog), \
+            #type, \
+            #type, \
+            node_version, \
+            node_type, \
+            node_style, \
+            node_catalog, \
+            [](::BluePrint::BP& blueprint) -> ::BluePrint::Node* { return new BluePrint::type(blueprint); } \
+        ); \
     } \
     \
-    extern "C" EXPORT void destroy(T* pObj) { \
+    extern "C" EXPORT void destroy(BluePrint::NodeTypeInfo* pObj) { \
         delete pObj; \
     }
     
