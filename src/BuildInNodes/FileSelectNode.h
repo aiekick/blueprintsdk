@@ -39,7 +39,7 @@ struct FileSelectNode final : Node
         // Draw Custom setting
         ImGui::Checkbox(ICON_IGFD_BOOKMARK " Bookmark", &m_isShowBookmark);
         ImGui::SameLine(0);
-        ImGui::Checkbox(ICON_IGFD_THUMBAILS_LIST " ShowHide", &m_isShowHiddenFiles);
+        ImGui::Checkbox(ICON_IGFD_HIDDEN_FILE " ShowHide", &m_isShowHiddenFiles);
         ImGui::SameLine(0);
         // file filter setting
         if (ImGui::InputText("Filters", (char*)m_filters.data(), m_filters.size() + 1, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data) -> int
@@ -256,7 +256,7 @@ struct FileSelectNode final : Node
     string m_file_surfix;
     string m_bookmark {""};
     bool m_isShowBookmark {false};
-    bool m_isShowHiddenFiles {true};
+    bool m_isShowHiddenFiles {false};
     bool m_needReload {false};
 
     std::vector<Pin *> m_OutputPins;
