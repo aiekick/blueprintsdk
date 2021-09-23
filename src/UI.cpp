@@ -1608,7 +1608,7 @@ void BluePrintUI::DrawInfoTooltip()
                 if (bp)
                 {
                     auto link = pin.GetLink(bp);
-                    while (link && link->m_MappedPin)
+                    while (link && link->IsMappedPin())
                         link = link->GetLink(bp);
                     if (link)
                     {
@@ -1619,7 +1619,9 @@ void BluePrintUI::DrawInfoTooltip()
                 }
             }
             pin.m_Node->m_mutex.unlock();
-            auto mat = pinValue.As<ImGui::ImMat>();
+            ImGui::ImMat mat;
+            if (pinValue.GetType() == PinType::Mat)
+                mat = pinValue.As<ImGui::ImMat>();
             if (!mat.empty())
             {
                 ImGui::Text("        Width:%d", mat.w);
@@ -1656,11 +1658,35 @@ void BluePrintUI::DrawInfoTooltip()
             }
             ImGui::TextUnformatted("=============================");
         }
-        if (!isDummy && !pin.m_MappedPin && !pin.IsInput() && pin.GetValueType() == PinType::Array)
+        if (!isDummy && !pin.m_MappedPin && pin.GetValueType() == PinType::Array)
         {
             ImGui::TextUnformatted("=============Array===========");
-            auto pinValue = pin.GetValue();
-            auto array = pinValue.As<imgui_json::array>();
+            pin.m_Node->m_mutex.lock();
+            PinValue pinValue;
+            if (!pin.IsInput())
+            {
+                pinValue = pin.GetValue();
+            }
+            else
+            {
+                auto bp = pin.m_Node->m_Blueprint;
+                if (bp)
+                {
+                    auto link = pin.GetLink(bp);
+                    while (link && link->IsMappedPin())
+                        link = link->GetLink(bp);
+                    if (link)
+                    {
+                        link->m_Node->m_mutex.lock();
+                        pinValue = link->GetValue();
+                        link->m_Node->m_mutex.unlock();
+                    }
+                }
+            }
+            pin.m_Node->m_mutex.unlock();
+            imgui_json::array array;
+            if (pinValue.GetType() == PinType::Array)
+                array = pinValue.As<imgui_json::array>();
             if (array.size() > 0)
             {
                 auto type = array[0].type();
@@ -1670,6 +1696,7 @@ void BluePrintUI::DrawInfoTooltip()
             else
             {
                 ImGui::TextUnformatted("      *Empty*");
+                ImGui::TextUnformatted("             ");
             }
             ImGui::TextUnformatted("=============================");
         }
