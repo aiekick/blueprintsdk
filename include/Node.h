@@ -209,6 +209,7 @@ struct IMGUI_API Node
     bool            m_NeedOverlayLogger {false};
     bool            m_BreakPoint        {false};
     ID_TYPE         m_GroupID           {0};
+    std::mutex      m_mutex;
 
     // for Node banchmark
     uint64_t        m_Tick {0};

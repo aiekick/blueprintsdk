@@ -1593,10 +1593,32 @@ void BluePrintUI::DrawInfoTooltip()
         }
         ImGui::Bullet(); ImGui::Text("      Type: %s", PinTypeToString(pin.GetType()).c_str());
         ImGui::Bullet(); ImGui::Text("Value Type: %s", PinTypeToString(pin.GetValueType()).c_str());
-        if (!isDummy && !pin.m_MappedPin && !pin.IsInput() && pin.GetValueType() == PinType::Mat)
+        if (!isDummy && !pin.m_MappedPin && pin.GetValueType() == PinType::Mat)
         {
             ImGui::TextUnformatted("=============ImMat===========");
-            auto pinValue = pin.GetValue();
+            pin.m_Node->m_mutex.lock();
+            PinValue pinValue;
+            if (!pin.IsInput())
+            {
+                pinValue = pin.GetValue();
+            }
+            else
+            {
+                auto bp = pin.m_Node->m_Blueprint;
+                if (bp)
+                {
+                    auto link = pin.GetLink(bp);
+                    while (link && link->m_MappedPin)
+                        link = link->GetLink(bp);
+                    if (link)
+                    {
+                        link->m_Node->m_mutex.lock();
+                        pinValue = link->GetValue();
+                        link->m_Node->m_mutex.unlock();
+                    }
+                }
+            }
+            pin.m_Node->m_mutex.unlock();
             auto mat = pinValue.As<ImGui::ImMat>();
             if (!mat.empty())
             {
