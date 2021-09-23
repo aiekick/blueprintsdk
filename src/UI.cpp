@@ -925,6 +925,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
 {
     if (!m_Document)
         return 0.f;
+    bool isThreadExecuting = m_Document->m_Blueprint.IsExecuting();
     // Draw Title bar icon
     int icons = 2; //node->HasSetting() ? 3 : 2;
     if (node->HasSetting()) icons++;
@@ -940,6 +941,8 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0,0));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0,0));
     ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
+    if (isThreadExecuting)
+        ImGui::BeginDisabled(true);
     if (ImGui::Button((titlebar_icons[0] + "##" + std::to_string(node->m_ID)).c_str())) 
     {
         *need_clone_node = node;
@@ -981,7 +984,8 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
         }
         if (ImGui::IsItemHovered()) node->m_IconHovered = 3;
     }
-
+    if (isThreadExecuting)
+        ImGui::EndDisabled();
     ImGui::PopStyleVar(3);
     ImGui::PopStyleColor(3);
     return textSizeButton * (icons + 2);
