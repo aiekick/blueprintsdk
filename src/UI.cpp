@@ -1694,7 +1694,7 @@ void BluePrintUI::DrawInfoTooltip()
             if (array.size() > 0)
             {
                 auto type = array[0].type();
-                ImGui::Text("        Element Size:%lu", array.size());
+                ImGui::Text("        Element Size:%zu", array.size());
                 ImGui::Text("        Element Type:%s", edd::Serialization::ToString(type).c_str());
             }
             else
