@@ -77,6 +77,9 @@ struct FileSelectNode final : Node
 
         ImGui::Separator();
         // open file dialog
+        auto& io = ImGui::GetIO();
+        ImVec2 maxSize = ImVec2((float)io.DisplaySize.x, (float)io.DisplaySize.y);
+        ImVec2 minSize = maxSize * 0.5f;
         ImGuiFileDialogFlags vflags = 0;
         if (m_isShowBookmark)       vflags |= ImGuiFileDialogFlags_ShowBookmark;
         if (!m_isShowHiddenFiles)   vflags |= ImGuiFileDialogFlags_DontShowHiddenFiles;
@@ -90,7 +93,7 @@ struct FileSelectNode final : Node
                                                     m_filters.c_str(), 
                                                     m_file_path.empty() ? "." : m_file_path,
                                                     1, this, vflags);
-        if (ImGuiFileDialog::Instance()->Display("##NodeChooseFileDlgKey"))
+        if (ImGuiFileDialog::Instance()->Display("##NodeChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, minSize, maxSize))
         {
 	        // action if OK
             if (ImGuiFileDialog::Instance()->IsOk() == true)

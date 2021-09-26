@@ -541,7 +541,6 @@ void BluePrintUI::Initialize(const char * ini_file, const char * bp_file, const 
 void BluePrintUI::Finalize()
 {
     ed::SetCurrentEditor(m_Editor);
-    m_Document->Save();
     m_Document = nullptr;
     ed::SetCurrentEditor(nullptr);
     ed::DestroyEditor(m_Editor);
@@ -1856,7 +1855,6 @@ void BluePrintUI::FileDialogs()
     if (!m_Document)
         return;
     auto& io = ImGui::GetIO();
-    ImVec2 modal_center(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
     ImVec2 maxSize = ImVec2((float)io.DisplaySize.x, (float)io.DisplaySize.y);
     ImVec2 minSize = maxSize * 0.5f;
     if (m_FileDialog.Display("##OpenFileDlgKey", ImGuiWindowFlags_NoCollapse, minSize, maxSize))
@@ -2381,7 +2379,6 @@ bool BluePrintUI::File_SaveAs()
 {
     const char *filters = "Blue print file (*.json *.bp){.json,.bp,.JSON,.BP},.*";
     auto& io = ImGui::GetIO();
-    ImVec2 modal_center(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
     ImVec2 maxSize = ImVec2((float)io.DisplaySize.x, (float)io.DisplaySize.y);
 	ImVec2 minSize = maxSize * 0.5f;
     m_FileDialog.OpenModal("##SaveFileDlgKey", ICON_IGFD_FOLDER_OPEN " Save File", filters, ".", 1, nullptr, ImGuiFileDialogFlags_ConfirmOverwrite | (m_BookMarkPath.empty() ? ImGuiFileDialogFlags_None : ImGuiFileDialogFlags_ShowBookmark));
@@ -2679,7 +2676,6 @@ bool BluePrintUI::File_Export(Node * group_node)
 {
     const char *filters = "Group file (*.group *.gp){.group,.gp,.GROUP,.GP},.*";
     auto& io = ImGui::GetIO();
-    ImVec2 modal_center(io.DisplaySize.x * 0.5f, io.DisplaySize.y * 0.5f);
     ImVec2 maxSize = ImVec2((float)io.DisplaySize.x, (float)io.DisplaySize.y);
 	ImVec2 minSize = maxSize * 0.5f;
     m_FileDialog.OpenModal("##SaveGroupDlgKey", ICON_IGFD_FOLDER_OPEN " Save Group File", filters, ".", 1, group_node, ImGuiFileDialogFlags_ConfirmOverwrite | (m_BookMarkPath.empty() ? ImGuiFileDialogFlags_None : ImGuiFileDialogFlags_ShowBookmark));

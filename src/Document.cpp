@@ -30,6 +30,11 @@ static string SaveReasonFlagsToString(ed::SaveReasonFlags flags, std::string sep
         return string(builder.c_str(), builder.size() - separator.size());
 }
 
+Document::~Document()
+{
+    Save();
+    m_Blueprint.Clear();
+}
 
 imgui_json::value Document::DocumentState::Serialize() const
 {
