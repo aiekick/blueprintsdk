@@ -1561,6 +1561,9 @@ void ed::EditorContext::SetNodeSize(NodeId nodeId, const ImVec2& size)
         node->m_IsLive = false;
     }
 
+    if (node->m_Type != NodeType::Group)
+        return;
+
     if (node->m_Bounds.GetSize() != size)
     {
         node->m_Bounds.Min = node->m_Bounds.Min;
