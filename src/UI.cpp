@@ -541,6 +541,7 @@ void BluePrintUI::Initialize(const char * ini_file, const char * bp_file, const 
 void BluePrintUI::Finalize()
 {
     ed::SetCurrentEditor(m_Editor);
+    m_Document->Save();
     m_Document = nullptr;
     ed::SetCurrentEditor(nullptr);
     ed::DestroyEditor(m_Editor);

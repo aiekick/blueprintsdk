@@ -200,7 +200,10 @@ void BP::Clear()
     m_Context.Stop();
 
     for (auto node : m_Nodes)
+    {
+        node->OnNodeDelete(nullptr);
         delete node;
+    }
 
     m_Nodes.resize(0);
     m_Pins.resize(0);

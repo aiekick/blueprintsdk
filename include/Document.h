@@ -16,7 +16,6 @@ namespace BluePrint
 {
 struct Document
 {
-    ~Document();
     struct DocumentState
     {
         imgui_json::value m_NodesState;
