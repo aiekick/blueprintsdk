@@ -96,6 +96,7 @@ struct IMGUI_API Node
     virtual void OnStepNext(Context& context) {}
     virtual void OnStepCurrent(Context& context) {}
     virtual void OnStop(Context& context) {}
+    virtual void OnClose(Context& context) {}
 
     virtual void OnDragStart(const Context& context) {}
     virtual void OnDragEnd(const Context& context) {}
