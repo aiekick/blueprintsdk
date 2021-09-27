@@ -201,7 +201,8 @@ void BP::Clear()
 
     for (auto node : m_Nodes)
     {
-        node->OnNodeDelete(nullptr);
+        if (node->GetStyle() != NodeStyle::Group)
+            node->OnNodeDelete(nullptr);
         delete node;
     }
 
