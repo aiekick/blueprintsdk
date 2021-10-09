@@ -14,6 +14,8 @@
 
 //------------------------------------------------------------------------------
 # include <imgui.h>
+#define IMGUI_DEFINE_MATH_OPERATORS
+# include <imgui_internal.h>
 # include <cstdint> // std::uintXX_t
 # include <utility> // std::move
 # include <vector>
@@ -469,6 +471,9 @@ IMGUI_API bool PinHadAnyLinks(PinId pinId);
 IMGUI_API ImVec2 GetScreenSize();
 IMGUI_API ImVec2 ScreenToCanvas(const ImVec2& pos);
 IMGUI_API ImVec2 CanvasToScreen(const ImVec2& pos);
+
+IMGUI_API ImVec2 GetViewSize();
+IMGUI_API ImRect GetViewRect();
 
 IMGUI_API int GetNodeCount();                                // Returns number of submitted nodes since Begin() call
 IMGUI_API int GetOrderedNodeIds(NodeId* nodes, int size);    // Fills an array with node id's in order they're drawn; up to 'size` elements are set. Returns actual size of filled id's.

@@ -743,6 +743,7 @@ bool BluePrintUI::Frame()
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
         ShowToolbar();
+        //Thumbnails();
         m_OverlayLogger->Draw(ImGui::GetItemRectMin(), io.DisplaySize); // Put here will show logger on background
         ed::Begin("###main_editor");
             DrawNodes();
@@ -751,10 +752,6 @@ bool BluePrintUI::Frame()
             HandleContextMenuAction();
             ShowDialogs();
             DrawInfoTooltip();
-            if (m_isNewNodePopuped && m_newNodeLinkPin != nullptr)
-            {
-                ed::DrawLastLine(m_Style == BluePrintStyle::BP_Style_BluePrint);
-            }
         ed::End();
         FileDialogs();
         m_OverlayLogger->Update(ImGui::GetIO().DeltaTime);
@@ -1551,6 +1548,11 @@ void BluePrintUI::DrawNodes()
         g_Mutex.unlock();
     }
 
+    // Handle new node menu last line drawing
+    if (m_isNewNodePopuped && m_newNodeLinkPin != nullptr)
+    {
+        ed::DrawLastLine(m_Style == BluePrintStyle::BP_Style_BluePrint);
+    }
     m_DebugOverlay->End();
 }
 
@@ -2920,4 +2922,30 @@ void BluePrintUI::ShowToolbar(bool* show)
     ImGui::End();
 }
 
+void BluePrintUI::Thumbnails(bool* show)
+{
+    float SCALE = 1.0f / 4.0f;
+    float zoom = ed::GetCurrentZoom();
+    auto screen_size = ed::GetScreenSize();
+    auto view_rect = ed::GetViewRect();
+    //auto view_size = ed::GetViewSize();
+    //ImVec2 origin = ed::GetCurrentOrigin();
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoInputs;
+    ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+    ImGui::SetNextWindowPos(screen_size - screen_size * SCALE);
+    ImGui::SetNextWindowSize(screen_size * SCALE);
+    if (ImGui::Begin("##floating_thumbnails", show, window_flags))
+    {
+        auto cursorPos = ImGui::GetCursorScreenPos();
+        auto window = ImGui::GetCurrentWindow();
+        auto drawList  = ImGui::GetWindowDrawList();
+        for (auto& node : m_Document->m_Blueprint.GetNodes())
+        {
+            auto node_pos = (ed::GetNodePosition(node->m_ID) - view_rect.Min) * SCALE / zoom;
+            auto node_size = ed::GetNodeSize(node->m_ID) * SCALE / zoom;
+            drawList->AddRectFilled(cursorPos + node_pos, cursorPos + node_pos + node_size, ImGui::GetColorU32(ImGuiCol_Border, 0.40f));
+        }
+    }
+    ImGui::End();
+}
 } // namespace BluePrint

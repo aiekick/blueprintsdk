@@ -1025,6 +1025,16 @@ ImVec2 ax::NodeEditor::CanvasToScreen(const ImVec2& pos)
     return s_Editor->ToScreen(pos);
 }
 
+ImVec2 ax::NodeEditor::GetViewSize()
+{
+    return s_Editor->GetViewRect().GetSize();
+}
+
+ImRect ax::NodeEditor::GetViewRect()
+{
+    return s_Editor->GetViewRect();
+}
+
 int ax::NodeEditor::GetNodeCount()
 {
     return s_Editor->CountLiveNodes();
