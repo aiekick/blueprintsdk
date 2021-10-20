@@ -733,18 +733,32 @@ bool BluePrintUI::Frame()
     if (!m_Editor || !m_Document)
         return true;
     auto& io = ImGui::GetIO();
-    ImGui::SetNextWindowPos(ImVec2(0, 0));
-    ImGui::SetNextWindowSize(io.DisplaySize);
-    ImGui::Begin("Content", nullptr,
-                ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoSavedSettings |
-                ImGuiWindowFlags_NoBringToFrontOnFocus);
-
+    ImVec2 Canvas_size;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_None;
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar |
+                            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
+                            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus | 
+                            ImGuiWindowFlags_NoDocking;
+        Canvas_size = ImVec2(1440, 960);
+    }
+    else
+    {
+        flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
+                            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        Canvas_size = io.DisplaySize;
+    }
+    ImGui::SetNextWindowSize(Canvas_size);
+    ImGui::Begin("Content", nullptr, flags);
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
         ShowToolbar();
         //Thumbnails();
-        m_OverlayLogger->Draw(ImGui::GetItemRectMin(), io.DisplaySize); // Put here will show logger on background
+        if (!(io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable))
+            m_OverlayLogger->Draw(ImGui::GetItemRectMin(), Canvas_size); // Put here will show logger on background
         ed::Begin("###main_editor");
             DrawNodes();
             HandleCreateAction();
