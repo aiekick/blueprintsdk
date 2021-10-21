@@ -52,9 +52,9 @@ struct TimerNode final : Node
             else
             {
                 if (threading)
-                    std::this_thread::sleep_for(std::chrono::milliseconds(m_interval_ms - delta_time));
+                    ImGui::sleep((int)(m_interval_ms - delta_time));
                 else
-                    std::this_thread::yield();
+                    ImGui::sleep(0);
             }
         }
         else

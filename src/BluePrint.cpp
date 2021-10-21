@@ -206,8 +206,12 @@ void BP::Clear()
         node->OnClose(m_Context);
         delete node;
     }
-
     m_Nodes.resize(0);
+
+    for (auto pin : m_Pins)
+    {
+        pin->m_Node = nullptr;
+    }
     m_Pins.resize(0);
     m_Generator = IDGenerator();
     m_Context = Context();

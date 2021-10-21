@@ -161,7 +161,7 @@ static void RunThread(Context& context, FlowPin& entryPoint)
                 if (monitor) monitor->OnPause(context);
                 context.m_pause_event = true;
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            ImGui::sleep(0.02f);
             continue;
         }
         else
