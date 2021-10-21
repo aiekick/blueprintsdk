@@ -295,6 +295,6 @@ private:
 
 private:
     void                CreateNewDocument();
-
+    bool                ReadyToQuit {false};
 };
 } // namespace BluePrint

@@ -77,9 +77,11 @@ struct FileSelectNode final : Node
 
         ImGui::Separator();
         // open file dialog
+        ImVec2 minSize = ImVec2(0, 0);
+		ImVec2 maxSize = ImVec2(FLT_MAX, FLT_MAX);
         auto& io = ImGui::GetIO();
-        ImVec2 maxSize = ImVec2((float)io.DisplaySize.x, (float)io.DisplaySize.y);
-        ImVec2 minSize = maxSize * 0.5f;
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            io.ConfigViewportsNoDecoration = true;
         ImGuiFileDialogFlags vflags = 0;
         if (m_isShowBookmark)       vflags |= ImGuiFileDialogFlags_ShowBookmark;
         if (!m_isShowHiddenFiles)   vflags |= ImGuiFileDialogFlags_DontShowHiddenFiles;
@@ -118,6 +120,8 @@ struct FileSelectNode final : Node
         ImGui::SameLine(0);
         ImGui::TextUnformatted(m_file_name.c_str());
         m_bookmark = ImGuiFileDialog::Instance()->SerializeBookmarks();
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            io.ConfigViewportsNoDecoration = false;
     }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
