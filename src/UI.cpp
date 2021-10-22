@@ -1680,6 +1680,7 @@ void BluePrintUI::DrawInfoTooltip()
                                                 mat.color_format == IM_CF_YUV444 ? "YUV444" :
                                                 mat.color_format == IM_CF_YUVA ? "YUVA" :
                                                 mat.color_format == IM_CF_NV12 ? "NV12" : "Unknown");
+                ImGui::Text("    TimeStamp:%.6f", mat.time_stamp);
             }
             else
             {
