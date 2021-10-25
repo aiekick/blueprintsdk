@@ -1668,7 +1668,9 @@ void BluePrintUI::DrawInfoTooltip()
                                                 mat.type == IM_DT_FLOAT16 ? "Float 16" : 
                                                 mat.type == IM_DT_FLOAT32 ? "Float" :
                                                 mat.type == IM_DT_FLOAT64 ? "Double" : "Unknown");
-                ImGui::Text("       Format:%s", mat.color_format == IM_CF_GRAY ? "Gray/Mono" :
+                ImGui::Text("       Format:%s", mat.flags & IM_MAT_FLAGS_AUDIO_FRAME ? "Audio" :
+                                                mat.flags & IM_MAT_FLAGS_CUSTOM_FRAME ? "Custom" :
+                                                mat.color_format == IM_CF_GRAY ? "Gray/Mono" :
                                                 mat.color_format == IM_CF_BGR ? "BGR" :
                                                 mat.color_format == IM_CF_ABGR ? "ABGR" :
                                                 mat.color_format == IM_CF_BGRA ? "BGRA" :
@@ -1680,6 +1682,15 @@ void BluePrintUI::DrawInfoTooltip()
                                                 mat.color_format == IM_CF_YUV444 ? "YUV444" :
                                                 mat.color_format == IM_CF_YUVA ? "YUVA" :
                                                 mat.color_format == IM_CF_NV12 ? "NV12" : "Unknown");
+                if (mat.flags & IM_MAT_FLAGS_VIDEO_FRAME)
+                {
+                    ImGui::Text("   Frame Type:%s", mat.flags & IM_MAT_FLAGS_VIDEO_FRAME_I ? "I" : 
+                                                    mat.flags & IM_MAT_FLAGS_VIDEO_FRAME_P ? "P" : 
+                                                    mat.flags & IM_MAT_FLAGS_VIDEO_FRAME_B ? "B" : "Unknown");
+                    ImGui::Text("    Frame HDR:%s", mat.flags & IM_MAT_FLAGS_VIDEO_HDR_PQ ? "PQ" : 
+                                                    mat.flags & IM_MAT_FLAGS_VIDEO_HDR_HLG ? "HLG" : "SDR");
+                    ImGui::Text("   Interlaced:%s", mat.flags & IM_MAT_FLAGS_VIDEO_INTERLACED ? "Interlaced" : "no");
+                }
                 ImGui::Text("    TimeStamp:%.6f", mat.time_stamp);
             }
             else
