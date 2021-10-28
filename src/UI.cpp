@@ -1681,7 +1681,8 @@ void BluePrintUI::DrawInfoTooltip()
                                                 mat.color_format == IM_CF_YUV422 ? "YUV422" :
                                                 mat.color_format == IM_CF_YUV444 ? "YUV444" :
                                                 mat.color_format == IM_CF_YUVA ? "YUVA" :
-                                                mat.color_format == IM_CF_NV12 ? "NV12" : "Unknown");
+                                                mat.color_format == IM_CF_NV12 ? "NV12" : 
+                                                mat.color_format == IM_CF_P010LE ? "P010LE" :"Unknown");
                 if (mat.flags & IM_MAT_FLAGS_VIDEO_FRAME)
                 {
                     ImGui::Text("   Frame Type:%s", mat.flags & IM_MAT_FLAGS_VIDEO_FRAME_I ? "I" : 
