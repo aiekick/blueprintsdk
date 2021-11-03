@@ -1,16 +1,16 @@
 #pragma once
 #include <imgui.h>
 #if IMGUI_ICONS
-#define DIGITAL_0   "\uf120"
-#define DIGITAL_1   "\uf121"
-#define DIGITAL_2   "\uf122"
-#define DIGITAL_3   "\uf123"
-#define DIGITAL_4   "\uf124"
-#define DIGITAL_5   "\uf125"
-#define DIGITAL_6   "\uf126"
-#define DIGITAL_7   "\uf127"
-#define DIGITAL_8   "\uf128"
-#define DIGITAL_9   "\uf129"
+#define DIGITAL_0   ICON_FAD_DIGITAL0
+#define DIGITAL_1   ICON_FAD_DIGITAL1
+#define DIGITAL_2   ICON_FAD_DIGITAL2
+#define DIGITAL_3   ICON_FAD_DIGITAL3
+#define DIGITAL_4   ICON_FAD_DIGITAL4
+#define DIGITAL_5   ICON_FAD_DIGITAL5
+#define DIGITAL_6   ICON_FAD_DIGITAL6
+#define DIGITAL_7   ICON_FAD_DIGITAL7
+#define DIGITAL_8   ICON_FAD_DIGITAL8
+#define DIGITAL_9   ICON_FAD_DIGITAL9
 #else
 #define DIGITAL_0   "0"
 #define DIGITAL_1   "1"
