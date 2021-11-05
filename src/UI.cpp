@@ -1669,7 +1669,6 @@ void BluePrintUI::DrawInfoTooltip()
                                                 mat.type == IM_DT_FLOAT32 ? "Float" :
                                                 mat.type == IM_DT_FLOAT64 ? "Double" : "Unknown");
                 ImGui::Text("       Format:%s", mat.flags & IM_MAT_FLAGS_AUDIO_FRAME ? "Audio" :
-                                                mat.flags & IM_MAT_FLAGS_CUSTOM_FRAME ? "Custom" :
                                                 mat.color_format == IM_CF_GRAY ? "Gray/Mono" :
                                                 mat.color_format == IM_CF_BGR ? "BGR" :
                                                 mat.color_format == IM_CF_ABGR ? "ABGR" :
