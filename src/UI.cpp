@@ -1651,6 +1651,7 @@ void BluePrintUI::DrawInfoTooltip()
             ImGui::ImMat mat;
             if (pinValue.GetType() == PinType::Mat)
                 mat = pinValue.As<ImGui::ImMat>();
+#if IMGUI_VULKAN_SHADER
             if (!mat.empty())
             {
                 ImGui::Text("        Width:%d", mat.w);
@@ -1697,6 +1698,7 @@ void BluePrintUI::DrawInfoTooltip()
             {
                 ImGui::TextUnformatted("      *Empty*");
             }
+#endif
             ImGui::TextUnformatted("=============================");
         }
         if (!isDummy && !pin.m_MappedPin && pin.GetValueType() == PinType::Array)
