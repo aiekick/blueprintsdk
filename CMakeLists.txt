@@ -26,11 +26,6 @@ set(IMGUI_BP_SDK_SRC
     src/Utils.cpp
     src/Document.cpp
     src/UI.cpp
-    src/node_editor/imgui_json.cpp
-    src/node_editor/imgui_logger.cpp
-    src/node_editor/imgui_canvas.cpp
-    src/node_editor/imgui_node_editor_api.cpp
-    src/node_editor/imgui_node_editor.cpp
 )
 
 set(IMGUI_BP_SDK_INC
@@ -44,21 +39,10 @@ set(IMGUI_BP_SDK_INC
     include/UI.h
     include/variant.hpp
     include/span.hpp
-    include/node_editor/imgui_json.h
-    include/node_editor/imgui_logger.h
-    include/node_editor/imgui_bezier_math.h
-    include/node_editor/imgui_bezier_math.inl
-    include/node_editor/imgui_canvas.h
-    include/node_editor/imgui_extra_math.h
-    include/node_editor/imgui_extra_math.inl
-    include/node_editor/imgui_node_editor_internal.h
-    include/node_editor/imgui_node_editor_internal.inl
-    include/node_editor/imgui_node_editor.h
 )
 
 set(IMGUI_BP_SDK_INC_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/node_editor
     ${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes/
 )
 
