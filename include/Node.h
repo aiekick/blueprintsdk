@@ -209,6 +209,7 @@ struct IMGUI_API Node
     bool            m_HasCustomLayout   {false};
     bool            m_NeedOverlayLogger {false};
     bool            m_BreakPoint        {false};
+    bool            m_NoBackGround      {false};
     ID_TYPE         m_GroupID           {0};
     std::mutex      m_mutex;
 

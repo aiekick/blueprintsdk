@@ -1,21 +1,7 @@
 #pragma once
 #include <iostream>
 #include <BluePrint.h>
-
-#if !IMGUI_VULKAN_SHADER
-namespace ImGui
-{
-// dummy ImMat
-struct ImMat
-{
-    int dims = 0;
-    int w = 0;
-    int h = 0;
-    int c = 0;
-    bool empty() const { return true; };
-};
-} // namespace ImGui
-#endif
+#include <immat.h>
 
 #define PIN_FLAG_NONE       (0)
 #define PIN_FLAG_IN         (1<<0)

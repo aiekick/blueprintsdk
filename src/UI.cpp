@@ -1312,6 +1312,8 @@ void BluePrintUI::DrawNodes()
             ed::PushStyleColor(ed::StyleColor_NodeBorder,    ImColor(32, 255,  32, 200));
         }
 #endif
+        if (node->m_NoBackGround)
+            ed::PushStyleColor(ed::StyleColor_NodeBg, ImVec4(0.f, 0.f, 0.f, 0.f));
         ed::BeginNode(node->m_ID);
         // Default node layout:                         Simple node layout:
         //
@@ -1494,6 +1496,8 @@ void BluePrintUI::DrawNodes()
 #if DEBUG_NODE_DRAWING
         ImGui::Debug_DrawItemRect();
 #endif
+        if (node->m_NoBackGround)
+            ed::PopStyleColor();
         ed::EndNode();
         if (isDummy)
             ed::PopStyleColor(1);
@@ -1651,7 +1655,6 @@ void BluePrintUI::DrawInfoTooltip()
             ImGui::ImMat mat;
             if (pinValue.GetType() == PinType::Mat)
                 mat = pinValue.As<ImGui::ImMat>();
-#if IMGUI_VULKAN_SHADER
             if (!mat.empty())
             {
                 ImGui::Text("        Width:%d", mat.w);
@@ -1698,7 +1701,6 @@ void BluePrintUI::DrawInfoTooltip()
             {
                 ImGui::TextUnformatted("      *Empty*");
             }
-#endif
             ImGui::TextUnformatted("=============================");
         }
         if (!isDummy && !pin.m_MappedPin && pin.GetValueType() == PinType::Array)
