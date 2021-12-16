@@ -295,6 +295,8 @@ private:
 
 private:
     void                CreateNewDocument();
+    void                CommitLinksToEditor();
+    bool                m_ShowNode  {true}; // TODO::Dicky check
     bool                ReadyToQuit {false};
 };
 } // namespace BluePrint

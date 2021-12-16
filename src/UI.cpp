@@ -1022,10 +1022,59 @@ bool BluePrintUI::CheckNodeStyle(const Node* node, NodeStyle style)
     return checked;
 }
 
+void BluePrintUI::CommitLinksToEditor()
+{
+    auto pins = m_Document->m_Blueprint.GetPins();
+    for (auto pin : pins)
+    {
+        if (!pin->m_Link)
+        {
+            if (!(pin->m_Flags & PIN_FLAG_LINKED)) pin->m_LinkFrom.clear();
+            continue;
+        }
+
+        auto link = pin->GetLink(&m_Document->m_Blueprint);
+        if (!link)
+        {
+            pin->m_Link = 0;
+            pin->m_LinkPin = nullptr;
+            continue;
+        }
+        else
+        {
+            pin->m_LinkPin = link;
+        }
+
+        if (std::find(pins.begin(), pins.end(), link) == pins.end())
+        {
+            pin->m_Link = 0;
+            pin->m_LinkPin = nullptr;
+            continue;
+        }
+        
+        // To keep things simple, link id is same as pin id.
+        // check link is between bridge and shadow
+        //bool inner_link = pin->IsMappedPin() && link->IsMappedPin() && pin->m_MappedPin && pin->m_MappedPin == link->m_MappedPin;
+        //ed::Link(pin->m_ID, pin->m_ID, pin->m_Link, (inner_link ? ImVec4(0, 0, 0,  0) : PinTypeToColor(this, pin->GetValueType())), 1.5); // Maybe add to setting
+        ed::Link(pin->m_ID, pin->m_ID, pin->m_Link, PinTypeToColor(this, pin->GetValueType()), 3.0); // Maybe add to setting
+        pin->m_Flags |= PIN_FLAG_LINKED;
+        link->m_Flags |= PIN_FLAG_LINKED;
+        if (std::find(link->m_LinkFrom.begin(), link->m_LinkFrom.end(), pin->m_ID) == link->m_LinkFrom.end())
+        {
+            link->m_LinkFrom.push_back(pin->m_ID);
+        }
+    }
+}
+
 void BluePrintUI::DrawNodes()
 {
     if (!m_Document)
         return;
+    if (!m_ShowNode)
+    {
+        CommitLinksToEditor();
+        return;
+    }
     const auto iconSize = ImVec2(ImGui::GetTextLineHeight(), ImGui::GetTextLineHeight());
     m_DebugOverlay->Begin();
     Node* need_clone_node = nullptr;
@@ -1513,46 +1562,7 @@ void BluePrintUI::DrawNodes()
     }
 
     // Commit all links to editor
-    auto pins = m_Document->m_Blueprint.GetPins();
-    for (auto pin : pins)
-    {
-        if (!pin->m_Link)
-        {
-            if (!(pin->m_Flags & PIN_FLAG_LINKED)) pin->m_LinkFrom.clear();
-            continue;
-        }
-
-        auto link = pin->GetLink(&m_Document->m_Blueprint);
-        if (!link)
-        {
-            pin->m_Link = 0;
-            pin->m_LinkPin = nullptr;
-            continue;
-        }
-        else
-        {
-            pin->m_LinkPin = link;
-        }
-
-        if (std::find(pins.begin(), pins.end(), link) == pins.end())
-        {
-            pin->m_Link = 0;
-            pin->m_LinkPin = nullptr;
-            continue;
-        }
-        
-        // To keep things simple, link id is same as pin id.
-        // check link is between bridge and shadow
-        //bool inner_link = pin->IsMappedPin() && link->IsMappedPin() && pin->m_MappedPin && pin->m_MappedPin == link->m_MappedPin;
-        //ed::Link(pin->m_ID, pin->m_ID, pin->m_Link, (inner_link ? ImVec4(0, 0, 0,  0) : PinTypeToColor(this, pin->GetValueType())), 1.5); // Maybe add to setting
-        ed::Link(pin->m_ID, pin->m_ID, pin->m_Link, PinTypeToColor(this, pin->GetValueType()), 3.0); // Maybe add to setting
-        pin->m_Flags |= PIN_FLAG_LINKED;
-        link->m_Flags |= PIN_FLAG_LINKED;
-        if (std::find(link->m_LinkFrom.begin(), link->m_LinkFrom.end(), pin->m_ID) == link->m_LinkFrom.end())
-        {
-            link->m_LinkFrom.push_back(pin->m_ID);
-        }
-    }
+    CommitLinksToEditor();
 
     // Handle clone node
     if (need_clone_node)
