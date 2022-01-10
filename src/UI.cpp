@@ -2831,7 +2831,6 @@ void BluePrintUI::ShowStyleEditor(bool* show)
         ImGui::End();
         return;
     }
-    //auto paneWidth = ImGui::GetContentRegionAvailWidth();
     float paneWidth = 600;
     auto& editorStyle = ed::GetStyle();
     ImGui::BeginHorizontal("Style buttons", ImVec2(paneWidth, 0), 1.0f);
