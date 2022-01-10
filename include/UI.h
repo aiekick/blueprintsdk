@@ -173,7 +173,7 @@ struct BluePrintUI
     BluePrintUI();
     void Initialize(const char * ini_file, const char * bp_file = nullptr, const char * plugin_path = nullptr);
     void Finalize();
-    bool Frame();
+    bool Frame(bool show_tool_bar = true, bool show_node = true);
     void SetStyle(enum BluePrintStyle style = BluePrintStyle::BP_Style_BluePrint);
 
     ed::Config                      m_Config;
@@ -296,7 +296,6 @@ private:
 private:
     void                CreateNewDocument();
     void                CommitLinksToEditor();
-    bool                m_ShowNode  {true}; // TODO::Dicky check
     bool                ReadyToQuit {false};
 };
 } // namespace BluePrint

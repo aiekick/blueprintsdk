@@ -727,7 +727,7 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
     m_Style = style;
 }
 
-bool BluePrintUI::Frame()
+bool BluePrintUI::Frame(bool show_tool_bar,  bool show_node)
 {
     bool done = false;
     if (!m_Editor || !m_Document || ReadyToQuit)
@@ -763,11 +763,14 @@ bool BluePrintUI::Frame()
         }
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
-        ShowToolbar();
+        if (show_tool_bar) ShowToolbar();
         //Thumbnails();
         m_OverlayLogger->Draw(debug_min, debug_max); // Put here will show logger on background
         ed::Begin("###main_editor");
-            DrawNodes();
+            if (show_node)
+                DrawNodes();
+            else
+                CommitLinksToEditor();
             HandleCreateAction();
             HandleDestroyAction();
             HandleContextMenuAction();
@@ -1070,11 +1073,6 @@ void BluePrintUI::DrawNodes()
 {
     if (!m_Document)
         return;
-    if (!m_ShowNode)
-    {
-        CommitLinksToEditor();
-        return;
-    }
     const auto iconSize = ImVec2(ImGui::GetTextLineHeight(), ImGui::GetTextLineHeight());
     m_DebugOverlay->Begin();
     Node* need_clone_node = nullptr;
