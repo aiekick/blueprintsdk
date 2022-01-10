@@ -22,10 +22,10 @@ namespace BluePrint
 
 BluePrintStyle BPStyleFromName(string name)
 {
-    if (name.compare("Light") == 0)
+    if (name.compare("Default") == 0)
         return BluePrintStyle::BP_Style_BluePrint;
-    else if (name.compare("Dark") == 0)
-        return BluePrintStyle::BP_Style_Dark;
+    else if (name.compare("Light") == 0)
+        return BluePrintStyle::BP_Style_Light;
     else if (name.compare("Mono") == 0)
         return BluePrintStyle::BP_Style_Mono;
     else if (name.compare("Custom") == 0)
@@ -38,9 +38,9 @@ string BPStyleToString(BluePrintStyle style)
 {
     switch (style)
     {
-        default:                                return "Light";
-        case BluePrintStyle::BP_Style_BluePrint:return "Light";
-        case BluePrintStyle::BP_Style_Dark:     return "Dark";
+        default:                                return "Default";
+        case BluePrintStyle::BP_Style_BluePrint:return "Default";
+        case BluePrintStyle::BP_Style_Light:    return "Light";
         case BluePrintStyle::BP_Style_Mono:     return "Mono";
         case BluePrintStyle::BP_Style_Custom:   return "Custom";
     }
@@ -99,16 +99,16 @@ void ContextMenu::Show(BluePrintUI& UI)
         if (ImGui::BeginMenu(ICON_BLUEPRINT_STYLE " Set Style"))
         {
             ImGui::Bullet();
-            if (ImGui::MenuItem("Light##BluePrintStyle"))
+            if (ImGui::MenuItem("Default##BluePrintStyle"))
             {
                 UI.SetStyle(BluePrintStyle::BP_Style_BluePrint);
                 ed::SetTheme(BPStyleToString(BluePrintStyle::BP_Style_BluePrint));
             }
             ImGui::Bullet();
-            if (ImGui::MenuItem("Dark##BluePrintStyle"))
+            if (ImGui::MenuItem("Light##BluePrintStyle"))
             {
-                UI.SetStyle(BluePrintStyle::BP_Style_Dark);
-                ed::SetTheme(BPStyleToString(BluePrintStyle::BP_Style_Dark));
+                UI.SetStyle(BluePrintStyle::BP_Style_Light);
+                ed::SetTheme(BPStyleToString(BluePrintStyle::BP_Style_Light));
             }
             ImGui::Bullet();
             if (ImGui::MenuItem("Mono##BluePrintStyle"))
@@ -431,7 +431,7 @@ BluePrintUI::BluePrintUI()
     m_StyleColors[BluePrintStyleColor_PinCustom]            = ImColor(208,  64,  64, 255);
 }
 
-void BluePrintUI::Initialize(const char * ini_file, const char * bp_file, const char * plugin_path)
+void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
 {
     m_OverlayLogger = new OverlayLogger();
     OverlayLogger::SetCurrent(m_OverlayLogger);
@@ -541,7 +541,7 @@ void BluePrintUI::Initialize(const char * ini_file, const char * bp_file, const 
 void BluePrintUI::Finalize()
 {
     ed::SetCurrentEditor(m_Editor);
-    m_Document->Save();
+    if (m_Document) m_Document->Save();
     m_Document = nullptr;
     ed::SetCurrentEditor(nullptr);
     ed::DestroyEditor(m_Editor);
@@ -564,61 +564,11 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
     auto& io = ImGui::GetIO();
     switch (style)
     {
-    case BluePrintStyle::BP_Style_BluePrint:
-        {
-            ImGui::StyleColorsLight();
-            if (m_Document) m_Document->m_Blueprint.SetStyleLight(true);
-            m_FileDialog.SetLightStyle();
-            m_StyleColors[BluePrintStyleColor_GroupBg]              = ImColor(128, 128, 255, 128);
-            m_StyleColors[BluePrintStyleColor_TitleBg]              = ImColor(128, 128, 255,  64);
-            m_StyleColors[BluePrintStyleColor_ToolButtonActive]     = ImColor( 96,  96, 255, 192);
-            m_StyleColors[BluePrintStyleColor_ToolButtonHovered]    = ImColor( 96,  96, 255, 128);
-            m_StyleColors[BluePrintStyleColor_DebugCurrentNode]     = ImColor(  0, 255,   0, 128);
-            m_StyleColors[BluePrintStyleColor_DebugNextNode]        = ImColor(  0,   0, 255, 128);
-            m_StyleColors[BluePrintStyleColor_DebugBreakPointNode]  = ImColor(255,   0,   0, 128);
-            m_StyleColors[BluePrintStyleColor_PinVoid]      = ImColor(   0,   0,   0, 255);
-            m_StyleColors[BluePrintStyleColor_PinAny]       = ImColor(   0,   0,   0, 200);
-            m_StyleColors[BluePrintStyleColor_PinFlow]      = ImColor(   0,   0,   0, 200);
-            m_StyleColors[BluePrintStyleColor_PinBool]      = ImColor(  48, 48,  220, 255);
-            m_StyleColors[BluePrintStyleColor_PinInt32]     = ImColor(  68, 201, 156, 255);
-            m_StyleColors[BluePrintStyleColor_PinInt64]     = ImColor( 100,  34,  78, 255);
-            m_StyleColors[BluePrintStyleColor_PinFloat]     = ImColor(  74, 113,  37, 255);
-            m_StyleColors[BluePrintStyleColor_PinDouble]    = ImColor(  36,  56,  17, 255);
-            m_StyleColors[BluePrintStyleColor_PinString]    = ImColor( 124,  21, 153, 255);
-            m_StyleColors[BluePrintStyleColor_PinPoint]     = ImColor( 220, 110,  10, 255);
-            m_StyleColors[BluePrintStyleColor_PinVector]    = ImColor(  72, 110, 220, 255);
-            m_StyleColors[BluePrintStyleColor_PinMat]       = ImColor( 220,  10,  10, 255);
-            m_StyleColors[BluePrintStyleColor_PinCustom]    = ImColor( 208,  64,  64, 255);
-            auto& editorStyle = ed::GetStyle();
-            editorStyle.Colors[ed::StyleColor_Bg]           = ImColor( 220, 220, 252,  72);
-            editorStyle.Colors[ed::StyleColor_NodeBg]       = ImColor( 200, 200, 230, 228);
-            editorStyle.Colors[ed::StyleColor_NodeBorder]   = ImColor( 128, 128, 255,  96);
-            editorStyle.Colors[ed::StyleColor_SelNodeBorder]= ImColor(  20,  20, 255, 255);
-            editorStyle.Colors[ed::StyleColor_HovNodeBorder]= ImColor(  50, 176, 255, 255);
-            editorStyle.Colors[ed::StyleColor_Flow]         = ImColor(  64, 128,  64, 255);
-            editorStyle.Colors[ed::StyleColor_FlowDMarker]  = ImColor( 255, 128,  10, 255);
-            editorStyle.Colors[ed::StyleColor_FlowMarker]   = ImColor( 128, 255, 128, 255);
-            if (m_OverlayLogger)
-            {
-                m_OverlayLogger->SetLogColor(LogColor_LogTimeColor,     ImColor( 75, 105,   0, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogStringColor,   ImColor(128,  87,  66, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogKeywordColor,  ImColor(  0,   0,   0, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogTextColor,     ImColor( 96,  96,  96, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogOutlineColor,  ImColor( 20,  20,  20,  64));
-                m_OverlayLogger->SetLogColor(LogColor_LogNumberColor,   ImColor(128, 128,  64, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogVerboseColor,  ImColor( 64, 128,  64, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogWarningColor,  ImColor(128, 128,  96, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogErrorColor,    ImColor(128,  76,  76, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogInfoColor,     ImColor( 69,  99, 128, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogAssertColor,   ImColor(128,  30,  34, 255));
-            }
-        }
-        break;
-    case BluePrintStyle::BP_Style_Dark:
+        case BluePrintStyle::BP_Style_BluePrint:
         {
             ImGui::StyleColorsDark();
-            m_FileDialog.SetDarkStyle();
             if (m_Document) m_Document->m_Blueprint.SetStyleLight(false);
+            m_FileDialog.SetDarkStyle();
             m_StyleColors[BluePrintStyleColor_TitleBg]              = ImColor(255, 255, 255,  64);
             m_StyleColors[BluePrintStyleColor_TitleBgDummy]         = ImColor(255,   0,   0,  64);
             m_StyleColors[BluePrintStyleColor_GroupBg]              = ImColor(128, 128, 128, 128);
@@ -667,6 +617,56 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
                 m_OverlayLogger->SetLogColor(LogColor_LogErrorColor,    ImColor(255, 152, 152, 255));
                 m_OverlayLogger->SetLogColor(LogColor_LogInfoColor,     ImColor(138, 197, 255, 255));
                 m_OverlayLogger->SetLogColor(LogColor_LogAssertColor,   ImColor(255,  61,  68, 255));
+            }
+        }
+        break;
+    case BluePrintStyle::BP_Style_Light:
+        {
+            ImGui::StyleColorsLight();
+            if (m_Document) m_Document->m_Blueprint.SetStyleLight(true);
+            m_FileDialog.SetDarkStyle();
+            m_StyleColors[BluePrintStyleColor_GroupBg]              = ImColor(128, 128, 255, 128);
+            m_StyleColors[BluePrintStyleColor_TitleBg]              = ImColor(128, 128, 255,  64);
+            m_StyleColors[BluePrintStyleColor_ToolButtonActive]     = ImColor( 96,  96, 255, 192);
+            m_StyleColors[BluePrintStyleColor_ToolButtonHovered]    = ImColor( 96,  96, 255, 128);
+            m_StyleColors[BluePrintStyleColor_DebugCurrentNode]     = ImColor(  0, 255,   0, 128);
+            m_StyleColors[BluePrintStyleColor_DebugNextNode]        = ImColor(  0,   0, 255, 128);
+            m_StyleColors[BluePrintStyleColor_DebugBreakPointNode]  = ImColor(255,   0,   0, 128);
+            m_StyleColors[BluePrintStyleColor_PinVoid]      = ImColor(   0,   0,   0, 255);
+            m_StyleColors[BluePrintStyleColor_PinAny]       = ImColor(   0,   0,   0, 200);
+            m_StyleColors[BluePrintStyleColor_PinFlow]      = ImColor(   0,   0,   0, 200);
+            m_StyleColors[BluePrintStyleColor_PinBool]      = ImColor(  48, 48,  220, 255);
+            m_StyleColors[BluePrintStyleColor_PinInt32]     = ImColor(  68, 201, 156, 255);
+            m_StyleColors[BluePrintStyleColor_PinInt64]     = ImColor( 100,  34,  78, 255);
+            m_StyleColors[BluePrintStyleColor_PinFloat]     = ImColor(  74, 113,  37, 255);
+            m_StyleColors[BluePrintStyleColor_PinDouble]    = ImColor(  36,  56,  17, 255);
+            m_StyleColors[BluePrintStyleColor_PinString]    = ImColor( 124,  21, 153, 255);
+            m_StyleColors[BluePrintStyleColor_PinPoint]     = ImColor( 220, 110,  10, 255);
+            m_StyleColors[BluePrintStyleColor_PinVector]    = ImColor(  72, 110, 220, 255);
+            m_StyleColors[BluePrintStyleColor_PinMat]       = ImColor( 220,  10,  10, 255);
+            m_StyleColors[BluePrintStyleColor_PinCustom]    = ImColor( 208,  64,  64, 255);
+            auto& editorStyle = ed::GetStyle();
+            editorStyle.Colors[ed::StyleColor_Bg]           = ImColor( 220, 220, 252,  72);
+            editorStyle.Colors[ed::StyleColor_NodeBg]       = ImColor( 200, 200, 230, 228);
+            editorStyle.Colors[ed::StyleColor_NodeBorder]   = ImColor( 128, 128, 255,  96);
+            editorStyle.Colors[ed::StyleColor_SelNodeBorder]= ImColor(  20,  20, 255, 255);
+            editorStyle.Colors[ed::StyleColor_HovNodeBorder]= ImColor(  50, 176, 255, 255);
+            editorStyle.Colors[ed::StyleColor_Flow]         = ImColor(  64, 128,  64, 255);
+            editorStyle.Colors[ed::StyleColor_FlowDMarker]  = ImColor( 255, 128,  10, 255);
+            editorStyle.Colors[ed::StyleColor_FlowMarker]   = ImColor( 128, 255, 128, 255);
+            if (m_OverlayLogger)
+            {
+                m_OverlayLogger->SetLogColor(LogColor_LogTimeColor,     ImColor( 75, 105,   0, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogStringColor,   ImColor(128,  87,  66, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogKeywordColor,  ImColor(  0,   0,   0, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogTextColor,     ImColor( 96,  96,  96, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogOutlineColor,  ImColor( 20,  20,  20,  64));
+                m_OverlayLogger->SetLogColor(LogColor_LogNumberColor,   ImColor(128, 128,  64, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogVerboseColor,  ImColor( 64, 128,  64, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogWarningColor,  ImColor(128, 128,  96, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogErrorColor,    ImColor(128,  76,  76, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogInfoColor,     ImColor( 69,  99, 128, 255));
+                m_OverlayLogger->SetLogColor(LogColor_LogAssertColor,   ImColor(128,  30,  34, 255));
             }
         }
         break;
@@ -727,45 +727,72 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
     m_Style = style;
 }
 
-bool BluePrintUI::Frame(bool show_tool_bar,  bool show_node)
+bool BluePrintUI::Frame(bool child_window,  bool show_node)
 {
     bool done = false;
     if (!m_Editor || !m_Document || ReadyToQuit)
         return true;
     auto& io = ImGui::GetIO();
-    ImVec2 Canvas_size;
-    ImGuiWindowFlags flags = ImGuiWindowFlags_None;
-    ImGuiCond cond = ImGuiCond_Once;
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    if (!child_window)
     {
-        io.ConfigViewportsNoDecoration = false;
-        flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
-                            ImGuiWindowFlags_NoDocking;
-        Canvas_size = ImVec2(1440 * io.FontGlobalScale, 960 * io.FontGlobalScale);
+        m_isChildWindow = false;
+        ImVec2 Canvas_size;
+        ImGuiWindowFlags flags = ImGuiWindowFlags_None;
+        ImGuiCond cond = ImGuiCond_Once;
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            io.ConfigViewportsNoDecoration = false;
+            flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
+                                ImGuiWindowFlags_NoDocking;
+            Canvas_size = ImVec2(1440 * io.FontGlobalScale, 960 * io.FontGlobalScale);
+        }
+        else
+        {
+            flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                            ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
+                            ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
+            Canvas_size = io.DisplaySize;
+            cond = ImGuiCond_None;
+            ImGui::SetNextWindowPos(ImVec2(0, 0));
+        }
+        ImGui::SetNextWindowSize(Canvas_size, cond);
+        ImGui::Begin("Content", nullptr, flags);
+            ImVec2 debug_min = ImGui::GetItemRectMin();
+            ImVec2 debug_max = Canvas_size;
+            if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+            {
+                debug_min = ImGui::GetWindowPos();
+                debug_max = debug_min + ImGui::GetWindowSize();
+            }
+            ed::SetCurrentEditor(m_Editor);
+            UpdateActions();
+            ShowToolbar();
+            //Thumbnails();
+            m_OverlayLogger->Draw(debug_min, debug_max); // Put here will show logger on background
+            ed::Begin("###main_editor");
+                if (show_node)
+                    DrawNodes();
+                else
+                    CommitLinksToEditor();
+                HandleCreateAction();
+                HandleDestroyAction();
+                HandleContextMenuAction();
+                ShowDialogs();
+                DrawInfoTooltip();
+            ed::End();
+            FileDialogs();
+            m_OverlayLogger->Update(ImGui::GetIO().DeltaTime);
+            //m_OverlayLogger->Draw(ImGui::GetItemRectMin(), io.DisplaySize); // Put here will show logger on foreground
+            ed::SetCurrentEditor(nullptr); // Don't Stop ed?
+
+        ImGui::End();
+        io.ConfigViewportsNoDecoration = true;
     }
     else
     {
-        flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-                        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
-                        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus;
-        Canvas_size = io.DisplaySize;
-        cond = ImGuiCond_None;
-        ImGui::SetNextWindowPos(ImVec2(0, 0));
-    }
-    ImGui::SetNextWindowSize(Canvas_size, cond);
-    ImGui::Begin("Content", nullptr, flags);
-        ImVec2 debug_min = ImGui::GetItemRectMin();
-        ImVec2 debug_max = Canvas_size;
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            debug_min = ImGui::GetWindowPos();
-            debug_max = debug_min + ImGui::GetWindowSize();
-        }
+        m_isChildWindow = true;
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
-        if (show_tool_bar) ShowToolbar();
-        //Thumbnails();
-        m_OverlayLogger->Draw(debug_min, debug_max); // Put here will show logger on background
         ed::Begin("###main_editor");
             if (show_node)
                 DrawNodes();
@@ -778,12 +805,8 @@ bool BluePrintUI::Frame(bool show_tool_bar,  bool show_node)
             DrawInfoTooltip();
         ed::End();
         FileDialogs();
-        m_OverlayLogger->Update(ImGui::GetIO().DeltaTime);
-        //m_OverlayLogger->Draw(ImGui::GetItemRectMin(), io.DisplaySize); // Put here will show logger on foreground
-        ed::SetCurrentEditor(nullptr); // Don't Stop ed?
-    
-    ImGui::End();
-    io.ConfigViewportsNoDecoration = true;
+        ed::SetCurrentEditor(nullptr);
+    }
     return done;
 }
 

@@ -25,8 +25,8 @@
 #define ICON_NEW_NODE           "\ue9fe"
 #define ICON_UNLINK             "\ue646"
 #define ICON_SHOW_FLOW          "\uf3b2"
-#define ICON_ZOOM_IN            "\uf0b2"
-#define ICON_ZOOM_OUT           "\uf78c"
+#define ICON_BP_ZOOM_IN         "\uf0b2"
+#define ICON_BP_ZOOM_OUT        "\uf78c"
 #define ICON_NODE_SETTING       "\ue8b8"
 #define ICON_NODE_DEBUG         "\uf67b"
 #define ICON_NODE_DLL           "\uf0c1"
@@ -49,8 +49,8 @@
 #define ICON_NEW_NODE           "+"
 #define ICON_UNLINK             "UnLink"
 #define ICON_SHOW_FLOW          "Show"
-#define ICON_ZOOM_IN            "Zoom In"
-#define ICON_ZOOM_OUT           "Zoom Out"
+#define ICON_BP_ZOOM_IN         "Zoom In"
+#define ICON_BP_ZOOM_OUT        "Zoom Out"
 #define ICON_NODE_COPY          "C"
 #define ICON_NODE_SETTING       "S"
 #define ICON_NODE_DELETE        "D"
@@ -103,7 +103,7 @@ namespace BluePrint
 enum class BluePrintStyle:int32_t 
 {
     BP_Style_BluePrint = 0,
-    BP_Style_Dark,
+    BP_Style_Light,
     BP_Style_Mono,
     BP_Style_Custom,
 };
@@ -171,9 +171,9 @@ struct NodeSettingDialog
 struct BluePrintUI
 {
     BluePrintUI();
-    void Initialize(const char * ini_file, const char * bp_file = nullptr, const char * plugin_path = nullptr);
+    void Initialize(const char * bp_file = nullptr, const char * plugin_path = nullptr);
     void Finalize();
-    bool Frame(bool show_tool_bar = true, bool show_node = true);
+    bool Frame(bool child_window = false, bool show_node = true);
     void SetStyle(enum BluePrintStyle style = BluePrintStyle::BP_Style_BluePrint);
 
     ed::Config                      m_Config;
@@ -183,6 +183,7 @@ struct BluePrintUI
     std::string                     m_BookMarkPath;
     std::vector<ClipNode>           m_ClipBoard;
     bool                            m_isNewNodePopuped {false};
+    bool                            m_isChildWindow {false};
     Pin*                            m_newNodeLinkPin {nullptr};
     ImVec4                          m_StyleColors[BluePrintStyleColor_Count];
     ImVec2                          m_PopupMousePos {};
@@ -266,8 +267,8 @@ public:
 
     Action m_View_ShowFlow          = { "Show Flow",         ICON_SHOW_FLOW,             [this] { View_ShowFlow();           } };
     Action m_View_ShowMeters        = { "Show Meters",       ICON_METERS,                [this] { View_ShowMeters();         } };
-    Action m_View_ZoomToContent     = { "Zoom To Content",   ICON_ZOOM_OUT,              [this] { View_ZoomToContent();      } };
-    Action m_View_ZoomToSelection   = { "Zoom To Selection", ICON_ZOOM_IN,               [this] { View_ZoomToSelection();    } };
+    Action m_View_ZoomToContent     = { "Zoom To Content",   ICON_BP_ZOOM_OUT,           [this] { View_ZoomToContent();      } };
+    Action m_View_ZoomToSelection   = { "Zoom To Selection", ICON_BP_ZOOM_IN,            [this] { View_ZoomToSelection();    } };
     Action m_View_NavigateBackward  = { "Navigate Backward", ICON_MD_ARROW_BACK,         [this] { View_NavigateBackward();   } };
     Action m_View_NavigateForward   = { "Navigate Forward",  ICON_MD_ARROW_FORWARD,      [this] { View_NavigateForward();    } };
 

@@ -334,6 +334,8 @@ bool Document::Save(std::string path) const
 
 bool Document::Save() const
 {
+    if (m_Path.empty())
+        return false;
     return Save(m_Path);
 }
 
