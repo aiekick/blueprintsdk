@@ -820,6 +820,18 @@ void BluePrintUI::CreateNewDocument()
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(40, 80));
 }
 
+void BluePrintUI::CreateNewMediaDocument()
+{
+    auto view_rect = ed::GetViewRect();
+    auto blueprint = &m_Document->m_Blueprint;
+    auto entryPointNode = blueprint->CreateNode<BluePrint::EntryPointNode>();
+                            ed::SetNodePosition(entryPointNode->m_ID, view_rect.Min + ImVec2(10, 10));
+    auto exitPointNode = blueprint->CreateNode<BluePrint::ExitPointNode>();
+                            ed::SetNodePosition(exitPointNode->m_ID, view_rect.Max - ImVec2(100, 100));
+    entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
+    exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOut);
+}
+
 void BluePrintUI::InstallDocumentCallbacks()
 {
     m_Config.UserPointer = this;
@@ -2434,15 +2446,29 @@ bool BluePrintUI::File_Import()
     return result;
 }
 
-bool BluePrintUI::File_New(bool save_change)
+bool BluePrintUI::File_New()
 {
-    File_Close(save_change);
+    File_Close();
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
     m_Document->m_Blueprint.Clear();
     ed::NavigateToOrigin();
     CreateNewDocument();
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    ed::SetCurrentEditor(nullptr);
+    return true;
+}
+
+bool BluePrintUI::File_New(imgui_json::value bp)
+{
+    ed::SetCurrentEditor(m_Editor);
+    ed::ClearSelection();
+    m_Document->m_Blueprint.Clear();
+    m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    if (bp.is_object())
+        m_Document->Deserialize(bp, *m_Document);
+    else
+        CreateNewMediaDocument();
     ed::SetCurrentEditor(nullptr);
     return true;
 }
@@ -2480,13 +2506,13 @@ bool BluePrintUI::File_Save()
         return File_SaveAs();
 }
 
-bool BluePrintUI::File_Close(bool save_change)
+bool BluePrintUI::File_Close()
 {
     // TODO::Dicky Do we need close file?
     if (!File_IsOpen())
         return true;
     bool result = true;
-    if (File_IsModified() && save_change)
+    if (File_IsModified())
     {
         File_Save();
     }

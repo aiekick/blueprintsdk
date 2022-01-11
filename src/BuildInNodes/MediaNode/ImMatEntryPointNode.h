@@ -6,7 +6,7 @@ struct EntryPointNode final : Node
 {
     BP_NODE(EntryPointNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Simple, "System")
 
-    EntryPointNode(BP& blueprint): Node(blueprint) { m_Name = "Start"; }
+    EntryPointNode(BP& blueprint): Node(blueprint) { m_Name = "Input"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
@@ -16,8 +16,9 @@ struct EntryPointNode final : Node
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
 
     FlowPin m_Exit = { this, "Start" };
+    MatPin  m_MatOut = { this, "Out" };
 
-    Pin* m_OutputPins[1] = { &m_Exit };
+    Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 };
 } // namespace BluePrint
 

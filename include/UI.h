@@ -216,11 +216,12 @@ public:
     bool File_Import(std::string path, ImVec2 pos, string* error = nullptr);
     bool File_Import();
     bool File_Export(Node * group_node);
-    bool File_New(bool save_change = true);
+    bool File_New();
+    bool File_New(imgui_json::value bp);
     bool File_SaveAsEx(std::string path);
     bool File_SaveAs();
     bool File_Save();
-    bool File_Close(bool save_change = true);
+    bool File_Close();
     bool File_Exit();
 
     bool Edit_Undo();
@@ -296,6 +297,7 @@ private:
 
 private:
     void                CreateNewDocument();
+    void                CreateNewMediaDocument();
     void                CommitLinksToEditor();
     bool                ReadyToQuit {false};
 };
