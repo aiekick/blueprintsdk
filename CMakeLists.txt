@@ -15,6 +15,7 @@ if (POLICY CMP0068)
 endif()
 
 option(IMGUI_BP_SDK_STATIC                "Build BluePrint as static library" OFF)
+option(IMGUI_BP_SDK_MEDIA_NODE_ONLY       "Build BluePrint built-in node" OFF)
 
 set(IMGUI_BP_SDK_SRC
     src/BluePrint.cpp
@@ -44,11 +45,14 @@ set(IMGUI_BP_SDK_INC
 set(IMGUI_BP_SDK_INC_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes/
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes/MediaNode
 )
 
 # Generate all buildin node files into one header file
 message(STATUS "Generate Build In Nodes")
 file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/BuildInNodes.h)
+
+if(NOT IMGUI_BP_SDK_MEDIA_NODE_ONLY)
 list(APPEND incls "#pragma once\n")
 list(APPEND incls "// Genetated By cmake, don't change it\n")
 file(GLOB_RECURSE header_files "${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes/*.h")
@@ -57,6 +61,17 @@ foreach(f ${header_files})
     list(APPEND incls "#include \"${fr}\"\n")
 endforeach()
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/BuildInNodes.h ${incls})
+else()
+add_definitions(-DIMGUI_BP_SDK_MEDIA_NODE_ONLY)
+list(APPEND incls "#pragma once\n")
+list(APPEND incls "// Genetated By cmake, don't change it\n")
+list(APPEND incls "#include \"CommentNode.h\"\n")
+list(APPEND incls "#include \"ImMatEntryPointNode.h\"\n")
+list(APPEND incls "#include \"ImMatExitPointNode.h\"\n")
+list(APPEND incls "#include \"DummyNode.h\"\n")
+list(APPEND incls "#include \"GroupNode.h\"\n")
+file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/BuildInNodes.h ${incls})
+endif()
 
 include_directories(${IMGUI_BP_SDK_INC_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
 

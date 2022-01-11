@@ -97,6 +97,7 @@ NodeRegistry::NodeRegistry()
         ExitPointNode::GetStaticTypeInfo(),
         CommentNode::GetStaticTypeInfo(),
         GroupNode::GetStaticTypeInfo(),
+#ifndef IMGUI_BP_SDK_MEDIA_NODE_ONLY
         DateTimeNode::GetStaticTypeInfo(),
         ConstValueNode::GetStaticTypeInfo(),
         LoopNode::GetStaticTypeInfo(),
@@ -114,6 +115,7 @@ NodeRegistry::NodeRegistry()
         BranchNode::GetStaticTypeInfo(),
         FlipFlopNode::GetStaticTypeInfo(),
         PrintNode::GetStaticTypeInfo(),
+#endif
     })
 {
     RebuildTypes();
