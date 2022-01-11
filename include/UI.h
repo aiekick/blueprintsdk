@@ -173,7 +173,7 @@ struct BluePrintUI
     BluePrintUI();
     void Initialize(const char * bp_file = nullptr, const char * plugin_path = nullptr);
     void Finalize();
-    bool Frame(bool child_window = false, bool show_node = true);
+    bool Frame(bool child_window = false, bool show_node = true, bool bp_enabled = true);
     void SetStyle(enum BluePrintStyle style = BluePrintStyle::BP_Style_BluePrint);
 
     ed::Config                      m_Config;
@@ -216,11 +216,11 @@ public:
     bool File_Import(std::string path, ImVec2 pos, string* error = nullptr);
     bool File_Import();
     bool File_Export(Node * group_node);
-    bool File_New();
+    bool File_New(bool save_change = true);
     bool File_SaveAsEx(std::string path);
     bool File_SaveAs();
     bool File_Save();
-    bool File_Close();
+    bool File_Close(bool save_change = true);
     bool File_Exit();
 
     bool Edit_Undo();
@@ -289,7 +289,7 @@ private:
     void                FileDialogs();
     void                HandleCreateAction();
     void                HandleDestroyAction();
-    void                HandleContextMenuAction();
+    void                HandleContextMenuAction(bool create_only = false);
 
     EntryPointNode*     FindEntryPointNode();
     void                InitFileDialog(const char * bookmark_path = nullptr);

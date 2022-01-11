@@ -505,14 +505,14 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
 
     if (!bp_file || m_Document->Load(bp_file) != BP_ERR_NONE)
     {
-        if (bp_file)
-            LOGE("Load BluePrint file %s Failed!!! We will build new file.", bp_file);
-        else
-            LOGE("No BluePrint file set!!! We will build new file.");
-        CreateNewDocument();
+        //if (bp_file)
+        //    LOGE("Load BluePrint file %s Failed!!! We will build new file.", bp_file);
+        //else
+        //    LOGE("No BluePrint file set!!! We will build new file.");
+        //CreateNewDocument();
     }
 
-    m_Document->SetPath(bp_file);
+    if (bp_file) m_Document->SetPath(bp_file);
     m_Document->OnMakeCurrent();
 
     for (auto nodeTypeInfo : m_Document->m_Blueprint.GetNodeRegistry()->GetTypes())
@@ -727,7 +727,7 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
     m_Style = style;
 }
 
-bool BluePrintUI::Frame(bool child_window,  bool show_node)
+bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
 {
     bool done = false;
     if (!m_Editor || !m_Document || ReadyToQuit)
@@ -794,15 +794,18 @@ bool BluePrintUI::Frame(bool child_window,  bool show_node)
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
         ed::Begin("###main_editor");
+        if (bp_enabled)
+        {
             if (show_node)
                 DrawNodes();
             else
                 CommitLinksToEditor();
             HandleCreateAction();
             HandleDestroyAction();
-            HandleContextMenuAction();
+            HandleContextMenuAction(true);
             ShowDialogs();
             DrawInfoTooltip();
+        }
         ed::End();
         FileDialogs();
         ed::SetCurrentEditor(nullptr);
@@ -2264,7 +2267,7 @@ void BluePrintUI::HandleDestroyAction()
     }
 }
 
-void BluePrintUI::HandleContextMenuAction()
+void BluePrintUI::HandleContextMenuAction(bool create_only)
 {
     if (!m_Document)
         return;
@@ -2276,7 +2279,10 @@ void BluePrintUI::HandleContextMenuAction()
     {
         ed::Suspend();
         LOGI("[HandleContextMenuAction] Show Background Context Menu");
-        m_ContextMenu.Open();
+        if (create_only)
+            ImGui::OpenPopup("##create_node");
+        else
+            m_ContextMenu.Open();
         ed::Resume();
     }
 
@@ -2428,14 +2434,16 @@ bool BluePrintUI::File_Import()
     return result;
 }
 
-bool BluePrintUI::File_New()
+bool BluePrintUI::File_New(bool save_change)
 {
-    File_Close();
+    File_Close(save_change);
+    ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
     m_Document->m_Blueprint.Clear();
     ed::NavigateToOrigin();
     CreateNewDocument();
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    ed::SetCurrentEditor(nullptr);
     return true;
 }
 
@@ -2472,13 +2480,13 @@ bool BluePrintUI::File_Save()
         return File_SaveAs();
 }
 
-bool BluePrintUI::File_Close()
+bool BluePrintUI::File_Close(bool save_change)
 {
     // TODO::Dicky Do we need close file?
     if (!File_IsOpen())
         return true;
     bool result = true;
-    if (File_IsModified())
+    if (File_IsModified() && save_change)
     {
         File_Save();
     }
