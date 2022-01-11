@@ -813,23 +813,25 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
     return done;
 }
 
+//void BluePrintUI::CreateNewDocument()
+//{
+//    auto blueprint = &m_Document->m_Blueprint;
+//    auto entryPointNode =   blueprint->CreateNode<BluePrint::EntryPointNode>();
+//                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(40, 80));
+//}
+
 void BluePrintUI::CreateNewDocument()
 {
     auto blueprint = &m_Document->m_Blueprint;
-    auto entryPointNode =   blueprint->CreateNode<BluePrint::EntryPointNode>();
-                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(40, 80));
-}
-
-void BluePrintUI::CreateNewMediaDocument()
-{
-    auto view_rect = ed::GetViewRect();
-    auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::EntryPointNode>();
-                            ed::SetNodePosition(entryPointNode->m_ID, view_rect.Min + ImVec2(10, 10));
+                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
+#ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
+    auto view_size = ed::GetViewSize();
     auto exitPointNode = blueprint->CreateNode<BluePrint::ExitPointNode>();
-                            ed::SetNodePosition(exitPointNode->m_ID, view_rect.Max - ImVec2(100, 100));
+                            ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOut);
+#endif
 }
 
 void BluePrintUI::InstallDocumentCallbacks()
@@ -2455,7 +2457,6 @@ bool BluePrintUI::File_New()
     ed::NavigateToOrigin();
     CreateNewDocument();
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
-    ed::SetCurrentEditor(nullptr);
     return true;
 }
 
@@ -2468,8 +2469,7 @@ bool BluePrintUI::File_New(imgui_json::value bp)
     if (bp.is_object())
         m_Document->Deserialize(bp, *m_Document);
     else
-        CreateNewMediaDocument();
-    ed::SetCurrentEditor(nullptr);
+        CreateNewDocument();
     return true;
 }
 

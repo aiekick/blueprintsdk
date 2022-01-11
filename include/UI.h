@@ -297,7 +297,6 @@ private:
 
 private:
     void                CreateNewDocument();
-    void                CreateNewMediaDocument();
     void                CommitLinksToEditor();
     bool                ReadyToQuit {false};
 };
