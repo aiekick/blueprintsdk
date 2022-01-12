@@ -115,6 +115,8 @@ NodeRegistry::NodeRegistry()
         BranchNode::GetStaticTypeInfo(),
         FlipFlopNode::GetStaticTypeInfo(),
         PrintNode::GetStaticTypeInfo(),
+#else
+        Lut3DNode::GetStaticTypeInfo(),
 #endif
     })
 {
