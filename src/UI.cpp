@@ -2477,7 +2477,10 @@ bool BluePrintUI::File_New(imgui_json::value bp, ImVec2 size)
     if (bp.is_object())
         m_Document->Deserialize(bp, *m_Document);
     else
+    {
         CreateNewDocument(size);
+        View_ZoomToContent();
+    }
     return true;
 }
 
