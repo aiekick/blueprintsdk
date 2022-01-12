@@ -793,6 +793,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
         m_isChildWindow = true;
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
+        ShowShortToolbar();
         ed::Begin("###main_editor");
         if (bp_enabled)
         {
@@ -819,9 +820,9 @@ void BluePrintUI::CreateNewDocument(ImVec2 size)
     auto entryPointNode = blueprint->CreateNode<BluePrint::EntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
 #ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
-    auto view_size = ed::GetViewSize();
+    auto view_size = size;
     if (view_size.x == 0 || view_size.y == 0)
-        view_size = size;
+        view_size = ed::GetViewSize();
     auto exitPointNode = blueprint->CreateNode<BluePrint::ExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
@@ -2473,14 +2474,18 @@ bool BluePrintUI::File_New(imgui_json::value bp, ImVec2 size)
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
     m_Document->m_Blueprint.Clear();
-    m_DebugOverlay->Init(&m_Document->m_Blueprint);
     if (bp.is_object())
+    {
         m_Document->Deserialize(bp, *m_Document);
+        m_Document->OnMakeCurrent();
+    }
     else
     {
         CreateNewDocument(size);
+        m_Document->OnMakeCurrent();
         View_ZoomToContent();
     }
+    m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
@@ -2985,6 +2990,53 @@ void BluePrintUI::ShowStyleEditor(bool* show)
     ImGui::End();
 }
 
+void BluePrintUI::ShowShortToolbar(bool* show)
+{
+    auto& io = ImGui::GetIO();
+    ImVec2 window_pos = ImGui::GetCursorScreenPos();
+    ImVec2 window_size = ImGui::GetWindowSize();
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+    ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+    ImGui::PushStyleColor(ImGuiCol_Button, m_StyleColors[BluePrintStyleColor_ToolButton]);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, m_StyleColors[BluePrintStyleColor_ToolButtonHovered]);
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, m_StyleColors[BluePrintStyleColor_ToolButtonActive]);
+    ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(1.0, 1.0, 1.0, 0.8));
+    ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
+    ImGui::SetNextWindowPos(window_pos + ImVec2(window_size.x - 48, 8));
+    if (ImGui::Begin("##embedded_toolbar", show, window_flags))
+    {
+        auto toolbarAction = [](Action& action)
+        {
+            ImGui::ScopedDisableItem disableAction(!action.IsEnabled());
+#if IMGUI_ICONS
+            string title = action.GetIcon() + "##toolbar";
+#else
+            string title = action.GetName() + "##toolbar";
+#endif
+            if (ImGui::Button(title.c_str()))
+            {
+                action.Execute();
+            }
+        };
+        toolbarAction(m_View_ShowFlow); ImGui::ShowTooltipOnHover("%s", m_View_ShowFlow.GetName().c_str());
+        toolbarAction(m_View_ZoomToContent); ImGui::ShowTooltipOnHover("%s", m_View_ZoomToContent.GetName().c_str());
+        toolbarAction(m_View_ZoomToSelection); ImGui::ShowTooltipOnHover("%s", m_View_ZoomToSelection.GetName().c_str());
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+        toolbarAction(m_Edit_Copy); ImGui::ShowTooltipOnHover("%s", m_Edit_Copy.GetName().c_str());
+        toolbarAction(m_Edit_Paste); ImGui::ShowTooltipOnHover("%s", m_Edit_Paste.GetName().c_str());
+        toolbarAction(m_Edit_Cut); ImGui::ShowTooltipOnHover("%s", m_Edit_Cut.GetName().c_str());
+        toolbarAction(m_Edit_Duplicate); ImGui::ShowTooltipOnHover("%s", m_Edit_Duplicate.GetName().c_str());
+        toolbarAction(m_Edit_Delete); ImGui::ShowTooltipOnHover("%s", m_Edit_Delete.GetName().c_str());
+        toolbarAction(m_Edit_Unlink); ImGui::ShowTooltipOnHover("%s", m_Edit_Unlink.GetName().c_str());
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+        toolbarAction(m_Edit_Undo); ImGui::ShowTooltipOnHover("%s", m_Edit_Undo.GetName().c_str());
+        toolbarAction(m_Edit_Redo); ImGui::ShowTooltipOnHover("%s", m_Edit_Redo.GetName().c_str());
+    }
+    ImGui::End();
+    ImGui::PopStyleVar(1);
+    ImGui::PopStyleColor(4);
+}
+
 void BluePrintUI::ShowToolbar(bool* show)
 {
     auto& io = ImGui::GetIO();
@@ -3091,9 +3143,9 @@ void BluePrintUI::ShowToolbar(bool* show)
         ImGui::SameLine();
         ImGui::Dummy(ImVec2(20, 0));
     }
+    ImGui::End();
     ImGui::PopStyleVar(1);
     ImGui::PopStyleColor(3);
-    ImGui::End();
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
         io.ConfigViewportsNoDecoration = false;

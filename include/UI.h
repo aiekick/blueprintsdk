@@ -206,6 +206,7 @@ public:
     Node*   ShowNewNodeMenu(ImVec2 popupPosition = {});
     void    ShowStyleEditor(bool* show = nullptr);
     void    ShowToolbar(bool* show = nullptr);
+    void    ShowShortToolbar(bool* show = nullptr);
     void    Thumbnails(bool* show = nullptr);
 
     bool File_IsOpen();
