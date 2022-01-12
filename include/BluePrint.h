@@ -108,6 +108,7 @@ inline bool GetTo(const imgui_json::value& value, std::string key, V& result)
 };
 
 struct EntryPointNode;
+struct ExitPointNode;
 struct NodeRegistry;
 struct Node;
 struct Context;

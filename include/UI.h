@@ -217,7 +217,7 @@ public:
     bool File_Import();
     bool File_Export(Node * group_node);
     bool File_New();
-    bool File_New(imgui_json::value bp);
+    bool File_New(imgui_json::value bp, ImVec2 size);
     bool File_SaveAsEx(std::string path);
     bool File_SaveAs();
     bool File_Save();
@@ -247,6 +247,9 @@ public:
     bool Blueprint_Next();
     bool Blueprint_Current();
     bool Blueprint_BreakPoint();
+#ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
+    bool Blueprint_Exec(ImGui::ImMat input);
+#endif
 
     Action m_File_Open       = { "Open...",         ICON_OPEN_BLUEPRINT,   [this] { File_Open();        } };
     Action m_File_Import     = { "Import...",       ICON_IMPORT_GROUP,     [this] { File_Import();      } };
@@ -293,10 +296,11 @@ private:
     void                HandleContextMenuAction(bool create_only = false);
 
     EntryPointNode*     FindEntryPointNode();
+    ExitPointNode*      FindExitPointNode();
     void                InitFileDialog(const char * bookmark_path = nullptr);
 
 private:
-    void                CreateNewDocument();
+    void                CreateNewDocument(ImVec2 size);
     void                CommitLinksToEditor();
     bool                ReadyToQuit {false};
 };

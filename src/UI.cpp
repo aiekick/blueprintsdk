@@ -813,20 +813,15 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
     return done;
 }
 
-//void BluePrintUI::CreateNewDocument()
-//{
-//    auto blueprint = &m_Document->m_Blueprint;
-//    auto entryPointNode =   blueprint->CreateNode<BluePrint::EntryPointNode>();
-//                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(40, 80));
-//}
-
-void BluePrintUI::CreateNewDocument()
+void BluePrintUI::CreateNewDocument(ImVec2 size)
 {
     auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::EntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
 #ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
     auto view_size = ed::GetViewSize();
+    if (view_size.x == 0 || view_size.y == 0)
+        view_size = size;
     auto exitPointNode = blueprint->CreateNode<BluePrint::ExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
@@ -2381,6 +2376,19 @@ EntryPointNode* BluePrintUI::FindEntryPointNode()
     return nullptr;
 }
 
+ExitPointNode* BluePrintUI::FindExitPointNode()
+{
+    for (auto& node : m_Document->m_Blueprint.GetNodes())
+    {
+        if (node->GetTypeInfo().m_ID == ExitPointNode::GetStaticTypeInfo().m_ID)
+        {
+            return static_cast<ExitPointNode*>(node);
+        }
+    }
+
+    return nullptr;
+}
+
 bool BluePrintUI::File_Open(std::string path, string* error)
 {
     if (File_IsOpen())
@@ -2455,12 +2463,12 @@ bool BluePrintUI::File_New()
     ed::ClearSelection();
     m_Document->m_Blueprint.Clear();
     ed::NavigateToOrigin();
-    CreateNewDocument();
+    CreateNewDocument(ed::GetViewSize());
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
-bool BluePrintUI::File_New(imgui_json::value bp)
+bool BluePrintUI::File_New(imgui_json::value bp, ImVec2 size)
 {
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
@@ -2469,7 +2477,7 @@ bool BluePrintUI::File_New(imgui_json::value bp)
     if (bp.is_object())
         m_Document->Deserialize(bp, *m_Document);
     else
-        CreateNewDocument();
+        CreateNewDocument(size);
     return true;
 }
 
@@ -2727,6 +2735,25 @@ bool BluePrintUI::Blueprint_Run()
     }
     return true;
 }
+
+#ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
+bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
+{
+    if (!m_Document)
+        return false;
+    auto entryNode = FindEntryPointNode();
+    entryNode->m_MatOut.SetValue(input);
+    auto result = m_Document->m_Blueprint.Execute(*entryNode);
+    if (result == StepResult::Done)
+        LOGI("Execution: Running");
+    else if (result == StepResult::Error)
+    {
+        LOGI("Execution: Failed at step %" PRIu32, m_Document->m_Blueprint.StepCount());
+        return false;
+    }
+    return true;
+}
+#endif
 
 bool BluePrintUI::Blueprint_Pause()
 {
