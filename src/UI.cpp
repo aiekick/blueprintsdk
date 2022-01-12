@@ -2742,6 +2742,8 @@ bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
     if (!m_Document)
         return false;
     auto entryNode = FindEntryPointNode();
+    if (!entryNode)
+        return false;
     entryNode->m_MatOut.SetValue(input);
     auto result = m_Document->m_Blueprint.Execute(*entryNode);
     if (result == StepResult::Done)
@@ -2753,6 +2755,38 @@ bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
     }
     return true;
 }
+
+bool BluePrintUI::Blueprint_GetResult(ImGui::ImMat& input, ImGui::ImMat& output)
+{
+    if (!m_Document)
+        return false;
+    auto entryNode = FindEntryPointNode();
+    auto exitNode = FindExitPointNode();
+    if (!entryNode || !exitNode)
+        return false;
+    if (m_Document->m_Blueprint.IsExecuting())
+    {
+        LOGI("Get Result: Still Executing");
+        return false;
+    }
+    auto input_val = entryNode->m_MatOut.GetValue();
+    auto output_val = exitNode->m_MatIn.GetValue();
+    input = input_val.As<ImGui::ImMat>();
+    output = output_val.As<ImGui::ImMat>();
+    if (input.empty() || output.empty())
+    {
+        LOGI("Get Result: result is empty");
+        return false;
+    }
+    if (input.time_stamp != output.time_stamp)
+    {
+        LOGI("Get Result: input/output is not match");
+        return false;
+    }
+
+    return true;
+}
+
 #endif
 
 bool BluePrintUI::Blueprint_Pause()

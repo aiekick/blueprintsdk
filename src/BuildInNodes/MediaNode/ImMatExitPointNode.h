@@ -10,7 +10,8 @@ struct ExitPointNode final : Node
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
-        m_Mat = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        auto mat = context.GetPinValue(m_MatIn);
+        m_MatIn.SetValue(mat);
         context.m_Callstack.clear();
         return {};
     }
@@ -21,7 +22,5 @@ struct ExitPointNode final : Node
     MatPin  m_MatIn = { this, "In" };
 
     Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
-
-    ImGui::ImMat m_Mat;
 };
 } // namespace BluePrint
