@@ -378,6 +378,18 @@ StepResult BP::Execute(EntryPointNode& entryPointNode)
 #endif
 }
 
+StepResult BP::Run(EntryPointNode& entryPointNode)
+{
+    auto nodeIt = std::find(m_Nodes.begin(), m_Nodes.end(), static_cast<Node*>(&entryPointNode));
+    if (nodeIt == m_Nodes.end())
+        return StepResult::Error;
+
+    if (!m_Context.m_Executing)
+        ResetState();
+    
+    return m_Context.Run(entryPointNode.m_Exit);
+}
+
 StepResult BP::Pause()
 {
     return m_Context.Pause();

@@ -142,6 +142,27 @@ StepResult Context::Restep(Context * context)
     return SetStepResult(StepResult::Success);
 }
 
+StepResult Context::Run(FlowPin& entryPoint)
+{
+    m_Executing = true;
+    m_ThreadRunning = false;
+    Start(entryPoint);
+    auto result = StepResult::Done;
+    while (true)
+    {
+        result = Step();
+        if (result != StepResult::Success)
+            break;
+    }
+    m_Executing = false;
+    m_PrevNode = nullptr;
+    m_CurrentNode = nullptr;
+    m_PrevFlowPin = {};
+    m_CurrentFlowPin = {};
+    m_Callstack.clear();
+    return result;
+}
+
 static void RunThread(Context& context, FlowPin& entryPoint)
 {
     ContextMonitor* monitor = context.m_Monitor;

@@ -161,6 +161,7 @@ struct IMGUI_API Context
     StepResult Step(Context * context = nullptr, bool restep = false);
     StepResult Restep(Context * context = nullptr);
     
+    StepResult Run(FlowPin& entryPoint);        // non-thread run, blocking mode
     StepResult Execute(FlowPin& entryPoint);
     StepResult Pause();
     StepResult ThreadStep();
@@ -349,6 +350,7 @@ struct IMGUI_API BP
             ContextMonitor* GetContextMonitor();
     const   ContextMonitor* GetContextMonitor() const;
 
+    StepResult Run(EntryPointNode& entryPointNode);
     StepResult Execute(EntryPointNode& entryPointNode);
     StepResult Stop();
     StepResult Pause();

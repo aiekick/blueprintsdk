@@ -2764,6 +2764,25 @@ bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
     return true;
 }
 
+bool BluePrintUI::Blueprint_Run(ImGui::ImMat input)
+{
+    if (!m_Document)
+        return false;
+    auto entryNode = FindEntryPointNode();
+    if (!entryNode)
+        return false;
+    entryNode->m_MatOut.SetValue(input);
+    auto result = m_Document->m_Blueprint.Run(*entryNode);
+    if (result == StepResult::Done)
+        LOGI("Execution: Running");
+    else if (result == StepResult::Error)
+    {
+        LOGI("Execution: Failed at step %" PRIu32, m_Document->m_Blueprint.StepCount());
+        return false;
+    }
+    return true;
+}
+
 bool BluePrintUI::Blueprint_GetResult(ImGui::ImMat& input, ImGui::ImMat& output)
 {
     if (!m_Document)
