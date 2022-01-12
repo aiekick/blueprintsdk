@@ -116,7 +116,19 @@ NodeRegistry::NodeRegistry()
         FlipFlopNode::GetStaticTypeInfo(),
         PrintNode::GetStaticTypeInfo(),
 #else
+        AlmNode::GetStaticTypeInfo(),
+        BilateralNode::GetStaticTypeInfo(),
+        BoxBlurNode::GetStaticTypeInfo(),
+        CannyNode::GetStaticTypeInfo(),
+        CasNode::GetStaticTypeInfo(),
+        ColorInvertNode::GetStaticTypeInfo(),
+        DeBandNode::GetStaticTypeInfo(),
+        DeinterlaceNode::GetStaticTypeInfo(),
+        GaussianBlurNode::GetStaticTypeInfo(),
+        HQDN3DNode::GetStaticTypeInfo(),
+        LaplacianNode::GetStaticTypeInfo(),
         Lut3DNode::GetStaticTypeInfo(),
+        SobelNode::GetStaticTypeInfo(),
         USMNode::GetStaticTypeInfo(),
 #endif
     })
