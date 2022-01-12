@@ -117,6 +117,7 @@ NodeRegistry::NodeRegistry()
         PrintNode::GetStaticTypeInfo(),
 #else
         Lut3DNode::GetStaticTypeInfo(),
+        USMNode::GetStaticTypeInfo(),
 #endif
     })
 {
