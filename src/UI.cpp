@@ -2773,16 +2773,16 @@ bool BluePrintUI::Blueprint_GetResult(ImGui::ImMat& input, ImGui::ImMat& output)
     auto output_val = exitNode->m_MatIn.GetValue();
     input = input_val.As<ImGui::ImMat>();
     output = output_val.As<ImGui::ImMat>();
-    if (input.empty() || output.empty())
-    {
-        LOGI("Get Result: result is empty");
-        return false;
-    }
-    if (input.time_stamp != output.time_stamp)
-    {
-        LOGI("Get Result: input/output is not match");
-        return false;
-    }
+    //if (input.empty() || output.empty())
+    //{
+    //    LOGI("Get Result: result is empty");
+    //    return false;
+    //}
+    //if (input.time_stamp != output.time_stamp)
+    //{
+    //    LOGI("Get Result: input/output is not match");
+    //    return false;
+    //}
 
     return true;
 }
