@@ -182,7 +182,7 @@ private:
     bool m_bEnabled      {true};
     float m_sigma       {3.f};
     float m_threshold   {1.f};
-    float m_amount      {1.f};
+    float m_amount      {2.f};
     ImGui::USM_vulkan * m_filter {nullptr};
 };
 } //namespace BluePrint
