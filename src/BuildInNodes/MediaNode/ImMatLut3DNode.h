@@ -3,7 +3,6 @@
 #include <Pin.h>
 #if IMGUI_VULKAN_SHADER
 #include <ImVulkanShader.h>
-#endif
 #include "Lut3D.h"
 #if IMGUI_ICONS
 #include <icons.h>
@@ -25,8 +24,8 @@ struct Lut3DNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-        if (m_filter && m_setting_changed) { delete m_filter; m_filter = nullptr; }
-        m_setting_changed = false;
+        //if (m_filter && m_setting_changed) { delete m_filter; m_filter = nullptr; }
+        //m_setting_changed = false;
     }
 
     void OnStop(Context& context) override
@@ -53,11 +52,7 @@ struct Lut3DNode final : Node
             }
             if (!m_filter || m_setting_changed)
             {
-#if IMGUI_VULKAN_SHADER
                 int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-#else
-                int gpu = -1;
-#endif
                 if (m_filter) { delete m_filter; m_filter = nullptr; }
                 if (m_lut_mode != NO_DEFAULT)
                     m_filter = new ImGui::LUT3D_vulkan(m_lut_mode, m_interpolation_mode, gpu);
@@ -72,7 +67,6 @@ struct Lut3DNode final : Node
             }
             bool is_hdr_pq = m_bEnabled && ((m_lut_mode == SDR709_HDRPQ) || (m_lut_mode == HDRHLG_HDRPQ));
             bool is_hdr_hlg = m_bEnabled && ((m_lut_mode == SDR709_HDRHLG) || (m_lut_mode == HDRPQ_HDRHLG));
-#if IMGUI_VULKAN_SHADER
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             if (mat_in.device == IM_DD_VULKAN)
             {
@@ -95,23 +89,6 @@ struct Lut3DNode final : Node
                 if (is_hdr_hlg) im_RGB.flags |= IM_MAT_FLAGS_VIDEO_HDR_HLG;
                 m_MatOut.SetValue(im_RGB);
             }
-#else
-            ImGui::ImMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            if (mat_in.device == IM_DD_VULKAN)
-            {
-                return {};
-            }
-            else if (mat_in.device == IM_DD_CPU)
-            {
-                m_filter->filter(mat_in, im_RGB);
-                im_RGB.time_stamp = mat_in.time_stamp;
-                im_RGB.rate = mat_in.rate;
-                im_RGB.flags = mat_in.flags;
-                if (is_hdr_pq) im_RGB.flags |= IM_MAT_FLAGS_VIDEO_HDR_PQ;
-                if (is_hdr_hlg) im_RGB.flags |= IM_MAT_FLAGS_VIDEO_HDR_HLG;
-                m_MatOut.SetValue(im_RGB);
-            }
-#endif
         }
         return m_Exit;
     }
@@ -306,3 +283,4 @@ private:
     bool  m_setting_changed {false};
 };
 } // namespace BluePrint
+#endif // IMGUI_VULKAN_SHADER

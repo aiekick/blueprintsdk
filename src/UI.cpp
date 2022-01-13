@@ -811,7 +811,6 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
         FileDialogs();
         ed::SetCurrentEditor(nullptr);
     }
-    m_isInited = true;
     return done;
 }
 
@@ -829,6 +828,7 @@ void BluePrintUI::CreateNewDocument(ImVec2 size)
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOut);
 #endif
+    blueprint->SetOpen(true);
 }
 
 void BluePrintUI::InstallDocumentCallbacks()
@@ -2765,9 +2765,11 @@ bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
     return true;
 }
 
-bool BluePrintUI::Blueprint_Run(ImGui::ImMat input, ImGui::ImMat& output)
+bool BluePrintUI::Blueprint_Run(ImGui::ImMat& input, ImGui::ImMat& output)
 {
     if (!m_Document)
+        return false;
+    if (!m_Document->m_Blueprint.IsOpened())
         return false;
     auto entryNode = FindEntryPointNode();
     auto exitNode = FindExitPointNode();

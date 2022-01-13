@@ -116,6 +116,7 @@ NodeRegistry::NodeRegistry()
         FlipFlopNode::GetStaticTypeInfo(),
         PrintNode::GetStaticTypeInfo(),
 #else
+#if IMGUI_VULKAN_SHADER
         AlmNode::GetStaticTypeInfo(),
         BilateralNode::GetStaticTypeInfo(),
         BoxBlurNode::GetStaticTypeInfo(),
@@ -130,6 +131,7 @@ NodeRegistry::NodeRegistry()
         Lut3DNode::GetStaticTypeInfo(),
         SobelNode::GetStaticTypeInfo(),
         USMNode::GetStaticTypeInfo(),
+#endif
 #endif
     })
 {

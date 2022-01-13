@@ -1,6 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
+#if IMGUI_VULKAN_SHADER
 #include <imgui_logger.h>
 #include <imgui_json.h>
 #include <ImVulkanShader.h>
@@ -21,7 +22,7 @@ struct ColorInvertNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-        if (m_filter) { delete m_filter; m_filter = nullptr; }
+        //if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
 
     void OnStop(Context& context) override
@@ -153,3 +154,4 @@ private:
     ImGui::ColorInvert_vulkan * m_filter   {nullptr};
 };
 } // namespace BluePrint
+#endif // IMGUI_VULKAN_SHADER

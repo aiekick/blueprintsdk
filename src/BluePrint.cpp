@@ -198,7 +198,7 @@ void BP::ForgetPin(Pin* pin)
 void BP::Clear()
 {
     m_Context.Stop();
-
+    m_IsOpen = false;
     for (auto node : m_Nodes)
     {
         //if (node->GetStyle() != NodeStyle::Group)
@@ -539,7 +539,7 @@ int BP::Load(const imgui_json::value& value)
         return BP_ERR_NODE_LOAD;
 
     m_Generator.SetState(generatorState);
-
+    m_IsOpen = true;
     return BP_ERR_NONE;
 }
 
@@ -562,7 +562,7 @@ int BP::Import(const imgui_json::value& value, ImVec2 pos)
 
     group_node->LoadGroup(value, pos);
     m_Nodes.emplace_back(group_node);
-    
+
     return BP_ERR_NONE;
 }
 

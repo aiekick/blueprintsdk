@@ -1,6 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
+#if IMGUI_VULKAN_SHADER
 #include <imgui_logger.h>
 #include <imgui_json.h>
 #include <ImVulkanShader.h>
@@ -22,7 +23,7 @@ struct BoxBlurNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-        if (m_blur) { delete m_blur; m_blur = nullptr; }
+        //if (m_blur) { delete m_blur; m_blur = nullptr; }
     }
 
     void OnStop(Context& context) override
@@ -189,3 +190,4 @@ private:
     int m_iteration {1};
 };
 } // namespace BluePrint
+#endif // IMGUI_VULKAN_SHADER

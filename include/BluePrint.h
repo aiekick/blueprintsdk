@@ -356,6 +356,8 @@ struct IMGUI_API BP
     StepResult Pause();
     StepResult Next();
     StepResult Current();
+    bool IsOpened() { return m_IsOpen; }
+    void SetOpen(bool opened) { m_IsOpen = opened; }
     bool IsExecuting();
     bool IsPaused();
     void ShowFlow();
@@ -410,6 +412,7 @@ private:
     std::vector<Pin*>               m_Pins;
     Context                         m_Context;
     bool                            m_StyleLight {false};
+    bool                            m_IsOpen {false};
 };
 # pragma endregion
 

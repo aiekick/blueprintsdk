@@ -1,6 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
+#if IMGUI_VULKAN_SHADER
 #include <ImVulkanShader.h>
 
 #include "ALM_vulkan.h"
@@ -19,7 +20,7 @@ struct AlmNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-        if (m_filter) { delete m_filter; m_filter = nullptr; }
+        //if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
 
     void OnStop(Context& context) override
@@ -188,3 +189,4 @@ private:
     ImGui::ALM_vulkan * m_filter {nullptr};
 };
 } //namespace BluePrint
+#endif // IMGUI_VULKAN_SHADER

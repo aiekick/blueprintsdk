@@ -1,8 +1,8 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
+#if IMGUI_VULKAN_SHADER
 #include <ImVulkanShader.h>
-
 #include "HQDN3D_vulkan.h"
 
 namespace BluePrint
@@ -19,7 +19,7 @@ struct HQDN3DNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-        if (m_filter) { delete m_filter; m_filter = nullptr; }
+        //if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
 
     void OnStop(Context& context) override
@@ -195,10 +195,11 @@ struct HQDN3DNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     bool m_bEnabled      {true};
-    float m_lum_spac    {4.0};
-    float m_chrom_spac  {3.0};
+    float m_lum_spac    {6.0};
+    float m_chrom_spac  {4.0};
     float m_lum_tmp     {4.5};
     float m_chrom_tmp   {3.375};
     ImGui::HQDN3D_vulkan * m_filter   {nullptr};
 };
 } //namespace BluePrint
+#endif // IMGUI_VULKAN_SHADER

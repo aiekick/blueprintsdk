@@ -1,8 +1,8 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
+#if IMGUI_VULKAN_SHADER
 #include <ImVulkanShader.h>
-
 #include <CAS_vulkan.h>
 
 namespace BluePrint
@@ -19,7 +19,7 @@ struct CasNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-        if (m_filter) { delete m_filter; m_filter = nullptr; }
+        //if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
 
     void OnStop(Context& context) override
@@ -165,3 +165,4 @@ private:
     ImGui::CAS_vulkan * m_filter {nullptr};
 };
 } //namespace BluePrint
+#endif // IMGUI_VULKAN_SHADER
