@@ -184,6 +184,7 @@ struct BluePrintUI
     std::vector<ClipNode>           m_ClipBoard;
     bool                            m_isNewNodePopuped {false};
     bool                            m_isChildWindow {false};
+    bool                            m_isInited      {false};
     Pin*                            m_newNodeLinkPin {nullptr};
     ImVec4                          m_StyleColors[BluePrintStyleColor_Count];
     ImVec2                          m_PopupMousePos {};
@@ -250,8 +251,8 @@ public:
     bool Blueprint_BreakPoint();
 #ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
     bool Blueprint_Exec(ImGui::ImMat input);
-    bool Blueprint_Run(ImGui::ImMat input);
     bool Blueprint_GetResult(ImGui::ImMat& input, ImGui::ImMat& output);
+    bool Blueprint_Run(ImGui::ImMat input, ImGui::ImMat& output);
 #endif
 
     Action m_File_Open       = { "Open...",         ICON_OPEN_BLUEPRINT,   [this] { File_Open();        } };

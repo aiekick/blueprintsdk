@@ -811,6 +811,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
         FileDialogs();
         ed::SetCurrentEditor(nullptr);
     }
+    m_isInited = true;
     return done;
 }
 
@@ -2764,12 +2765,13 @@ bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
     return true;
 }
 
-bool BluePrintUI::Blueprint_Run(ImGui::ImMat input)
+bool BluePrintUI::Blueprint_Run(ImGui::ImMat input, ImGui::ImMat& output)
 {
     if (!m_Document)
         return false;
     auto entryNode = FindEntryPointNode();
-    if (!entryNode)
+    auto exitNode = FindExitPointNode();
+    if (!entryNode || !exitNode)
         return false;
     entryNode->m_MatOut.SetValue(input);
     auto result = m_Document->m_Blueprint.Run(*entryNode);
@@ -2780,6 +2782,8 @@ bool BluePrintUI::Blueprint_Run(ImGui::ImMat input)
         LOGI("Execution: Failed at step %" PRIu32, m_Document->m_Blueprint.StepCount());
         return false;
     }
+    auto output_val = exitNode->m_MatIn.GetValue();
+    output = output_val.As<ImGui::ImMat>();
     return true;
 }
 
