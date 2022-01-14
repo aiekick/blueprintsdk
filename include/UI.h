@@ -168,6 +168,21 @@ struct NodeSettingDialog
 };
 # pragma endregion
 
+typedef int (*BluePrintCallback)(int type);
+typedef struct BluePrintCallbackFunctions
+{
+    BluePrintCallback   BluePrintOnInitialized  {nullptr};
+    BluePrintCallback   BluePrintOnLoaded       {nullptr};
+    BluePrintCallback   BluePrintOnSave         {nullptr};
+    BluePrintCallback   BluePrintOnChanged      {nullptr};
+    BluePrintCallback   BluePrintOnStart        {nullptr};
+    BluePrintCallback   BluePrintOnPause        {nullptr};
+    BluePrintCallback   BluePrintOnStop         {nullptr};
+    BluePrintCallback   BluePrintOnQuit         {nullptr};
+    BluePrintCallback   BluePrintOnReset        {nullptr};
+
+} BluePrintCallbackFunctions;
+
 struct BluePrintUI
 {
     BluePrintUI();
@@ -175,7 +190,8 @@ struct BluePrintUI
     void Finalize();
     bool Frame(bool child_window = false, bool show_node = true, bool bp_enabled = true);
     void SetStyle(enum BluePrintStyle style = BluePrintStyle::BP_Style_BluePrint);
-
+    void SetCallbacks(BluePrintCallbackFunctions callbacks);
+    
     ed::Config                      m_Config;
     ed::EditorContext*              m_Editor {nullptr};
     unique_ptr<Document>            m_Document {nullptr};
@@ -306,5 +322,8 @@ private:
     void                CreateNewDocument(ImVec2 size);
     void                CommitLinksToEditor();
     bool                ReadyToQuit {false};
+
+private:
+    BluePrintCallbackFunctions  m_CallBacks;
 };
 } // namespace BluePrint

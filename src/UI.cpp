@@ -727,6 +727,11 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
     m_Style = style;
 }
 
+void BluePrintUI::SetCallbacks(BluePrintCallbackFunctions callbacks)
+{
+    m_CallBacks = callbacks;
+}
+
 bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
 {
     bool done = false;
@@ -2182,9 +2187,7 @@ void BluePrintUI::HandleCreateAction()
             {
                 auto transaction = m_Document->BeginUndoTransaction("Create Link");
                 if (startPin->LinkTo(*endPin))
-                {
                     LOGI("[HandleCreateAction] %" PRI_pin " linked with %" PRI_pin, FMT_pin(startPin), FMT_pin(endPin));
-                }
                 else
                     transaction->Discard();
             }
@@ -2902,15 +2905,17 @@ void BluePrintUI::UpdateActions()
     auto hasRedo     = hasDocument && !m_Document->m_Redo.empty();
     auto isModified  = hasDocument && File_IsModified();
     auto entryNode = FindEntryPointNode();
+    auto exitNode = FindExitPointNode();
     bool hasBlueprint = true;
     bool hasEntryPoint = (entryNode != nullptr);
+    bool hasExitPoint = (exitNode != nullptr);
     bool isExecuting   = m_Document->m_Blueprint.CurrentNode() != nullptr;
     bool hasSelectedNode   = GetSelectedNodes(m_Document->m_Blueprint).size() > 0;
     bool hasSelectedLink   = GetSelectedLinks(m_Document->m_Blueprint).size() > 0;
     bool hasClipBoardNodes = m_ClipBoard.size() > 0;
     bool isThreadExecuting = m_Document->m_Blueprint.IsExecuting();
     bool isThreadPaused = m_Document->m_Blueprint.IsPaused();
-
+    bool isEditable = true;
     bool hasExportedLink = false;
     if (hasSelectedLink)
     {
@@ -2925,6 +2930,15 @@ void BluePrintUI::UpdateActions()
         }
     }
 
+    auto select_nodes = GetSelectedNodes(m_Document->m_Blueprint);
+    for (auto node : select_nodes)
+    {
+        if (node->GetTypeInfo().m_ID == EntryPointNode::GetStaticTypeInfo().m_ID)
+            isEditable = false;
+        if (node->GetTypeInfo().m_ID == ExitPointNode::GetStaticTypeInfo().m_ID)
+            isEditable = false;
+    }
+
     m_File_Open.SetEnabled(!isThreadExecuting);
     m_File_New.SetEnabled(!isThreadExecuting);
     m_File_Close.SetEnabled(hasDocument && !isThreadExecuting);
@@ -2932,11 +2946,11 @@ void BluePrintUI::UpdateActions()
     m_File_Save.SetEnabled(hasDocument && !isThreadExecuting);
     m_Edit_Undo.SetEnabled(hasUndo && (!isThreadExecuting || isThreadPaused));
     m_Edit_Redo.SetEnabled(hasRedo && (!isThreadExecuting || isThreadPaused));
-    m_Edit_Cut.SetEnabled(hasDocument && hasSelectedNode && (!isThreadExecuting || isThreadPaused));
-    m_Edit_Copy.SetEnabled(hasDocument && hasSelectedNode && (!isThreadExecuting || isThreadPaused));
-    m_Edit_Paste.SetEnabled(hasDocument && hasClipBoardNodes && (!isThreadExecuting || isThreadPaused));
-    m_Edit_Duplicate.SetEnabled(hasDocument && hasSelectedNode && (!isThreadExecuting || isThreadPaused));
-    m_Edit_Delete.SetEnabled(hasDocument && hasSelectedNode && (!isThreadExecuting || isThreadPaused));
+    m_Edit_Cut.SetEnabled(hasDocument && hasSelectedNode && (!isThreadExecuting || isThreadPaused) && isEditable);
+    m_Edit_Copy.SetEnabled(hasDocument && hasSelectedNode && (!isThreadExecuting || isThreadPaused) && isEditable);
+    m_Edit_Paste.SetEnabled(hasDocument && hasClipBoardNodes && (!isThreadExecuting || isThreadPaused) && isEditable);
+    m_Edit_Duplicate.SetEnabled(hasDocument && hasSelectedNode && (!isThreadExecuting || isThreadPaused) && isEditable);
+    m_Edit_Delete.SetEnabled(hasDocument && hasSelectedNode && (!isThreadExecuting || isThreadPaused) && isEditable);
     m_Edit_Unlink.SetEnabled(hasDocument && hasSelectedLink && !hasExportedLink && (!isThreadExecuting || isThreadPaused));
     m_Edit_Setting.SetEnabled(hasDocument && (!isThreadExecuting || isThreadPaused));
     m_View_NavigateBackward.SetEnabled(hasDocument && false);
