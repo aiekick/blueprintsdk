@@ -736,6 +736,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
     if (!child_window)
     {
         m_isChildWindow = false;
+        m_DebugOverlay->Enable(true);
         ImVec2 Canvas_size;
         ImGuiWindowFlags flags = ImGuiWindowFlags_None;
         ImGuiCond cond = ImGuiCond_Once;
@@ -791,6 +792,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
     else
     {
         m_isChildWindow = true;
+        m_DebugOverlay->Enable(false);
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
         ShowShortToolbar();
@@ -805,7 +807,6 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
             HandleDestroyAction();
             HandleContextMenuAction(true);
             ShowDialogs();
-            DrawInfoTooltip();
         }
         ed::End();
         FileDialogs();
@@ -1611,7 +1612,7 @@ void BluePrintUI::DrawNodes()
     }
     bool isThreadExecuting = m_Document->m_Blueprint.IsExecuting();
     bool isThreadPaused = m_Document->m_Blueprint.IsPaused();
-    if (isThreadExecuting && !isThreadPaused && m_DebugOverlay)
+    if (isThreadExecuting && !isThreadPaused && m_DebugOverlay && !m_isChildWindow)
     {
         g_Mutex.lock();
         m_Document->m_Blueprint.SetContextMonitor(m_DebugOverlay->GetContextMonitor());

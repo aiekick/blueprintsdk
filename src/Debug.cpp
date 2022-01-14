@@ -89,7 +89,7 @@ ContextMonitor* DebugOverlay::GetContextMonitor()
 
 void DebugOverlay::DrawNode(BluePrintUI* ui, const Node& node)
 {
-    if (nullptr == m_CurrentNode)
+    if (!m_Enable || nullptr == m_CurrentNode)
         return;
 
     auto isCurrentNode = (m_CurrentNode->m_ID == node.m_ID);
@@ -127,7 +127,7 @@ void DebugOverlay::DrawNode(BluePrintUI* ui, const Node& node)
 
 void DebugOverlay::DrawInputPin(BluePrintUI* ui, const Pin& pin)
 {
-    if (!m_Blueprint)
+    if (!m_Enable || !m_Blueprint)
         return;
     if (nullptr == m_CurrentNode)
         return;
@@ -190,7 +190,7 @@ void DebugOverlay::DrawInputPin(BluePrintUI* ui, const Pin& pin)
 
 void DebugOverlay::DrawOutputPin(BluePrintUI* ui, const Pin& pin)
 {
-    if (nullptr == m_CurrentNode)
+    if (!m_Enable || nullptr == m_CurrentNode)
         return;
 
     // Draw to layer over nodes

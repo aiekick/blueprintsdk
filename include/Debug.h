@@ -19,6 +19,7 @@ struct DebugOverlay:
     void Init(BP* blueprint);
     void Begin();
     void End();
+    void Enable(bool enable) { m_Enable = enable; };
 
     void DrawNode(BluePrintUI* ui, const Node& node);
     void DrawInputPin(BluePrintUI* ui, const Pin& pin);
@@ -33,6 +34,7 @@ private:
     void OnStepNext(Context& context) override;
     void OnStepCurrent(Context& context) override;
 
+    bool m_Enable {true};
     BP* m_Blueprint {nullptr};
     const Node* m_CurrentNode {nullptr};
     const Node* m_NextNode {nullptr};
