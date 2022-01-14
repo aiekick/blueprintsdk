@@ -2187,7 +2187,11 @@ void BluePrintUI::HandleCreateAction()
             {
                 auto transaction = m_Document->BeginUndoTransaction("Create Link");
                 if (startPin->LinkTo(*endPin))
+                {
                     LOGI("[HandleCreateAction] %" PRI_pin " linked with %" PRI_pin, FMT_pin(startPin), FMT_pin(endPin));
+                    if (m_CallBacks.BluePrintOnChanged)
+                        m_CallBacks.BluePrintOnChanged(BP_CB_Link);
+                }
                 else
                     transaction->Discard();
             }
@@ -2266,6 +2270,8 @@ void BluePrintUI::HandleDestroyAction()
                     LOGI("[HandleDestroyAction] %" PRI_pin " unlinked from %" PRI_pin, FMT_pin(startPin), FMT_pin(linkedPin));
                     startPin->Unlink();
                     ++brokenLinkCount;
+                    if (m_CallBacks.BluePrintOnChanged)
+                        m_CallBacks.BluePrintOnChanged(BP_CB_Unlink);
                 }
             }
         }

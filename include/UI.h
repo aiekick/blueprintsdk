@@ -168,6 +168,14 @@ struct NodeSettingDialog
 };
 # pragma endregion
 
+enum BluePrintCallBack:int 
+{
+    BP_CB_Unknown = -1,
+    BP_CB_Link,
+    BP_CB_Unlink,
+    BP_CB_Custom,
+};
+
 typedef int (*BluePrintCallback)(int type);
 typedef struct BluePrintCallbackFunctions
 {
