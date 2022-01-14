@@ -2752,6 +2752,19 @@ bool BluePrintUI::Blueprint_Run()
 }
 
 #ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
+bool BluePrintUI::Blueprint_IsValid()
+{
+    if (!m_Document)
+        return false;
+    if (!m_Document->m_Blueprint.IsOpened())
+        return false;
+    auto entryNode = FindEntryPointNode();
+    auto exitNode = FindExitPointNode();
+    if (!entryNode || !exitNode)
+        return false;
+    return true;
+}
+
 bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
 {
     if (!m_Document)

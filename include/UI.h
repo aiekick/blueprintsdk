@@ -265,6 +265,7 @@ public:
     bool Blueprint_Current();
     bool Blueprint_BreakPoint();
 #ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
+    bool Blueprint_IsValid();
     bool Blueprint_Exec(ImGui::ImMat input);
     bool Blueprint_GetResult(ImGui::ImMat& input, ImGui::ImMat& output);
     bool Blueprint_Run(ImGui::ImMat& input, ImGui::ImMat& output);
