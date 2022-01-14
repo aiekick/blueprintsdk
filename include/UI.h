@@ -174,6 +174,7 @@ enum BluePrintCallBack:int
     BP_CB_Link,
     BP_CB_Unlink,
     BP_CB_PARAM_CHANGED,
+    BP_CB_SETTING_CHANGED,
     BP_CB_Custom,
 };
 
@@ -333,7 +334,7 @@ private:
     void                CommitLinksToEditor();
     bool                ReadyToQuit {false};
 
-private:
+public:
     BluePrintCallbackFunctions  m_CallBacks;
     void *                      m_UserHandle {nullptr};
 };

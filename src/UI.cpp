@@ -297,6 +297,8 @@ void NodeSettingDialog::Show(BluePrintUI& UI)
             UI.m_Document->m_IsModified = true;
             ed::SetNodeChanged(node->m_ID);
             ImGui::CloseCurrentPopup();
+            if (UI.m_CallBacks.BluePrintOnChanged)
+                UI.m_CallBacks.BluePrintOnChanged(BP_CB_SETTING_CHANGED, UI.m_Document->m_Name, UI.m_UserHandle);
         }
         ImGui::EndPopup();
     }
