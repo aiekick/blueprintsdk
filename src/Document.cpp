@@ -21,6 +21,12 @@ static string SaveReasonFlagsToString(ed::SaveReasonFlags flags, std::string sep
         builder.appendf("Size%" PRI_sv, FMT_sv(separator));
     if (testFlag(ed::SaveReasonFlags::Selection))
         builder.appendf("Selection%" PRI_sv, FMT_sv(separator));
+    if (testFlag(ed::SaveReasonFlags::Node))
+        builder.appendf("Node%" PRI_sv, FMT_sv(separator));
+    if (testFlag(ed::SaveReasonFlags::Pin))
+        builder.appendf("Pin%" PRI_sv, FMT_sv(separator));
+    if (testFlag(ed::SaveReasonFlags::Link))
+        builder.appendf("Link%" PRI_sv, FMT_sv(separator));
     if (testFlag(ed::SaveReasonFlags::User))
         builder.appendf("User%" PRI_sv, FMT_sv(separator));
 
@@ -168,7 +174,7 @@ void Document::UndoTransaction::Commit(std::string name)
 
             if (need_undo)
             {
-                LOGV("[UndoTransaction] Commit: %" PRI_sv, FMT_sv(name));
+                //LOGV("[UndoTransaction] Commit: %" PRI_sv, FMT_sv(name));
                 m_Document->m_Undo.emplace_back(std::move(m_State));
                 m_Document->m_Redo.clear();
             }

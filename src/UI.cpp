@@ -2182,7 +2182,9 @@ void BluePrintUI::HandleCreateAction()
             {
                 auto transaction = m_Document->BeginUndoTransaction("Create Link");
                 if (startPin->LinkTo(*endPin))
+                {
                     LOGI("[HandleCreateAction] %" PRI_pin " linked with %" PRI_pin, FMT_pin(startPin), FMT_pin(endPin));
+                }
                 else
                     transaction->Discard();
             }
