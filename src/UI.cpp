@@ -727,9 +727,10 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
     m_Style = style;
 }
 
-void BluePrintUI::SetCallbacks(BluePrintCallbackFunctions callbacks)
+void BluePrintUI::SetCallbacks(BluePrintCallbackFunctions callbacks, void * handle)
 {
     m_CallBacks = callbacks;
+    m_UserHandle = handle;
 }
 
 bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
@@ -1539,7 +1540,11 @@ void BluePrintUI::DrawNodes()
             float zoom = ed::GetCurrentZoom();
             ImVec2 origin = ed::GetCurrentOrigin();
             if (node->DrawCustomLayout(ImGui::GetCurrentContext(), zoom, origin))
+            {
                 ed::SetNodeChanged(node->m_ID);
+                if (m_CallBacks.BluePrintOnChanged)
+                    m_CallBacks.BluePrintOnChanged(BP_CB_PARAM_CHANGED, m_Document->m_Name, m_UserHandle);
+            }
         }
         layout.SetColumnAlignment(1.0f);
         layout.NextColumn();
@@ -2190,7 +2195,7 @@ void BluePrintUI::HandleCreateAction()
                 {
                     LOGI("[HandleCreateAction] %" PRI_pin " linked with %" PRI_pin, FMT_pin(startPin), FMT_pin(endPin));
                     if (m_CallBacks.BluePrintOnChanged)
-                        m_CallBacks.BluePrintOnChanged(BP_CB_Link);
+                        m_CallBacks.BluePrintOnChanged(BP_CB_Link, m_Document->m_Name, m_UserHandle);
                 }
                 else
                     transaction->Discard();
@@ -2271,7 +2276,7 @@ void BluePrintUI::HandleDestroyAction()
                     startPin->Unlink();
                     ++brokenLinkCount;
                     if (m_CallBacks.BluePrintOnChanged)
-                        m_CallBacks.BluePrintOnChanged(BP_CB_Unlink);
+                        m_CallBacks.BluePrintOnChanged(BP_CB_Unlink, m_Document->m_Name, m_UserHandle);
                 }
             }
         }
@@ -2478,11 +2483,12 @@ bool BluePrintUI::File_New()
     m_Document->m_Blueprint.Clear();
     ed::NavigateToOrigin();
     CreateNewDocument(ed::GetViewSize());
+    m_Document->m_Name = "NONAMED";
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
-bool BluePrintUI::File_New(imgui_json::value bp, ImVec2 size)
+bool BluePrintUI::File_New(imgui_json::value bp, ImVec2 size, std::string name)
 {
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
@@ -2498,6 +2504,10 @@ bool BluePrintUI::File_New(imgui_json::value bp, ImVec2 size)
         m_Document->OnMakeCurrent();
         View_ZoomToContent();
     }
+    if (name.empty())
+        m_Document->m_Name = "NONAMED";
+    else
+        m_Document->m_Name = name;
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }

@@ -173,10 +173,11 @@ enum BluePrintCallBack:int
     BP_CB_Unknown = -1,
     BP_CB_Link,
     BP_CB_Unlink,
+    BP_CB_PARAM_CHANGED,
     BP_CB_Custom,
 };
 
-typedef int (*BluePrintCallback)(int type);
+typedef int (*BluePrintCallback)(int type, std::string name, void* handle);
 typedef struct BluePrintCallbackFunctions
 {
     BluePrintCallback   BluePrintOnInitialized  {nullptr};
@@ -198,7 +199,7 @@ struct BluePrintUI
     void Finalize();
     bool Frame(bool child_window = false, bool show_node = true, bool bp_enabled = true);
     void SetStyle(enum BluePrintStyle style = BluePrintStyle::BP_Style_BluePrint);
-    void SetCallbacks(BluePrintCallbackFunctions callbacks);
+    void SetCallbacks(BluePrintCallbackFunctions callbacks, void * handle);
     
     ed::Config                      m_Config;
     ed::EditorContext*              m_Editor {nullptr};
@@ -242,7 +243,7 @@ public:
     bool File_Import();
     bool File_Export(Node * group_node);
     bool File_New();
-    bool File_New(imgui_json::value bp, ImVec2 size);
+    bool File_New(imgui_json::value bp, ImVec2 size, std::string name);
     bool File_SaveAsEx(std::string path);
     bool File_SaveAs();
     bool File_Save();
@@ -334,5 +335,6 @@ private:
 
 private:
     BluePrintCallbackFunctions  m_CallBacks;
+    void *                      m_UserHandle {nullptr};
 };
 } // namespace BluePrint
