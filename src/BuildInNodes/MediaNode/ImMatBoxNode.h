@@ -17,7 +17,7 @@ struct BoxBlurNode final : Node
 
     ~BoxBlurNode()
     {
-        if (m_blur) { delete m_blur; m_blur = nullptr; }
+        if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
 
     void Reset(Context& context) override
@@ -37,30 +37,31 @@ struct BoxBlurNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (!mat_in.empty())
         {
+            int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
             if (!m_bEnabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
             }
-            if (!m_blur)
+            if (!m_filter || gpu != m_device)
             {
-                int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-                if (m_blur) { delete m_blur; m_blur = nullptr; }
-                m_blur = new ImGui::BoxBlur_vulkan(gpu);
+                if (m_filter) { delete m_filter; m_filter = nullptr; }
+                m_filter = new ImGui::BoxBlur_vulkan(gpu);
             }
-            if (!m_blur)
+            if (!m_filter)
             {
                 return {};
             }
-            m_blur->SetParam(m_Size, m_Size);
+            m_device = gpu;
+            m_filter->SetParam(m_Size, m_Size);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             if (mat_in.device == IM_DD_VULKAN)
             {
                 ImGui::VkMat in_RGB = mat_in;
-                m_blur->filter(in_RGB, im_RGB);
+                m_filter->filter(in_RGB, im_RGB);
                 for (int i = 1; i < m_iteration; i++)
                 {
-                    m_blur->filter(im_RGB, im_RGB);
+                    m_filter->filter(im_RGB, im_RGB);
                 }
                 im_RGB.time_stamp = mat_in.time_stamp;
                 im_RGB.rate = mat_in.rate;
@@ -69,10 +70,10 @@ struct BoxBlurNode final : Node
             }
             else if (mat_in.device == IM_DD_CPU)
             {
-                m_blur->filter(mat_in, im_RGB);
+                m_filter->filter(mat_in, im_RGB);
                 for (int i = 1; i < m_iteration; i++)
                 {
-                    m_blur->filter(im_RGB, im_RGB);
+                    m_filter->filter(im_RGB, im_RGB);
                 }
                 im_RGB.time_stamp = mat_in.time_stamp;
                 im_RGB.rate = mat_in.rate;
@@ -176,10 +177,11 @@ struct BoxBlurNode final : Node
 
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
-    bool m_bEnabled      {true};
-    ImGui::BoxBlur_vulkan * m_blur   {nullptr};
-    int m_Size {3};
-    int m_iteration {1};
+    int m_device        {-1};
+    bool m_bEnabled     {true};
+    int m_Size          {3};
+    int m_iteration     {1};
+    ImGui::BoxBlur_vulkan * m_filter   {nullptr};
 };
 } // namespace BluePrint
 #endif // IMGUI_VULKAN_SHADER

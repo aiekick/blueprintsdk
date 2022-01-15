@@ -33,14 +33,14 @@ struct DeinterlaceNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (!mat_in.empty())
         {
+            int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
             if (!m_bEnabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
             }
-            if (!m_filter)
+            if (!m_filter || gpu != m_device)
             {
-                int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
                 if (m_filter) { delete m_filter; m_filter = nullptr; }
                 m_filter = new ImGui::DeInterlace_vulkan(gpu);
             }
@@ -48,6 +48,7 @@ struct DeinterlaceNode final : Node
             {
                 return {};
             }
+            m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             if (mat_in.device == IM_DD_VULKAN)
             {
@@ -139,7 +140,8 @@ struct DeinterlaceNode final : Node
 
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
-    bool m_bEnabled      {true};
+    int m_device            {-1};
+    bool m_bEnabled         {true};
     ImGui::DeInterlace_vulkan * m_filter {nullptr};
 };
 } //namespace BluePrint

@@ -33,17 +33,17 @@ struct HQDN3DNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (!mat_in.empty())
         {
+            int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
             if (!m_bEnabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
             }
-            if (!m_filter || 
+            if (!m_filter || gpu != m_device ||
                 m_filter->in_width != mat_in.w || 
                 m_filter->in_height != mat_in.h ||
                 m_filter->in_channels != mat_in.c)
             {
-                int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
                 if (m_filter) { delete m_filter; m_filter = nullptr; }
                 m_filter = new ImGui::HQDN3D_vulkan(mat_in.w, mat_in.h, mat_in.c, gpu);
             }
@@ -51,6 +51,7 @@ struct HQDN3DNode final : Node
             {
                 return {};
             }
+            m_device = gpu;
             m_filter->SetParam(m_lum_spac, m_chrom_spac, m_lum_tmp, m_chrom_tmp);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             if (mat_in.device == IM_DD_VULKAN)
@@ -186,7 +187,8 @@ struct HQDN3DNode final : Node
 
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
-    bool m_bEnabled      {true};
+    int m_device        {-1};
+    bool m_bEnabled     {true};
     float m_lum_spac    {6.0};
     float m_chrom_spac  {4.0};
     float m_lum_tmp     {4.5};
