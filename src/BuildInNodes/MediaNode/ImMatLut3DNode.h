@@ -24,8 +24,6 @@ struct Lut3DNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-        //if (m_filter && m_setting_changed) { delete m_filter; m_filter = nullptr; }
-        //m_setting_changed = false;
     }
 
     void OnStop(Context& context) override
@@ -37,11 +35,6 @@ struct Lut3DNode final : Node
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
-        if (entryPoint.m_ID == m_IReset.m_ID)
-        {
-            Reset(context);
-            return m_OReset;
-        }
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (!mat_in.empty())
         {
@@ -59,7 +52,6 @@ struct Lut3DNode final : Node
                 else if (!m_path.empty())
                     m_filter = new ImGui::LUT3D_vulkan(m_path, m_interpolation_mode, gpu);
                 m_setting_changed = false;
-                return m_OReset;
             }
             if (!m_filter)
             {
@@ -260,15 +252,12 @@ struct Lut3DNode final : Node
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
 
     FlowPin   m_Enter   = { this, "Enter" };
-    
     FlowPin   m_Exit    = { this, "Exit" };
-    FlowPin   m_IReset  = { this, "Reset In" };
-    FlowPin   m_OReset  = { this, "Reset Out" };
     MatPin    m_MatIn   = { this, "In" };
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[3] = { &m_Enter, &m_IReset, &m_MatIn };
-    Pin* m_OutputPins[3] = { &m_Exit, &m_OReset, &m_MatOut };
+    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:
     string  m_path;

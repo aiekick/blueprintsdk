@@ -19,7 +19,6 @@ struct HQDN3DNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-        //if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
 
     void OnStop(Context& context) override
@@ -31,11 +30,6 @@ struct HQDN3DNode final : Node
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
-        if (entryPoint.m_ID == m_IReset.m_ID)
-        {
-            Reset(context);
-            return m_OReset;
-        }
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (!mat_in.empty())
         {
@@ -183,14 +177,12 @@ struct HQDN3DNode final : Node
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
 
     FlowPin   m_Enter   = { this, "Enter" };
-    FlowPin   m_IReset  = { this, "Reset In" };
     FlowPin   m_Exit    = { this, "Exit" };
-    FlowPin   m_OReset  = { this, "Reset Out" };
     MatPin    m_MatIn   = { this, "In" };
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[3] = { &m_Enter, &m_IReset, &m_MatIn };
-    Pin* m_OutputPins[3] = { &m_Exit, &m_OReset, &m_MatOut };
+    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
