@@ -14,6 +14,7 @@ struct EntryPointNode final : Node
     }
 
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
+    Pin* GetAutoLinkOutputPin() override { return &m_MatOut; }
 
     FlowPin m_Exit = { this, "Start" };
     MatPin  m_MatOut = { this, "Out" };

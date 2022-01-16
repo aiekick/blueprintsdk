@@ -173,9 +173,18 @@ enum BluePrintCallBack:int
     BP_CB_Unknown = -1,
     BP_CB_Link,
     BP_CB_Unlink,
+    BP_CB_NODE_DELETED,
     BP_CB_PARAM_CHANGED,
     BP_CB_SETTING_CHANGED,
     BP_CB_Custom,
+};
+
+enum BluePrintCallBackReturn:int 
+{
+    BP_CBR_Unknown = -1,
+    BP_CBR_Nothing,
+    BP_CBR_AutoLink,
+    BP_CBR_Custom,
 };
 
 typedef int (*BluePrintCallback)(int type, std::string name, void* handle);

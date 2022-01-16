@@ -298,7 +298,9 @@ void NodeSettingDialog::Show(BluePrintUI& UI)
             ed::SetNodeChanged(node->m_ID);
             ImGui::CloseCurrentPopup();
             if (UI.m_CallBacks.BluePrintOnChanged)
+            {
                 UI.m_CallBacks.BluePrintOnChanged(BP_CB_SETTING_CHANGED, UI.m_Document->m_Name, UI.m_UserHandle);
+            }
         }
         ImGui::EndPopup();
     }
@@ -1545,7 +1547,9 @@ void BluePrintUI::DrawNodes()
             {
                 ed::SetNodeChanged(node->m_ID);
                 if (m_CallBacks.BluePrintOnChanged)
+                {
                     m_CallBacks.BluePrintOnChanged(BP_CB_PARAM_CHANGED, m_Document->m_Name, m_UserHandle);
+                }
             }
         }
         layout.SetColumnAlignment(1.0f);
@@ -2197,7 +2201,18 @@ void BluePrintUI::HandleCreateAction()
                 {
                     LOGI("[HandleCreateAction] %" PRI_pin " linked with %" PRI_pin, FMT_pin(startPin), FMT_pin(endPin));
                     if (m_CallBacks.BluePrintOnChanged)
-                        m_CallBacks.BluePrintOnChanged(BP_CB_Link, m_Document->m_Name, m_UserHandle);
+                    {
+                        auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_Link, m_Document->m_Name, m_UserHandle);
+                        if (startPin->m_Type == PinType::Flow && ret == BP_CBR_AutoLink)
+                        {
+                            auto out_pin = startPin->m_Node->GetAutoLinkOutputPin();
+                            auto in_pin = endPin->m_Node->GetAutoLinkInputPin();
+                            if (in_pin && out_pin)
+                            {
+                                in_pin->LinkTo(*out_pin);
+                            }
+                        }
+                    }
                 }
                 else
                     transaction->Discard();
@@ -2277,8 +2292,16 @@ void BluePrintUI::HandleDestroyAction()
                     LOGI("[HandleDestroyAction] %" PRI_pin " unlinked from %" PRI_pin, FMT_pin(startPin), FMT_pin(linkedPin));
                     startPin->Unlink();
                     ++brokenLinkCount;
+                    /*
                     if (m_CallBacks.BluePrintOnChanged)
-                        m_CallBacks.BluePrintOnChanged(BP_CB_Unlink, m_Document->m_Name, m_UserHandle);
+                    {
+                        auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_Unlink, m_Document->m_Name, m_UserHandle);
+                        if (startPin->m_Type == PinType::Flow && ret == BP_CBR_AutoLink)
+                        {
+                            // TODO:: link data pin
+                        }
+                    }
+                    */
                 }
             }
         }
@@ -2288,6 +2311,14 @@ void BluePrintUI::HandleDestroyAction()
     {
         LOGI("[HandleDestroyAction] %" PRI_node, FMT_node(node));
         m_Document->m_Blueprint.DeleteNode(node);
+        if (m_CallBacks.BluePrintOnChanged)
+        {
+            auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_NODE_DELETED, m_Document->m_Name, m_UserHandle);
+            if (ret == BP_CBR_AutoLink)
+            {
+                // TODO:: link data pin
+            }
+        }
     }
     if (!nodesToDelete.empty() || brokenLinkCount)
     {
@@ -2317,7 +2348,7 @@ void BluePrintUI::HandleContextMenuAction(bool create_only)
     }
 
     ed::NodeId contextNodeId;
-    if (ed::ShowNodeContextMenu(&contextNodeId))
+    if (!create_only && ed::ShowNodeContextMenu(&contextNodeId))
     {
         auto node = m_Document->m_Blueprint.FindNode(static_cast<uint32_t>(contextNodeId.Get()));
 

@@ -142,6 +142,8 @@ struct CasNode final : Node
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
+    Pin* GetAutoLinkInputPin() override { return &m_MatIn; }
+    Pin* GetAutoLinkOutputPin() override { return &m_MatOut; }
 
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
