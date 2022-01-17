@@ -190,8 +190,10 @@ struct IMGUI_API Node
 
     virtual span<Pin*>      GetInputPins() { return {}; } // Returns list of input pins of the node
     virtual span<Pin*>      GetOutputPins() { return {}; } // Returns list of output pins of the node
-    virtual Pin*            GetAutoLinkInputPin() { return nullptr; } // Return auto link data pin which as input
-    virtual Pin*            GetAutoLinkOutputPin() { return nullptr; } // Return auto link data pin which as output
+    virtual Pin*            GetAutoLinkInputFlowPin() { return nullptr; } // Return auto link flow pin which as input
+    virtual Pin*            GetAutoLinkOutputFlowPin() { return nullptr; } // Return auto link flow pin which as output
+    virtual Pin*            GetAutoLinkInputDataPin() { return nullptr; } // Return auto link data pin which as input
+    virtual Pin*            GetAutoLinkOutputDataPin() { return nullptr; } // Return auto link data pin which as output
 
     virtual void            OnNodeDelete(Node * node = nullptr) {};
 

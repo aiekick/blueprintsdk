@@ -2205,8 +2205,8 @@ void BluePrintUI::HandleCreateAction()
                         auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_Link, m_Document->m_Name, m_UserHandle);
                         if (startPin->m_Type == PinType::Flow && ret == BP_CBR_AutoLink)
                         {
-                            auto out_pin = startPin->m_Node->GetAutoLinkOutputPin();
-                            auto in_pin = endPin->m_Node->GetAutoLinkInputPin();
+                            auto out_pin = startPin->m_Node->GetAutoLinkOutputDataPin();
+                            auto in_pin = endPin->m_Node->GetAutoLinkInputDataPin();
                             if (in_pin && out_pin)
                             {
                                 in_pin->LinkTo(*out_pin);
@@ -2272,6 +2272,15 @@ void BluePrintUI::HandleDestroyAction()
         {
             // Infor Node to handle delete before serv links
             node->OnNodeDelete();
+            if (m_CallBacks.BluePrintOnChanged)
+            {
+                auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_NODE_DELETED, m_Document->m_Name, m_UserHandle);
+                if (ret == BP_CBR_AutoLink)
+                {
+                    // first get input flow pin link status
+
+                }
+            }
             // Queue nodes for deletion. We need to serve links first to avoid crash.
             nodesToDelete.push_back(node);
         }
@@ -2311,14 +2320,6 @@ void BluePrintUI::HandleDestroyAction()
     {
         LOGI("[HandleDestroyAction] %" PRI_node, FMT_node(node));
         m_Document->m_Blueprint.DeleteNode(node);
-        if (m_CallBacks.BluePrintOnChanged)
-        {
-            auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_NODE_DELETED, m_Document->m_Name, m_UserHandle);
-            if (ret == BP_CBR_AutoLink)
-            {
-                // TODO:: link data pin
-            }
-        }
     }
     if (!nodesToDelete.empty() || brokenLinkCount)
     {
