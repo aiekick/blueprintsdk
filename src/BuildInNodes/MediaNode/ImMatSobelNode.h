@@ -11,8 +11,8 @@ namespace BluePrint
 {
 struct SobelNode final : Node
 {
-    BP_NODE(SobelNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
-    SobelNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Image Sobel Edge"; }
+    BP_NODE_WITH_NAME(SobelNode, "Sobel Edge", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    SobelNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Sobel Edge"; }
 
     ~SobelNode()
     {

@@ -9,8 +9,8 @@ namespace BluePrint
 {
 struct USMNode final : Node
 {
-    BP_NODE(USMNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
-    USMNode(BP& blueprint): Node(blueprint) { m_Name = "Mat USM Sharp"; }
+    BP_NODE_WITH_NAME(USMNode, "USM Sharpen", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    USMNode(BP& blueprint): Node(blueprint) { m_Name = "Mat USM Sharpen"; }
     ~USMNode()
     {
         if (m_filter) { delete m_filter; m_filter = nullptr; }

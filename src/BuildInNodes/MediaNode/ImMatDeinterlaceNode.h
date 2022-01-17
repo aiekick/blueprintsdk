@@ -9,7 +9,7 @@ namespace BluePrint
 {
 struct DeinterlaceNode final : Node
 {
-    BP_NODE(DeinterlaceNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(DeinterlaceNode, "Deinterlace", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
     DeinterlaceNode(BP& blueprint): Node(blueprint) { m_Name = "Mat DeInterlace"; }
     ~DeinterlaceNode()
     {

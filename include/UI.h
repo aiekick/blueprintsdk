@@ -269,6 +269,7 @@ public:
     bool Edit_Delete();
     bool Edit_Unlink();
     bool Edit_Setting();
+    bool Edit_Insert(ID_TYPE id);
 
     bool View_ShowFlow();
     bool View_ShowMeters();

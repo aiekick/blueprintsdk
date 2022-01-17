@@ -14,7 +14,7 @@ namespace BluePrint
 {
 struct Lut3DNode final : Node
 {
-    BP_NODE(Lut3DNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(Lut3DNode, "Lut 3D", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
     Lut3DNode(BP& blueprint): Node(blueprint) { m_Name = "Lut3D"; }
     ~Lut3DNode()
     {

@@ -451,6 +451,27 @@ private:
         return GetStaticTypeInfo(); \
     }
 
+# define BP_NODE_WITH_NAME(type, name, node_version, node_type, node_style, node_catalog) \
+    static ::BluePrint::NodeTypeInfo GetStaticTypeInfo() \
+    { \
+        return \
+        { \
+            fnv1a_hash_32(#type + string("*") + node_catalog), \
+            #type, \
+            name, \
+            node_version, \
+            node_type, \
+            node_style, \
+            node_catalog, \
+            [](::BluePrint::BP& blueprint) -> ::BluePrint::Node* { return new type(blueprint); } \
+        }; \
+    } \
+    \
+    ::BluePrint::NodeTypeInfo GetTypeInfo() const override \
+    { \
+        return GetStaticTypeInfo(); \
+    }
+
 #if defined(_WIN32)
 #define EXPORT __declspec(dllexport)
 #else

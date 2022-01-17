@@ -2776,6 +2776,20 @@ bool BluePrintUI::Edit_Setting()
     return false; // TODO::Dicky
 }
 
+bool BluePrintUI::Edit_Insert(ID_TYPE id)
+{
+    if (!Blueprint_IsValid())
+        return false;
+    ed::SetCurrentEditor(m_Editor);
+    ed::ClearSelection();
+    auto new_node = m_Document->m_Blueprint.CreateNode(id);
+    if (!new_node)
+        return false;
+    ed::SetNodePosition(new_node->m_ID, ImVec2(40, 80));
+    ed::SelectNode(new_node->m_ID, true);
+    return true;
+}
+
 bool BluePrintUI::View_ShowFlow()
 {
     if (!m_Document)

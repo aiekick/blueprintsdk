@@ -10,7 +10,7 @@ namespace BluePrint
 {
 struct AlmNode final : Node
 {
-    BP_NODE(AlmNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(AlmNode, "ALM Enhancement", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
     AlmNode(BP& blueprint): Node(blueprint) { m_Name = "Mat ALM"; }
     ~AlmNode()
     {

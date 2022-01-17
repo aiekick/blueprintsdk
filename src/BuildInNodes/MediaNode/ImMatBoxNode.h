@@ -12,8 +12,8 @@ namespace BluePrint
 {
 struct BoxBlurNode final : Node
 {
-    BP_NODE(BoxBlurNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
-    BoxBlurNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Image Box Blur"; }
+    BP_NODE_WITH_NAME(BoxBlurNode, "Box Blur", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BoxBlurNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Box Blur"; }
 
     ~BoxBlurNode()
     {
