@@ -246,7 +246,7 @@ struct ClipNode
     bool            m_NeedOverlayLogger {false};
 };
 
-struct NodeRegistry
+struct IMGUI_API NodeRegistry
 {
     NodeRegistry();
     ~NodeRegistry();

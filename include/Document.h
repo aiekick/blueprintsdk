@@ -14,7 +14,7 @@ using namespace imgui_logger;
 namespace ed = ax::NodeEditor;
 namespace BluePrint
 {
-struct Document
+struct IMGUI_API Document
 {
     struct DocumentState
     {
