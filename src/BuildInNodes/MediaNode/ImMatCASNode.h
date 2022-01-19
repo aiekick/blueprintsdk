@@ -93,8 +93,8 @@ struct CasNode final : Node
         bool check = m_bEnabled;
         float _strength = m_strength;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(300, 8));
-        ImGui::PushItemWidth(300);
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("CAS");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);

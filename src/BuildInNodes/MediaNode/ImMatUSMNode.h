@@ -95,8 +95,8 @@ struct USMNode final : Node
         float _sigma = m_sigma;
         float _amount = m_amount;
         float _threshold = m_threshold;
-        ImGui::Dummy(ImVec2(300, 8));
-        ImGui::PushItemWidth(300);
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("USM");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);

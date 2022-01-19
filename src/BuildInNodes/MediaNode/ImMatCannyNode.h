@@ -95,8 +95,8 @@ struct CannyNode final : Node
         int _blurRadius = m_blurRadius;
         float _minThreshold = m_minThreshold;
         float _maxThreshold = m_maxThreshold;
-        ImGui::Dummy(ImVec2(300, 8));
-        ImGui::PushItemWidth(300);
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Canny");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);

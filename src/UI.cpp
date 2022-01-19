@@ -159,7 +159,8 @@ void NodeContextMenu::Show(BluePrintUI& UI)
     //auto blueprint = &UI.m_Document->m_Blueprint;
     auto storage = ImGui::GetStateStorage();
     auto node = reinterpret_cast<Node*>(storage->GetVoidPtr(ImGui::GetID("##node-context-menu-node")));
-
+    if (!node)
+        return;
     ed::ClearSelection();
     ed::SelectNode(node->m_ID);
     auto menuAction = [](Action& action)
@@ -209,9 +210,11 @@ void PinContextMenu::PinContextMenu::Show(BluePrintUI& UI)
     if (!ImGui::IsPopupOpen("##pin-context-menu"))
         return;
 
-    /*
     auto storage = ImGui::GetStateStorage();
     auto pin = reinterpret_cast<Pin*>(storage->GetVoidPtr(ImGui::GetID("##pin-context-menu-pin")));
+    if (!pin)
+        return;
+    /*
     if (ImGui::BeginPopup("##pin-context-menu"))
     {
         ImGui::Bullet();
@@ -246,7 +249,6 @@ void LinkContextMenu::Show(BluePrintUI& UI)
     BP& blueprint = UI.m_Document->m_Blueprint;
     auto storage = ImGui::GetStateStorage();
     auto pin = reinterpret_cast<Pin*>(storage->GetVoidPtr(ImGui::GetID("##link-context-menu-pin")));
-
     if (ImGui::BeginPopup("##link-context-menu"))
     {
         if (ImGui::MenuItem("Break Link"))
@@ -284,6 +286,8 @@ void NodeSettingDialog::Show(BluePrintUI& UI)
     
     auto storage = ImGui::GetStateStorage();
     auto node = reinterpret_cast<Node*>(storage->GetVoidPtr(ImGui::GetID("##setting-node")));
+    if (!node)
+        return;
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImVec2 center = ImGui::GetWindowViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
@@ -323,6 +327,8 @@ void NodeDeleteDialog::Show(BluePrintUI& UI)
     
     auto storage = ImGui::GetStateStorage();
     auto node = reinterpret_cast<Node*>(storage->GetVoidPtr(ImGui::GetID("##delete-node")));
+    if (!node)
+        return;
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImVec2 center = ImGui::GetWindowViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
@@ -346,8 +352,7 @@ void NodeDeleteDialog::Show(BluePrintUI& UI)
 
 void NodeCreateDialog::Open(Pin* fromPin)
 {
-    auto storage = ImGui::GetStateStorage();
-    storage->SetVoidPtr(ImGui::GetID("##create_node_pin"), fromPin);
+    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##create_node_pin"), fromPin);
     ImGui::OpenPopup("##create_node");
 }
 
@@ -2575,6 +2580,14 @@ bool BluePrintUI::File_New(imgui_json::value bp, ImVec2 size, std::string name)
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
     m_Document->m_Blueprint.Clear();
+    // clean StateStorage
+    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##node-context-menu-node"), nullptr);
+    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##pin-context-menu-pin"), nullptr);
+    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##link-context-menu-pin"), nullptr);
+    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##setting-node"), nullptr);
+    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##delete-node"), nullptr);
+    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##create_node_pin"), nullptr);
+
     if (bp.is_object())
     {
         m_Document->Deserialize(bp, *m_Document);

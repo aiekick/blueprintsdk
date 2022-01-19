@@ -92,8 +92,8 @@ struct DeinterlaceNode final : Node
         bool changed = false;
         bool check = m_bEnabled;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(300, 8));
-        ImGui::PushItemWidth(300);
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Interlace");
         return false;

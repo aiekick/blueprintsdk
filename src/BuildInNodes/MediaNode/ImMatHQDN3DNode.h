@@ -100,8 +100,8 @@ struct HQDN3DNode final : Node
         float _lum_tmp = m_lum_tmp;
         float _chrom_tmp = m_chrom_tmp;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(300, 8));
-        ImGui::PushItemWidth(300);
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("HQDN3D");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);

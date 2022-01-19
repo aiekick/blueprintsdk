@@ -97,8 +97,8 @@ struct AlmNode final : Node
         float _bias = m_bias;
         float _gamma = m_gamma;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(300, 8));
-        ImGui::PushItemWidth(300);
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("ALM");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);

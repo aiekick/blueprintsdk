@@ -98,8 +98,8 @@ struct BilateralNode final : Node
         int _ksize = m_ksize;
         float _sigma_spatial = m_sigma_spatial;
         float _sigma_color = m_sigma_color;
-        ImGui::Dummy(ImVec2(300, 8));
-        ImGui::PushItemWidth(300);
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Bilateral");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
