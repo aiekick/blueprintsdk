@@ -2887,6 +2887,8 @@ bool BluePrintUI::Blueprint_IsValid()
     auto exitNode = FindExitPointNode();
     if (!entryNode || !exitNode)
         return false;
+    if (!entryNode->m_ID || !exitNode->m_ID)
+        return false;
     return true;
 }
 
@@ -2911,14 +2913,10 @@ bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
 
 bool BluePrintUI::Blueprint_Run(ImGui::ImMat& input, ImGui::ImMat& output)
 {
-    if (!m_Document)
-        return false;
-    if (!m_Document->m_Blueprint.IsOpened())
+    if (!Blueprint_IsValid())
         return false;
     auto entryNode = FindEntryPointNode();
     auto exitNode = FindExitPointNode();
-    if (!entryNode || !exitNode)
-        return false;
     entryNode->m_MatOut.SetValue(input);
     auto result = m_Document->m_Blueprint.Run(*entryNode);
     if (result == StepResult::Done)
