@@ -238,6 +238,7 @@ private:
 
 public:
     void    UpdateActions();
+    void    CleanStateStorage();
     Node*   ShowNewNodeMenu(ImVec2 popupPosition = {});
     void    ShowStyleEditor(bool* show = nullptr);
     void    ShowToolbar(bool* show = nullptr);
@@ -253,7 +254,7 @@ public:
     bool File_Import();
     bool File_Export(Node * group_node);
     bool File_New();
-    bool File_New(imgui_json::value bp, ImVec2 size, std::string name);
+    bool File_New(imgui_json::value& bp, ImVec2 size, std::string name);
     bool File_SaveAsEx(std::string path);
     bool File_SaveAs();
     bool File_Save();

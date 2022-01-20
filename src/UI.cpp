@@ -136,6 +136,7 @@ void ContextMenu::Show(BluePrintUI& UI)
         ImGui::Separator();
         if (ImGui::BeginMenu(ICON_NEW_NODE " Add Node"))
         {
+            UI.CleanStateStorage();
             UI.ShowNewNodeMenu(popupPosition);
             ImGui::EndMenu();
         }
@@ -2395,7 +2396,10 @@ void BluePrintUI::HandleContextMenuAction(bool create_only)
         ed::Suspend();
         LOGI("[HandleContextMenuAction] Show Background Context Menu");
         if (create_only)
+        {
+            CleanStateStorage();
             ImGui::OpenPopup("##create_node");
+        }
         else
             m_ContextMenu.Open();
         ed::Resume();
@@ -2495,6 +2499,17 @@ ExitPointNode* BluePrintUI::FindExitPointNode()
     return nullptr;
 }
 
+void BluePrintUI::CleanStateStorage()
+{
+    auto storage = ImGui::GetStateStorage();
+    storage->SetVoidPtr(ImGui::GetID("##node-context-menu-node"), nullptr);
+    storage->SetVoidPtr(ImGui::GetID("##pin-context-menu-pin"), nullptr);
+    storage->SetVoidPtr(ImGui::GetID("##link-context-menu-pin"), nullptr);
+    storage->SetVoidPtr(ImGui::GetID("##setting-node"), nullptr);
+    storage->SetVoidPtr(ImGui::GetID("##delete-node"), nullptr);
+    storage->SetVoidPtr(ImGui::GetID("##create_node_pin"), nullptr);
+}
+
 bool BluePrintUI::File_Open(std::string path, string* error)
 {
     if (File_IsOpen())
@@ -2568,6 +2583,7 @@ bool BluePrintUI::File_New()
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
     m_Document->m_Blueprint.Clear();
+    CleanStateStorage();
     ed::NavigateToOrigin();
     CreateNewDocument(ed::GetViewSize());
     m_Document->m_Name = "NONAMED";
@@ -2575,29 +2591,33 @@ bool BluePrintUI::File_New()
     return true;
 }
 
-bool BluePrintUI::File_New(imgui_json::value bp, ImVec2 size, std::string name)
+bool BluePrintUI::File_New(imgui_json::value& bp, ImVec2 size, std::string name)
 {
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
     m_Document->m_Blueprint.Clear();
-    // clean StateStorage
-    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##node-context-menu-node"), nullptr);
-    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##pin-context-menu-pin"), nullptr);
-    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##link-context-menu-pin"), nullptr);
-    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##setting-node"), nullptr);
-    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##delete-node"), nullptr);
-    ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##create_node_pin"), nullptr);
-
+    CleanStateStorage();
     if (bp.is_object())
     {
-        m_Document->Deserialize(bp, *m_Document);
-        m_Document->OnMakeCurrent();
+        if (m_Document->Deserialize(bp, *m_Document) != BP_ERR_NONE)
+        {
+            // TODO::Dicky if node load failed, may not CreateNewDocument
+            CreateNewDocument(size);
+            m_Document->OnMakeCurrent();
+            View_ZoomToContent();
+            bp = m_Document->Serialize();
+        }
+        else
+        {
+            m_Document->OnMakeCurrent();
+        }
     }
     else
     {
         CreateNewDocument(size);
         m_Document->OnMakeCurrent();
         View_ZoomToContent();
+        bp = m_Document->Serialize();
     }
     if (name.empty())
         m_Document->m_Name = "NONAMED";
