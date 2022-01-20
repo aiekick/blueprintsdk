@@ -122,6 +122,7 @@ NodeRegistry::NodeRegistry()
         BoxBlurNode::GetStaticTypeInfo(),
         CannyNode::GetStaticTypeInfo(),
         CasNode::GetStaticTypeInfo(),
+        ChromaKeyNode::GetStaticTypeInfo(),
         ColorInvertNode::GetStaticTypeInfo(),
         DeBandNode::GetStaticTypeInfo(),
         DeinterlaceNode::GetStaticTypeInfo(),
