@@ -2811,8 +2811,10 @@ bool BluePrintUI::Edit_Setting()
 
 bool BluePrintUI::Edit_Insert(ID_TYPE id)
 {
+#ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
     if (!Blueprint_IsValid())
         return false;
+#endif
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
     auto new_node = m_Document->m_Blueprint.CreateNode(id);
