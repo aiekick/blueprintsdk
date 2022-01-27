@@ -244,6 +244,7 @@ public:
     void    ShowToolbar(bool* show = nullptr);
     void    ShowShortToolbar(bool* show = nullptr);
     void    Thumbnails(bool* show = nullptr);
+    bool    Blueprint_IsValid();
 
     bool File_IsOpen();
     bool File_IsModified();
@@ -285,11 +286,9 @@ public:
     bool Blueprint_Next();
     bool Blueprint_Current();
     bool Blueprint_BreakPoint();
+
 #ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
-    bool Blueprint_IsValid();
-    bool Blueprint_Exec(ImGui::ImMat input);
-    bool Blueprint_GetResult(ImGui::ImMat& input, ImGui::ImMat& output);
-    bool Blueprint_Run(ImGui::ImMat& input, ImGui::ImMat& output);
+    bool Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output);
 #endif
 
     Action m_File_Open       = { "Open...",         ICON_OPEN_BLUEPRINT,   [this] { File_Open();        } };
@@ -336,8 +335,8 @@ private:
     void                HandleDestroyAction();
     void                HandleContextMenuAction(bool create_only = false);
 
-    EntryPointNode*     FindEntryPointNode();
-    ExitPointNode*      FindExitPointNode();
+    Node*               FindEntryPointNode();
+    Node*               FindExitPointNode();
     void                InitFileDialog(const char * bookmark_path = nullptr);
 
 private:

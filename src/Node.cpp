@@ -17,6 +17,8 @@ string NodeTypeToString(NodeType type)
     {
         default:                    return "UnKnown";
         case NodeType::Internal:    return "Internal";
+        case NodeType::EntryPoint:  return "Entry";
+        case NodeType::ExitPoint:   return "Exit";
         case NodeType::External:    return "External";
         case NodeType::Dummy:       return "Dummy";
     }
@@ -26,6 +28,10 @@ bool NodeTypeFromString(string str, NodeType& type)
 {
     if (str.compare("Internal") == 0)
         type = NodeType::Internal;
+    else if (str.compare("Entry") == 0)
+        type = NodeType::EntryPoint;
+    else if (str.compare("Exit") == 0)
+        type = NodeType::ExitPoint;
     else if (str.compare("External") == 0)
         type = NodeType::External;
     else if (str.compare("Dummy") == 0)
@@ -93,8 +99,10 @@ bool NodeVersionFromString(string str, VERSION_TYPE& version)
 NodeRegistry::NodeRegistry()
     : m_BuildInNodes({
         DummyNode::GetStaticTypeInfo(),
-        EntryPointNode::GetStaticTypeInfo(),
-        ExitPointNode::GetStaticTypeInfo(),
+        SystemEntryPointNode::GetStaticTypeInfo(),
+        SystemExitPointNode::GetStaticTypeInfo(),
+        FilterEntryPointNode::GetStaticTypeInfo(),
+        FilterExitPointNode::GetStaticTypeInfo(),
         CommentNode::GetStaticTypeInfo(),
         GroupNode::GetStaticTypeInfo(),
 #ifndef IMGUI_BP_SDK_MEDIA_NODE_ONLY

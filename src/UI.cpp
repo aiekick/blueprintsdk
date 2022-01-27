@@ -851,13 +851,13 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
 void BluePrintUI::CreateNewDocument(ImVec2 size)
 {
     auto blueprint = &m_Document->m_Blueprint;
-    auto entryPointNode = blueprint->CreateNode<BluePrint::EntryPointNode>();
+    auto entryPointNode = blueprint->CreateNode<BluePrint::FilterEntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
 #ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
     auto view_size = size;
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ed::GetViewSize();
-    auto exitPointNode = blueprint->CreateNode<BluePrint::ExitPointNode>();
+    auto exitPointNode = blueprint->CreateNode<BluePrint::FilterExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOut);
@@ -2473,26 +2473,26 @@ void BluePrintUI::InitFileDialog(const char * bookmark_path)
 #endif
 }
 
-EntryPointNode* BluePrintUI::FindEntryPointNode()
+Node* BluePrintUI::FindEntryPointNode()
 {
     for (auto& node : m_Document->m_Blueprint.GetNodes())
     {
-        if (node->GetTypeInfo().m_ID == EntryPointNode::GetStaticTypeInfo().m_ID)
+        if (node->GetTypeInfo().m_Type == NodeType::EntryPoint)
         {
-            return static_cast<EntryPointNode*>(node);
+            return node;
         }
     }
 
     return nullptr;
 }
 
-ExitPointNode* BluePrintUI::FindExitPointNode()
+Node* BluePrintUI::FindExitPointNode()
 {
     for (auto& node : m_Document->m_Blueprint.GetNodes())
     {
-        if (node->GetTypeInfo().m_ID == ExitPointNode::GetStaticTypeInfo().m_ID)
+        if (node->GetTypeInfo().m_Type == NodeType::ExitPoint)
         {
-            return static_cast<ExitPointNode*>(node);
+            return node;
         }
     }
 
@@ -2508,6 +2508,21 @@ void BluePrintUI::CleanStateStorage()
     storage->SetVoidPtr(ImGui::GetID("##setting-node"), nullptr);
     storage->SetVoidPtr(ImGui::GetID("##delete-node"), nullptr);
     storage->SetVoidPtr(ImGui::GetID("##create_node_pin"), nullptr);
+}
+
+bool BluePrintUI::Blueprint_IsValid()
+{
+    if (!m_Document)
+        return false;
+    if (!m_Document->m_Blueprint.IsOpened())
+        return false;
+    auto entryNode = FindEntryPointNode();
+    auto exitNode = FindExitPointNode();
+    if (!entryNode || !exitNode)
+        return false;
+    if (!entryNode->m_ID || !exitNode->m_ID)
+        return false;
+    return true;
 }
 
 bool BluePrintUI::File_Open(std::string path, string* error)
@@ -2811,10 +2826,8 @@ bool BluePrintUI::Edit_Setting()
 
 bool BluePrintUI::Edit_Insert(ID_TYPE id)
 {
-#ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
     if (!Blueprint_IsValid())
         return false;
-#endif
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
     auto new_node = m_Document->m_Blueprint.CreateNode(id);
@@ -2899,46 +2912,17 @@ bool BluePrintUI::Blueprint_Run()
 }
 
 #ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
-bool BluePrintUI::Blueprint_IsValid()
-{
-    if (!m_Document)
-        return false;
-    if (!m_Document->m_Blueprint.IsOpened())
-        return false;
-    auto entryNode = FindEntryPointNode();
-    auto exitNode = FindExitPointNode();
-    if (!entryNode || !exitNode)
-        return false;
-    if (!entryNode->m_ID || !exitNode->m_ID)
-        return false;
-    return true;
-}
-
-bool BluePrintUI::Blueprint_Exec(ImGui::ImMat input)
-{
-    if (!m_Document)
-        return false;
-    auto entryNode = FindEntryPointNode();
-    if (!entryNode)
-        return false;
-    entryNode->m_MatOut.SetValue(input);
-    auto result = m_Document->m_Blueprint.Execute(*entryNode);
-    if (result == StepResult::Done)
-        LOGI("Execution: Running");
-    else if (result == StepResult::Error)
-    {
-        LOGI("Execution: Failed at step %" PRIu32, m_Document->m_Blueprint.StepCount());
-        return false;
-    }
-    return true;
-}
-
-bool BluePrintUI::Blueprint_Run(ImGui::ImMat& input, ImGui::ImMat& output)
+bool BluePrintUI::Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output)
 {
     if (!Blueprint_IsValid())
         return false;
-    auto entryNode = FindEntryPointNode();
-    auto exitNode = FindExitPointNode();
+    auto entry_node = FindEntryPointNode();
+    auto exit_node = FindExitPointNode();
+    if (!entry_node || !exit_node)
+        return false;
+    
+    FilterEntryPointNode * entryNode = (FilterEntryPointNode *)entry_node;
+    FilterExitPointNode * exitNode = (FilterExitPointNode *)exit_node;
     entryNode->m_MatOut.SetValue(input);
     auto result = m_Document->m_Blueprint.Run(*entryNode);
     if (result == StepResult::Done)
@@ -2950,37 +2934,6 @@ bool BluePrintUI::Blueprint_Run(ImGui::ImMat& input, ImGui::ImMat& output)
     }
     auto output_val = exitNode->m_MatIn.GetValue();
     output = output_val.As<ImGui::ImMat>();
-    return true;
-}
-
-bool BluePrintUI::Blueprint_GetResult(ImGui::ImMat& input, ImGui::ImMat& output)
-{
-    if (!m_Document)
-        return false;
-    auto entryNode = FindEntryPointNode();
-    auto exitNode = FindExitPointNode();
-    if (!entryNode || !exitNode)
-        return false;
-    if (m_Document->m_Blueprint.IsExecuting())
-    {
-        LOGI("Get Result: Still Executing");
-        return false;
-    }
-    auto input_val = entryNode->m_MatOut.GetValue();
-    auto output_val = exitNode->m_MatIn.GetValue();
-    input = input_val.As<ImGui::ImMat>();
-    output = output_val.As<ImGui::ImMat>();
-    //if (input.empty() || output.empty())
-    //{
-    //    LOGI("Get Result: result is empty");
-    //    return false;
-    //}
-    //if (input.time_stamp != output.time_stamp)
-    //{
-    //    LOGI("Get Result: input/output is not match");
-    //    return false;
-    //}
-
     return true;
 }
 
@@ -3091,9 +3044,9 @@ void BluePrintUI::UpdateActions()
     auto select_nodes = GetSelectedNodes(m_Document->m_Blueprint);
     for (auto node : select_nodes)
     {
-        if (node->GetTypeInfo().m_ID == EntryPointNode::GetStaticTypeInfo().m_ID)
+        if (node->GetTypeInfo().m_Type == NodeType::EntryPoint)
             isEditable = false;
-        if (node->GetTypeInfo().m_ID == ExitPointNode::GetStaticTypeInfo().m_ID)
+        if (node->GetTypeInfo().m_Type == NodeType::ExitPoint)
             isEditable = false;
     }
 

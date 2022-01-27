@@ -14,6 +14,8 @@ namespace BluePrint
 enum class NodeType:int32_t 
 {
     Internal = 0,
+    EntryPoint,
+    ExitPoint,
     External,
     Dummy,          // In case load failed extra node
 };
@@ -194,7 +196,7 @@ struct IMGUI_API Node
     virtual Pin*            GetAutoLinkOutputFlowPin() { return nullptr; } // Return auto link flow pin which as output
     virtual Pin*            GetAutoLinkInputDataPin() { return nullptr; } // Return auto link data pin which as input
     virtual Pin*            GetAutoLinkOutputDataPin() { return nullptr; } // Return auto link data pin which as output
-
+    virtual FlowPin*        GetOutputFlowPin() { return nullptr; } // return Output FlowPin point
     virtual void            OnNodeDelete(Node * node = nullptr) {};
 
     virtual int  Load(const imgui_json::value& value);

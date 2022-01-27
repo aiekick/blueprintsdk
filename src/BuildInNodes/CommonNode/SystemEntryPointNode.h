@@ -2,11 +2,11 @@
 #include <imgui.h>
 namespace BluePrint
 {
-struct EntryPointNode final : Node
+struct SystemEntryPointNode final : Node
 {
-    BP_NODE(EntryPointNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Simple, "System")
+    BP_NODE(SystemEntryPointNode, VERSION_BLUEPRINT, NodeType::EntryPoint, NodeStyle::Simple, "System")
 
-    EntryPointNode(BP& blueprint): Node(blueprint) { m_Name = "Start"; }
+    SystemEntryPointNode(BP& blueprint): Node(blueprint) { m_Name = "Start"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
@@ -14,6 +14,7 @@ struct EntryPointNode final : Node
     }
 
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
+    FlowPin* GetOutputFlowPin() override { return &m_Exit; }
 
     FlowPin m_Exit = { this, "Start" };
 

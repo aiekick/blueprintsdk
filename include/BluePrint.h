@@ -107,8 +107,6 @@ inline bool GetTo(const imgui_json::value& value, std::string key, V& result)
     return true;
 };
 
-struct EntryPointNode;
-struct ExitPointNode;
 struct NodeRegistry;
 struct Node;
 struct Context;
@@ -350,8 +348,8 @@ struct IMGUI_API BP
             ContextMonitor* GetContextMonitor();
     const   ContextMonitor* GetContextMonitor() const;
 
-    StepResult Run(EntryPointNode& entryPointNode);
-    StepResult Execute(EntryPointNode& entryPointNode);
+    StepResult Run(Node& entryPointNode);
+    StepResult Execute(Node& entryPointNode);
     StepResult Stop();
     StepResult Pause();
     StepResult Next();

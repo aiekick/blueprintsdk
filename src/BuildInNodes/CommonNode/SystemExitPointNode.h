@@ -2,11 +2,11 @@
 #include <imgui.h>
 namespace BluePrint
 {
-struct ExitPointNode final : Node
+struct SystemExitPointNode final : Node
 {
-    BP_NODE(ExitPointNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Simple, "System")
+    BP_NODE(SystemExitPointNode, VERSION_BLUEPRINT, NodeType::ExitPoint, NodeStyle::Simple, "System")
 
-    ExitPointNode(BP& blueprint): Node(blueprint) { m_Name = "End"; }
+    SystemExitPointNode(BP& blueprint): Node(blueprint) { m_Name = "End"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
