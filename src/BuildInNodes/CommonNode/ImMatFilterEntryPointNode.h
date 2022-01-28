@@ -15,7 +15,7 @@ struct FilterEntryPointNode final : Node
 
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     Pin* GetAutoLinkOutputFlowPin() override { return &m_Exit; }
-    Pin* GetAutoLinkOutputDataPin() override { return &m_MatOut; }
+    vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOut}; }
     FlowPin* GetOutputFlowPin() override { return &m_Exit; }
 
     FlowPin m_Exit = { this, "Start" };

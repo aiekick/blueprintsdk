@@ -134,8 +134,8 @@ struct ColorInvertNode final : Node
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     Pin* GetAutoLinkInputFlowPin() override { return &m_Enter; }
     Pin* GetAutoLinkOutputFlowPin() override { return &m_Exit; }
-    Pin* GetAutoLinkInputDataPin() override { return &m_MatIn; }
-    Pin* GetAutoLinkOutputDataPin() override { return &m_MatOut; }
+    vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatIn}; }
+    vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOut}; }
 
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };

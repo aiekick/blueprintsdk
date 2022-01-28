@@ -102,10 +102,10 @@ NodeRegistry::NodeRegistry()
         SystemEntryPointNode::GetStaticTypeInfo(),
         SystemExitPointNode::GetStaticTypeInfo(),
         FilterEntryPointNode::GetStaticTypeInfo(),
-        FilterExitPointNode::GetStaticTypeInfo(),
+        FusionEntryPointNode::GetStaticTypeInfo(),
+        MatExitPointNode::GetStaticTypeInfo(),
         CommentNode::GetStaticTypeInfo(),
         GroupNode::GetStaticTypeInfo(),
-#ifndef IMGUI_BP_SDK_MEDIA_NODE_ONLY
         DateTimeNode::GetStaticTypeInfo(),
         ConstValueNode::GetStaticTypeInfo(),
         LoopNode::GetStaticTypeInfo(),
@@ -123,7 +123,7 @@ NodeRegistry::NodeRegistry()
         BranchNode::GetStaticTypeInfo(),
         FlipFlopNode::GetStaticTypeInfo(),
         PrintNode::GetStaticTypeInfo(),
-#else
+#ifdef IMGUI_BP_SDK_MEDIA_NODE
 #if IMGUI_VULKAN_SHADER
         AlmNode::GetStaticTypeInfo(),
         BilateralNode::GetStaticTypeInfo(),

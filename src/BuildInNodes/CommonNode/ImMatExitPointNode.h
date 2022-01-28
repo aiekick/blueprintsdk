@@ -2,11 +2,11 @@
 #include <imgui.h>
 namespace BluePrint
 {
-struct FilterExitPointNode final : Node
+struct MatExitPointNode final : Node
 {
-    BP_NODE(FilterExitPointNode, VERSION_BLUEPRINT, NodeType::ExitPoint, NodeStyle::Simple, "System")
+    BP_NODE(MatExitPointNode, VERSION_BLUEPRINT, NodeType::ExitPoint, NodeStyle::Simple, "System")
 
-    FilterExitPointNode(BP& blueprint): Node(blueprint) { m_Name = "End"; }
+    MatExitPointNode(BP& blueprint): Node(blueprint) { m_Name = "End"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
@@ -18,7 +18,7 @@ struct FilterExitPointNode final : Node
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
     Pin* GetAutoLinkInputFlowPin() override { return &m_Enter; }
-    Pin* GetAutoLinkInputDataPin() override { return &m_MatIn; }
+    vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatIn}; }
 
     FlowPin m_Enter = { this, "End" };
     MatPin  m_MatIn = { this, "In" };

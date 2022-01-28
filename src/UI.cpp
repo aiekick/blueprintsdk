@@ -394,9 +394,12 @@ void NodeCreateDialog::Show(BluePrintUI& UI)
                     {
                         auto out_pin = startPin->m_Node->GetAutoLinkOutputDataPin();
                         auto in_pin = startPin->GetLink()->m_Node->GetAutoLinkInputDataPin();
-                        if (in_pin && out_pin)
+                        if (in_pin.size() > 0 && out_pin.size() > 0 && in_pin.size() == out_pin.size())
                         {
-                            in_pin->LinkTo(*out_pin);
+                            for (int i = 0; i < in_pin.size(); i++)
+                            {
+                                in_pin[i]->LinkTo(*out_pin[i]);
+                            }
                         }
                     }
                 }
@@ -848,20 +851,46 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
     return done;
 }
 
-void BluePrintUI::CreateNewDocument(ImVec2 size)
+void BluePrintUI::CreateNewDocument()
+{
+    auto blueprint = &m_Document->m_Blueprint;
+    auto entryPointNode = blueprint->CreateNode<BluePrint::SystemEntryPointNode>();
+                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
+
+    auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
+                            ed::SetNodePosition(exitPointNode->m_ID, ed::GetViewSize() - ImVec2(100, 100));
+    entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
+    blueprint->SetOpen(true);
+}
+
+void BluePrintUI::CreateNewFilterDocument(ImVec2 size)
 {
     auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::FilterEntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
-#ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
+
     auto view_size = size;
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ed::GetViewSize();
-    auto exitPointNode = blueprint->CreateNode<BluePrint::FilterExitPointNode>();
+    auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOut);
-#endif
+    blueprint->SetOpen(true);
+}
+
+void BluePrintUI::CreateNewFusionDocument(ImVec2 size)
+{
+    auto blueprint = &m_Document->m_Blueprint;
+    auto entryPointNode = blueprint->CreateNode<BluePrint::FusionEntryPointNode>();
+                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
+
+    auto view_size = size;
+    if (view_size.x == 0 || view_size.y == 0)
+        view_size = ed::GetViewSize();
+    auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
+                            ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
+    entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     blueprint->SetOpen(true);
 }
 
@@ -2230,9 +2259,12 @@ void BluePrintUI::HandleCreateAction()
                         {
                             auto out_pin = startPin->m_Node->GetAutoLinkOutputDataPin();
                             auto in_pin = endPin->m_Node->GetAutoLinkInputDataPin();
-                            if (in_pin && out_pin)
+                            if (in_pin.size() && out_pin.size() && in_pin.size() == out_pin.size())
                             {
-                                in_pin->LinkTo(*out_pin);
+                                for (int i = 0; i < in_pin.size(); i++)
+                                {
+                                    in_pin[i]->LinkTo(*out_pin[i]);
+                                }
                             }
                         }
                     }
@@ -2323,18 +2355,24 @@ void BluePrintUI::HandleDestroyAction()
                         }
                     }
                     // Check data pin relink pair 
-                    if (in_data_pin && out_data_pin &&
-                        in_data_pin->m_LinkPin &&
-                        out_data_pin->m_LinkFrom.size() > 0)
+                    if (in_data_pin.size() > 0 && out_data_pin.size() > 0 && in_data_pin.size() == out_data_pin.size())
                     {
-                        for (auto from_pin : out_data_pin->m_LinkFrom)
+                        for (int i = 0; i < in_data_pin.size(); i++)
                         {
-                            std::pair<Pin *, Pin *> re_link;
-                            auto pin = m_Document->m_Blueprint.GetPinFromID(from_pin);
-                            if (pin)
+                            auto in_pin = in_data_pin[i];
+                            auto out_pin = out_data_pin[i];
+                            if (in_pin->m_LinkPin && out_pin->m_LinkFrom.size() > 0)
                             {
-                                std::pair<Pin *, Pin *> re_link(pin, in_data_pin->m_LinkPin);
-                                relink_pairs.push_back(re_link);
+                                for (auto from_pin : out_pin->m_LinkFrom)
+                                {
+                                    std::pair<Pin *, Pin *> re_link;
+                                    auto pin = m_Document->m_Blueprint.GetPinFromID(from_pin);
+                                    if (pin)
+                                    {
+                                        std::pair<Pin *, Pin *> re_link(pin, in_pin->m_LinkPin);
+                                        relink_pairs.push_back(re_link);
+                                    }
+                                }
                             }
                         }
                     }
@@ -2600,13 +2638,13 @@ bool BluePrintUI::File_New()
     m_Document->m_Blueprint.Clear();
     CleanStateStorage();
     ed::NavigateToOrigin();
-    CreateNewDocument(ed::GetViewSize());
+    CreateNewDocument();
     m_Document->m_Name = "NONAMED";
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
-bool BluePrintUI::File_New(imgui_json::value& bp, ImVec2 size, std::string name)
+bool BluePrintUI::File_New_Filter(imgui_json::value& bp, ImVec2 size, std::string name)
 {
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
@@ -2617,7 +2655,7 @@ bool BluePrintUI::File_New(imgui_json::value& bp, ImVec2 size, std::string name)
         if (m_Document->Deserialize(bp, *m_Document) != BP_ERR_NONE)
         {
             // TODO::Dicky if node load failed, may not CreateNewDocument
-            CreateNewDocument(size);
+            CreateNewFilterDocument(size);
             m_Document->OnMakeCurrent();
             View_ZoomToContent();
             bp = m_Document->Serialize();
@@ -2629,13 +2667,49 @@ bool BluePrintUI::File_New(imgui_json::value& bp, ImVec2 size, std::string name)
     }
     else
     {
-        CreateNewDocument(size);
+        CreateNewFilterDocument(size);
         m_Document->OnMakeCurrent();
         View_ZoomToContent();
         bp = m_Document->Serialize();
     }
     if (name.empty())
-        m_Document->m_Name = "NONAMED";
+        m_Document->m_Name = "FilterBluePrint";
+    else
+        m_Document->m_Name = name;
+    m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    return true;
+}
+
+bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, ImVec2 size, std::string name)
+{
+    ed::SetCurrentEditor(m_Editor);
+    ed::ClearSelection();
+    m_Document->m_Blueprint.Clear();
+    CleanStateStorage();
+    if (bp.is_object())
+    {
+        if (m_Document->Deserialize(bp, *m_Document) != BP_ERR_NONE)
+        {
+            // TODO::Dicky if node load failed, may not CreateNewDocument
+            CreateNewFusionDocument(size);
+            m_Document->OnMakeCurrent();
+            View_ZoomToContent();
+            bp = m_Document->Serialize();
+        }
+        else
+        {
+            m_Document->OnMakeCurrent();
+        }
+    }
+    else
+    {
+        CreateNewFusionDocument(size);
+        m_Document->OnMakeCurrent();
+        View_ZoomToContent();
+        bp = m_Document->Serialize();
+    }
+    if (name.empty())
+        m_Document->m_Name = "FusionBluePrint";
     else
         m_Document->m_Name = name;
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
@@ -2911,7 +2985,6 @@ bool BluePrintUI::Blueprint_Run()
     return true;
 }
 
-#ifdef IMGUI_BP_SDK_MEDIA_NODE_ONLY
 bool BluePrintUI::Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output)
 {
     if (!Blueprint_IsValid())
@@ -2922,7 +2995,7 @@ bool BluePrintUI::Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output)
         return false;
     
     FilterEntryPointNode * entryNode = (FilterEntryPointNode *)entry_node;
-    FilterExitPointNode * exitNode = (FilterExitPointNode *)exit_node;
+    MatExitPointNode * exitNode = (MatExitPointNode *)exit_node;
     entryNode->m_MatOut.SetValue(input);
     auto result = m_Document->m_Blueprint.Run(*entryNode);
     if (result == StepResult::Done)
@@ -2936,8 +3009,6 @@ bool BluePrintUI::Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output)
     output = output_val.As<ImGui::ImMat>();
     return true;
 }
-
-#endif
 
 bool BluePrintUI::Blueprint_Pause()
 {
