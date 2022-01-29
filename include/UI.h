@@ -143,9 +143,18 @@ struct NodeDeleteDialog
     void Show(BluePrintUI& UI);
 };
 
+enum BluePrintFlag : int32_t
+{
+    BluePrintFlag_None = 0,
+    BluePrintFlag_Filter = 1,
+    BluePrintFlag_Fusion = 1 << 1,
+    BluePrintFlag_System = 1 << 2,
+    BluePrintFlag_All = 1 << 31,
+};
+
 struct NodeCreateDialog
 {
-    void Open(Pin* fromPin = nullptr);
+    void Open(Pin* fromPin = nullptr, BluePrintFlag flag = BluePrintFlag::BluePrintFlag_All);
     void Show(BluePrintUI& UI);
 
           Node* GetCreatedNode()       { return m_CreatedNode; }
@@ -207,7 +216,7 @@ struct BluePrintUI
     BluePrintUI();
     void Initialize(const char * bp_file = nullptr, const char * plugin_path = nullptr);
     void Finalize();
-    bool Frame(bool child_window = false, bool show_node = true, bool bp_enabled = true);
+    bool Frame(bool child_window = false, bool show_node = true, bool bp_enabled = true, BluePrintFlag flag = BluePrintFlag::BluePrintFlag_All);
     void SetStyle(enum BluePrintStyle style = BluePrintStyle::BP_Style_BluePrint);
     void SetCallbacks(BluePrintCallbackFunctions callbacks, void * handle);
     
@@ -239,7 +248,7 @@ private:
 public:
     void    UpdateActions();
     void    CleanStateStorage();
-    Node*   ShowNewNodeMenu(ImVec2 popupPosition = {});
+    Node*   ShowNewNodeMenu(ImVec2 popupPosition = {}, std::string catalog_filter = "");
     void    ShowStyleEditor(bool* show = nullptr);
     void    ShowToolbar(bool* show = nullptr);
     void    ShowShortToolbar(bool* show = nullptr);
@@ -330,9 +339,9 @@ private:
     void                DrawInfoTooltip();
     void                ShowDialogs();
     void                FileDialogs();
-    void                HandleCreateAction();
+    void                HandleCreateAction(BluePrintFlag flag = BluePrintFlag::BluePrintFlag_All);
     void                HandleDestroyAction();
-    void                HandleContextMenuAction(bool create_only = false);
+    void                HandleContextMenuAction(BluePrintFlag flag = BluePrintFlag::BluePrintFlag_All);
 
     Node*               FindEntryPointNode();
     Node*               FindExitPointNode();

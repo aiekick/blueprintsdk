@@ -351,24 +351,65 @@ void NodeDeleteDialog::Show(BluePrintUI& UI)
     }
 }
 
-void NodeCreateDialog::Open(Pin* fromPin)
+void NodeCreateDialog::Open(Pin* fromPin, BluePrintFlag flag)
 {
     ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##create_node_pin"), fromPin);
-    ImGui::OpenPopup("##create_node");
+    if ((flag & BluePrintFlag::BluePrintFlag_Filter) != 0)
+    {
+        ImGui::OpenPopup("##create_filter_node");
+    }
+    else if ((flag & BluePrintFlag::BluePrintFlag_Fusion) != 0)
+    {
+        ImGui::OpenPopup("##create_fusion_node");
+    }
+    else if ((flag & BluePrintFlag::BluePrintFlag_System) != 0)
+    {
+        ImGui::OpenPopup("##create_system_node");
+    }
+    else
+    {
+        ImGui::OpenPopup("##create_node");
+    }
 }
 
 void NodeCreateDialog::Show(BluePrintUI& UI)
 {
-    if (!ImGui::IsPopupOpen("##create_node"))
+    std::string create_node_label = "";
+    std::string catalog_filter = "";
+    if (!ImGui::IsPopupOpen("##create_node") &&
+        !ImGui::IsPopupOpen("##create_filter_node") &&
+        !ImGui::IsPopupOpen("##create_fusion_node") &&
+        !ImGui::IsPopupOpen("##create_system_node"))
     {
         UI.m_isNewNodePopuped = false;
         UI.m_newNodeLinkPin = nullptr;
         return;
     }
 
+    if (ImGui::IsPopupOpen("##create_node"))
+    {
+        create_node_label = "##create_node";
+    }
+    else if (ImGui::IsPopupOpen("##create_filter_node"))
+    {
+        create_node_label = "##create_filter_node";
+        catalog_filter = "Filter";
+    }
+    else if (ImGui::IsPopupOpen("##create_fusion_node"))
+    {
+        create_node_label = "##create_fusion_node";
+        catalog_filter = "Fusion";
+    }
+    else if (ImGui::IsPopupOpen("##create_system_node"))
+    {
+        create_node_label = "##create_system_node";
+        catalog_filter = "System";
+    }
+
     auto storage = ImGui::GetStateStorage();
     auto fromPin = reinterpret_cast<Pin*>(storage->GetVoidPtr(ImGui::GetID("##create_node_pin")));
-    if (!ImGui::BeginPopup("##create_node"))
+    
+    if (!ImGui::BeginPopup(create_node_label.c_str()))
     {
         UI.m_isNewNodePopuped = false;
         UI.m_newNodeLinkPin = nullptr;
@@ -376,7 +417,7 @@ void NodeCreateDialog::Show(BluePrintUI& UI)
     }
     
     auto popupPosition = ImGui::GetMousePosOnOpeningCurrentPopup();
-    auto node = UI.ShowNewNodeMenu(popupPosition);
+    auto node = UI.ShowNewNodeMenu(popupPosition, catalog_filter);
     if (node)
     {
         m_CreatedNode = node;
@@ -762,7 +803,7 @@ void BluePrintUI::SetCallbacks(BluePrintCallbackFunctions callbacks, void * hand
     m_UserHandle = handle;
 }
 
-bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
+bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, BluePrintFlag flag)
 {
     bool done = false;
     if (!m_Editor || !m_Document || ReadyToQuit)
@@ -838,9 +879,9 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled)
                 DrawNodes();
             else
                 CommitLinksToEditor();
-            HandleCreateAction();
+            HandleCreateAction(flag);
             HandleDestroyAction();
-            HandleContextMenuAction(true);
+            HandleContextMenuAction(flag);
             ShowDialogs();
             DrawInfoTooltip(); // for debug
         }
@@ -2078,7 +2119,7 @@ void BluePrintUI::FileDialogs()
         io.ConfigViewportsNoDecoration = false;
 }
 
-Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition)
+Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_filter)
 {
     Node* node = nullptr;
     if (!m_Document)
@@ -2110,7 +2151,48 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition)
     auto registryNode = m_Document->m_Blueprint.GetNodeRegistry()->GetTypes();
     auto registryCatalog = m_Document->m_Blueprint.GetNodeRegistry()->GetCatalogs();
 
-    if (filter_string.size() > 0)
+    if (!catalog_filter.empty())
+    {
+        std::vector<const NodeTypeInfo *> array;
+        for (auto nodetype : registryNode)
+        {
+            if (nodetype->m_Catalog.compare("Dummy") != 0 && nodetype->m_Catalog.compare(catalog_filter) == 0)
+                array.push_back(nodetype);
+        }
+        string low_case_filter_str = filter_string.size() > 0 ? to_lower(filter_string) : "";
+        for (auto nodetype : array)
+        {
+            string low_case_node_type_name = to_lower(nodetype->m_Name);
+            if (filter_string.size() == 0 || low_case_node_type_name.find(low_case_filter_str) != string::npos)
+            {
+                ImGui::Bullet();
+                if (ImGui::MenuItem(nodetype->m_Name.c_str(), nullptr, false, true, nodetype->m_Type == NodeType::External ? ICON_NODE_DLL : nullptr))
+                {
+                    auto transaction = m_Document->BeginUndoTransaction("CreateNode");
+                    node = m_Document->m_Blueprint.CreateNode(nodetype->m_ID);
+                    LOGI("[NodeCreate] %" PRI_node " created", FMT_node(node));
+                    if (popupPosition.x == 0 || popupPosition.y == 0)
+                    {
+                        ImVec2 w_pos = ImGui::GetCursorPos();
+                        ImVec2 c_pos = ImGui::GetWindowPos();
+                        popupPosition = ImVec2(w_pos.x + c_pos.x, w_pos.y + c_pos.y);
+                    }
+                    auto nodePosition = ed::ScreenToCanvas(popupPosition);
+                    ed::SetNodePosition(node->m_ID, nodePosition);
+                    ed::SelectNode(node->m_ID);
+                    if (node->GetType() == NodeType::External && 
+                        node->NeedOverlayLogger())
+                    {
+                        node->SetLogger(m_Document->m_OverlayLogger);
+                    }
+                    transaction->AddAction("%" PRI_node " created", FMT_node(node));
+                    m_isNewNodePopuped = false;
+                    m_newNodeLinkPin = nullptr;
+                }
+            }
+        }
+    }
+    else if (filter_string.size() > 0)
     {
         string low_case_filter_str = to_lower(filter_string);
 
@@ -2125,11 +2207,11 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition)
             }
             for (auto nodetype : array)
             {
-                string low_case_node_type_name = to_lower(nodetype->m_NodeTypeName);
+                string low_case_node_type_name = to_lower(nodetype->m_Name);
                 if (low_case_node_type_name.find(low_case_filter_str) != string::npos)
                 {
                     ImGui::Bullet();
-                    if (ImGui::MenuItem(nodetype->m_NodeTypeName.c_str(), nullptr, false, true, nodetype->m_Type == NodeType::External ? ICON_NODE_DLL : nullptr))
+                    if (ImGui::MenuItem(nodetype->m_Name.c_str(), nullptr, false, true, nodetype->m_Type == NodeType::External ? ICON_NODE_DLL : nullptr))
                     {
                         auto transaction = m_Document->BeginUndoTransaction("CreateNode");
                         node = m_Document->m_Blueprint.CreateNode(nodetype->m_ID);
@@ -2168,7 +2250,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition)
                     array.push_back(nodetype);
                 std::sort(array.begin(), array.end(),
                             [](const NodeTypeInfo * a, const NodeTypeInfo * b) {
-                                return a->m_NodeTypeName < b->m_NodeTypeName;
+                                return a->m_Name < b->m_Name;
                         });
             }
             if (array.size() > 0 && ImGui::BeginMenu(catalog.c_str()))
@@ -2176,7 +2258,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition)
                 for (auto nodetype : array)
                 {
                     ImGui::Bullet();
-                    if (ImGui::MenuItem(nodetype->m_NodeTypeName.c_str(), nullptr, false, true, nodetype->m_Type == NodeType::External ? ICON_NODE_DLL : nullptr))
+                    if (ImGui::MenuItem(nodetype->m_Name.c_str(), nullptr, false, true, nodetype->m_Type == NodeType::External ? ICON_NODE_DLL : nullptr))
                     {
                         auto transaction = m_Document->BeginUndoTransaction("CreateNode");
                         node = m_Document->m_Blueprint.CreateNode(nodetype->m_ID);
@@ -2208,7 +2290,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition)
     return node;
 }
 
-void BluePrintUI::HandleCreateAction()
+void BluePrintUI::HandleCreateAction(BluePrintFlag flag)
 {
     if (!m_Document)
         return;
@@ -2299,7 +2381,7 @@ void BluePrintUI::HandleCreateAction()
             auto pin = m_Document->m_Blueprint.FindPin(static_cast<ID_TYPE>(nodeBuilder->m_PinId.Get()));
             ed::Suspend();
             LOGI("[HandleCreateAction] Open CreateNodeDialog");
-            m_NodeCreateDialog.Open(pin);
+            m_NodeCreateDialog.Open(pin, flag);
             m_isNewNodePopuped = true;
             m_newNodeLinkPin = pin;
             ed::Resume();
@@ -2421,7 +2503,7 @@ void BluePrintUI::HandleDestroyAction()
     }
 }
 
-void BluePrintUI::HandleContextMenuAction(bool create_only)
+void BluePrintUI::HandleContextMenuAction(BluePrintFlag flag)
 {
     if (!m_Document)
         return;
@@ -2433,25 +2515,41 @@ void BluePrintUI::HandleContextMenuAction(bool create_only)
     {
         ed::Suspend();
         LOGI("[HandleContextMenuAction] Show Background Context Menu");
-        if (create_only)
+        if ((flag & BluePrintFlag::BluePrintFlag_All) != 0)
         {
-            CleanStateStorage();
-            ImGui::OpenPopup("##create_node");
+            m_ContextMenu.Open();
         }
         else
-            m_ContextMenu.Open();
+        {
+            CleanStateStorage();
+            if ((flag & BluePrintFlag::BluePrintFlag_Filter) != 0)
+            {
+                ImGui::OpenPopup("##create_filter_node");
+            }
+            else if ((flag & BluePrintFlag::BluePrintFlag_Fusion) != 0)
+            {
+                ImGui::OpenPopup("##create_fusion_node");
+            }
+            else if ((flag & BluePrintFlag::BluePrintFlag_System) != 0)
+            {
+                ImGui::OpenPopup("##create_system_node");
+            }
+        }
         ed::Resume();
     }
 
-    ed::NodeId contextNodeId;
-    if (!create_only && ed::ShowNodeContextMenu(&contextNodeId))
+    if ((flag & BluePrintFlag::BluePrintFlag_All) != 0)
     {
-        auto node = m_Document->m_Blueprint.FindNode(static_cast<uint32_t>(contextNodeId.Get()));
+        ed::NodeId contextNodeId;
+        if (ed::ShowNodeContextMenu(&contextNodeId))
+        {
+            auto node = m_Document->m_Blueprint.FindNode(static_cast<uint32_t>(contextNodeId.Get()));
 
-        ed::Suspend();
-        LOGI("[HandleContextMenuAction] Open NodeContextMenu for %" PRI_node, FMT_node(node));
-        m_NodeContextMenu.Open(node);
-        ed::Resume();
+            ed::Suspend();
+            LOGI("[HandleContextMenuAction] Open NodeContextMenu for %" PRI_node, FMT_node(node));
+            m_NodeContextMenu.Open(node);
+            ed::Resume();
+        }
     }
 
     ed::PinId contextPinId;
