@@ -21,8 +21,10 @@ struct FusionEntryPointNode final : Node
     FlowPin m_Exit = { this, "Start" };
     MatPin  m_MatOutFirst = { this, "Out First" };
     MatPin  m_MatOutSecond = { this, "Out Second" };
+    Int64Pin m_FusionDuration = { this, "Fusion Duration" };
+    Int64Pin m_FusionTimeStamp = { this, "Time Stamp" };
 
-    Pin* m_OutputPins[3] = { &m_Exit, &m_MatOutFirst, &m_MatOutSecond };
+    Pin* m_OutputPins[5] = { &m_Exit, &m_MatOutFirst, &m_MatOutSecond, &m_FusionDuration, &m_FusionTimeStamp };
 };
 } // namespace BluePrint
 
