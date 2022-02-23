@@ -231,6 +231,7 @@ struct BluePrintUI
     Pin*                            m_newNodeLinkPin {nullptr};
     ImVec4                          m_StyleColors[BluePrintStyleColor_Count];
     ImVec2                          m_PopupMousePos {};
+    ImVec2                          m_ViewSize {};
     enum BluePrintStyle             m_Style {BluePrintStyle::BP_Style_BluePrint};
 private:
     DebugOverlay*                   m_DebugOverlay {nullptr};
@@ -264,8 +265,8 @@ public:
     bool File_Import();
     bool File_Export(Node * group_node);
     bool File_New();
-    bool File_New_Filter(imgui_json::value& bp, ImVec2 size, std::string name);
-    bool File_New_Fusion(imgui_json::value& bp, ImVec2 size, std::string name);
+    bool File_New_Filter(imgui_json::value& bp, std::string name);
+    bool File_New_Fusion(imgui_json::value& bp, std::string name);
     bool File_SaveAsEx(std::string path);
     bool File_SaveAs();
     bool File_Save();
@@ -349,8 +350,8 @@ private:
 
 private:
     void                CreateNewDocument();
-    void                CreateNewFilterDocument(ImVec2 size);
-    void                CreateNewFusionDocument(ImVec2 size);
+    void                CreateNewFilterDocument();
+    void                CreateNewFusionDocument();
     void                CommitLinksToEditor();
     bool                ReadyToQuit {false};
 

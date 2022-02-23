@@ -901,37 +901,44 @@ void BluePrintUI::CreateNewDocument()
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, ed::GetViewSize() - ImVec2(100, 100));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
+    CommitLinksToEditor();
     blueprint->SetOpen(true);
 }
 
-void BluePrintUI::CreateNewFilterDocument(ImVec2 size)
+void BluePrintUI::CreateNewFilterDocument()
 {
     auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::FilterEntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
 
-    auto view_size = size;
+    auto view_size = m_ViewSize;
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ed::GetViewSize();
+    if (view_size.x == 0 || view_size.y == 0)
+        view_size = ImVec2(200, 200);
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOut);
+    CommitLinksToEditor();
     blueprint->SetOpen(true);
 }
 
-void BluePrintUI::CreateNewFusionDocument(ImVec2 size)
+void BluePrintUI::CreateNewFusionDocument()
 {
     auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::FusionEntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
 
-    auto view_size = size;
+    auto view_size = m_ViewSize;
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ed::GetViewSize();
+    if (view_size.x == 0 || view_size.y == 0)
+        view_size = ImVec2(200, 200);
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
+    CommitLinksToEditor();
     blueprint->SetOpen(true);
 }
 
@@ -2742,7 +2749,7 @@ bool BluePrintUI::File_New()
     return true;
 }
 
-bool BluePrintUI::File_New_Filter(imgui_json::value& bp, ImVec2 size, std::string name)
+bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name)
 {
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
@@ -2750,12 +2757,11 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, ImVec2 size, std::strin
     CleanStateStorage();
     if (bp.is_object())
     {
-        if (m_Document->Deserialize(bp, *m_Document) != BP_ERR_NONE)
+        if (m_Document->Deserialize(bp, *m_Document) != BP_ERR_NONE || m_Document->m_Blueprint.GetNodes().size() == 0)
         {
             // TODO::Dicky if node load failed, may not CreateNewDocument
-            CreateNewFilterDocument(size);
+            CreateNewFilterDocument();
             m_Document->OnMakeCurrent();
-            View_ZoomToContent();
             bp = m_Document->Serialize();
         }
         else
@@ -2765,9 +2771,8 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, ImVec2 size, std::strin
     }
     else
     {
-        CreateNewFilterDocument(size);
+        CreateNewFilterDocument();
         m_Document->OnMakeCurrent();
-        View_ZoomToContent();
         bp = m_Document->Serialize();
     }
     if (name.empty())
@@ -2775,10 +2780,11 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, ImVec2 size, std::strin
     else
         m_Document->m_Name = name;
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    View_ZoomToContent();
     return true;
 }
 
-bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, ImVec2 size, std::string name)
+bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, std::string name)
 {
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
@@ -2786,10 +2792,10 @@ bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, ImVec2 size, std::strin
     CleanStateStorage();
     if (bp.is_object())
     {
-        if (m_Document->Deserialize(bp, *m_Document) != BP_ERR_NONE)
+        if (m_Document->Deserialize(bp, *m_Document) != BP_ERR_NONE || m_Document->m_Blueprint.GetNodes().size() == 0)
         {
             // TODO::Dicky if node load failed, may not CreateNewDocument
-            CreateNewFusionDocument(size);
+            CreateNewFusionDocument();
             m_Document->OnMakeCurrent();
             View_ZoomToContent();
             bp = m_Document->Serialize();
@@ -2801,7 +2807,7 @@ bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, ImVec2 size, std::strin
     }
     else
     {
-        CreateNewFusionDocument(size);
+        CreateNewFusionDocument();
         m_Document->OnMakeCurrent();
         View_ZoomToContent();
         bp = m_Document->Serialize();
