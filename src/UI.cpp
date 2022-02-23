@@ -2763,6 +2763,7 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name)
             CreateNewFilterDocument();
             m_Document->OnMakeCurrent();
             bp = m_Document->Serialize();
+            View_ZoomToContent();
         }
         else
         {
@@ -2774,13 +2775,13 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name)
         CreateNewFilterDocument();
         m_Document->OnMakeCurrent();
         bp = m_Document->Serialize();
+        View_ZoomToContent();
     }
     if (name.empty())
         m_Document->m_Name = "FilterBluePrint";
     else
         m_Document->m_Name = name;
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
-    View_ZoomToContent();
     return true;
 }
 
