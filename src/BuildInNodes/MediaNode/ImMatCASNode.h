@@ -9,7 +9,7 @@ namespace BluePrint
 {
 struct CasNode final : Node
 {
-    BP_NODE_WITH_NAME(CasNode, "CAS Sharpen", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(CasNode, "CAS Sharpen", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Enhance")
     CasNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Cas Sharpen"; }
     ~CasNode()
     {

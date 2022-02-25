@@ -9,7 +9,7 @@ namespace BluePrint
 {
 struct CannyNode final : Node
 {
-    BP_NODE_WITH_NAME(CannyNode, "Canny Edge", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(CannyNode, "Canny Edge", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Edge")
     CannyNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Canny Edge"; }
     ~CannyNode()
     {

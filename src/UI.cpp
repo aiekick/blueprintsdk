@@ -2163,7 +2163,8 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
         std::vector<const NodeTypeInfo *> array;
         for (auto nodetype : registryNode)
         {
-            if (nodetype->m_Catalog.compare("Dummy") != 0 && nodetype->m_Catalog.compare(catalog_filter) == 0)
+            auto catalogs = nodetype->GetCatalogInfo();
+            if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog_filter) == 0)
                 array.push_back(nodetype);
         }
         string low_case_filter_str = filter_string.size() > 0 ? to_lower(filter_string) : "";
@@ -2209,7 +2210,8 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
             std::vector<const NodeTypeInfo *> array;
             for (auto nodetype : registryNode)
             {
-                if (nodetype->m_Catalog.compare("Dummy") != 0 && nodetype->m_Catalog.compare(catalog) == 0)
+                auto catalogs = nodetype->GetCatalogInfo();
+                if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog) == 0)
                     array.push_back(nodetype);
             }
             for (auto nodetype : array)
@@ -2253,7 +2255,8 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
             std::vector<const NodeTypeInfo *> array;
             for (auto nodetype : registryNode)
             {
-                if (nodetype->m_Catalog.compare("Dummy") != 0 && nodetype->m_Catalog.compare(catalog) == 0)
+                auto catalogs = nodetype->GetCatalogInfo();
+                if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog) == 0)
                     array.push_back(nodetype);
                 std::sort(array.begin(), array.end(),
                             [](const NodeTypeInfo * a, const NodeTypeInfo * b) {

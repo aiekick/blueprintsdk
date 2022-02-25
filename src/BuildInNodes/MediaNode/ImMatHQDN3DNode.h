@@ -9,7 +9,7 @@ namespace BluePrint
 {
 struct HQDN3DNode final : Node
 {
-    BP_NODE_WITH_NAME(HQDN3DNode, "HQDN3D Denoise", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(HQDN3DNode, "HQDN3D Denoise", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Denoise")
     HQDN3DNode(BP& blueprint): Node(blueprint) { m_Name = "Mat HQDN3D"; }
     ~HQDN3DNode()
     {

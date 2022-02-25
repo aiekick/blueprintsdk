@@ -11,7 +11,7 @@ namespace BluePrint
 {
 struct LaplacianNode final : Node
 {
-    BP_NODE_WITH_NAME(LaplacianNode, "Laplacian Edge", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(LaplacianNode, "Laplacian Edge", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Edge")
     LaplacianNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Laplacian Edge"; }
 
     ~LaplacianNode()

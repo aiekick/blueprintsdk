@@ -13,7 +13,7 @@ namespace BluePrint
 {
 struct ChromaKeyNode final : Node
 {
-    BP_NODE_WITH_NAME(ChromaKeyNode, "Chroma Key", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(ChromaKeyNode, "Chroma Key", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Matting")
     ChromaKeyNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Chroma Key"; }
 
     ~ChromaKeyNode()

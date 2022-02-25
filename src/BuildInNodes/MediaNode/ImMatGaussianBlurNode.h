@@ -11,7 +11,7 @@ namespace BluePrint
 {
 struct GaussianBlurNode final : Node
 {
-    BP_NODE_WITH_NAME(GaussianBlurNode, "Gaussian Blur", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter")
+    BP_NODE_WITH_NAME(GaussianBlurNode, "Gaussian Blur", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Blur")
     GaussianBlurNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Gaussian Blur"; }
 
     ~GaussianBlurNode()
