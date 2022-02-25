@@ -97,12 +97,12 @@ struct CannyNode final : Node
         float _maxThreshold = m_maxThreshold;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_Canny",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Canny");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderInt("Blur Radius", &_blurRadius, 0, 10, "%d", flags);
-        ImGui::SliderFloat("Min Threshold", &_minThreshold, 0, 1.f, "%.2f", flags);
-        ImGui::SliderFloat("Max Threshold", &_maxThreshold, _minThreshold, 1.f, "%.2f", flags);
+        ImGui::SliderInt("Blur Radius##Canny", &_blurRadius, 0, 10, "%d", flags);
+        ImGui::SliderFloat("Min Threshold##Canny", &_minThreshold, 0, 1.f, "%.2f", flags);
+        ImGui::SliderFloat("Max Threshold##Canny", &_maxThreshold, _minThreshold, 1.f, "%.2f", flags);
         ImGui::PopItemWidth();
         if (m_blurRadius != _blurRadius) { m_blurRadius = _blurRadius; changed = true; }
         if (m_minThreshold != _minThreshold) { m_minThreshold = _minThreshold; changed = true; }

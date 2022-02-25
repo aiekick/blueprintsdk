@@ -97,12 +97,12 @@ struct USMNode final : Node
         float _threshold = m_threshold;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_USM",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("USM");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("Sigma", &_sigma, 0, 10.f, "%.1f", flags);
-        ImGui::SliderFloat("Amount", &_amount, 0, 3.f, "%.1f", flags);
-        ImGui::SliderFloat("Threshold", &_threshold, 0, 1.f, "%.2f", flags);
+        ImGui::SliderFloat("Sigma##USM", &_sigma, 0, 10.f, "%.1f", flags);
+        ImGui::SliderFloat("Amount##USM", &_amount, 0, 3.f, "%.1f", flags);
+        ImGui::SliderFloat("Threshold##USM", &_threshold, 0, 1.f, "%.2f", flags);
         ImGui::PopItemWidth();
         if (m_sigma != _sigma) { m_sigma = _sigma; changed = true; }
         if (m_amount != _amount) { m_amount = _amount; changed = true; }

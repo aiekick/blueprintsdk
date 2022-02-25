@@ -109,11 +109,11 @@ struct BoxBlurNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_Box",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Box");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderInt("Size", &_Size, 1, 20, "%d", flags);
-        ImGui::SliderInt("Iteration", &_iteration, 1, 20, "%d", flags);
+        ImGui::SliderInt("Size##Box", &_Size, 1, 20, "%d", flags);
+        ImGui::SliderInt("Iteration##Box", &_iteration, 1, 20, "%d", flags);
         ImGui::PopItemWidth();
         if (_Size != m_Size) { m_Size = _Size; changed = true; }
         if (_iteration != m_iteration) { m_iteration = _iteration; changed = true; }

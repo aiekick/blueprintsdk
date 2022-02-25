@@ -99,12 +99,12 @@ struct AlmNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_ALM",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("ALM");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("Strength", &_strength, 0, 1.f, "%.2f", flags);
-        ImGui::SliderFloat("Bias", &_bias, 0, 1.f, "%.2f", flags);
-        ImGui::SliderFloat("Gamma", &_gamma, 0, 4.f, "%.2f", flags);
+        ImGui::SliderFloat("Strength##ALM", &_strength, 0, 1.f, "%.2f", flags);
+        ImGui::SliderFloat("Bias##ALM", &_bias, 0, 1.f, "%.2f", flags);
+        ImGui::SliderFloat("Gamma##ALM", &_gamma, 0, 4.f, "%.2f", flags);
         ImGui::PopItemWidth();
         if (_strength != m_strength) { m_strength = _strength; changed = true; }
         if (_bias != m_bias) { m_bias = _bias; changed = true; }

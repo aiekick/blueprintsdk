@@ -102,14 +102,14 @@ struct DeBandNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_DeBand",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("DeBand");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("Threshold", &_threshold, 0, 0.05f, "%.3f", flags);
-        ImGui::SliderInt("Range", &_range, 0, 64, "%.d", flags);
-        ImGui::SliderFloat("Direction", &_direction, 0, 4*M_PI, "%.2f", flags);
+        ImGui::SliderFloat("Threshold##DeBand", &_threshold, 0, 0.05f, "%.3f", flags);
+        ImGui::SliderInt("Range##DeBand", &_range, 0, 64, "%.d", flags);
+        ImGui::SliderFloat("Direction##DeBand", &_direction, 0, 4*M_PI, "%.2f", flags);
         ImGui::TextUnformatted("Blur:");ImGui::SameLine();
-        ImGui::ToggleButton("##Blur",&_blur);
+        ImGui::ToggleButton("##Blur##DeBand",&_blur);
         ImGui::PopItemWidth();
         if (_threshold != m_threshold) { m_threshold = _threshold; changed = true; }
         if (_range != m_range) { m_range = _range; changed = true; }

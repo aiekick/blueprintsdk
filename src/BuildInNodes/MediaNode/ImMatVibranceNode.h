@@ -1,20 +1,21 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#if IMGUI_VULKAN_SHADER
 #include <imgui_logger.h>
 #include <imgui_json.h>
 #include <ImVulkanShader.h>
-#include <Laplacian.h>
+#include <Vibrance_vulkan.h>
+
+#define ICON_RESET     "\uf0e2"
 
 namespace BluePrint
 {
-struct LaplacianNode final : Node
+struct VibranceNode final : Node
 {
-    BP_NODE_WITH_NAME(LaplacianNode, "Laplacian Edge", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Edge")
-    LaplacianNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Laplacian Edge"; }
+    BP_NODE_WITH_NAME(VibranceNode, "Vibrance", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Color")
+    VibranceNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Vibrance"; }
 
-    ~LaplacianNode()
+    ~VibranceNode()
     {
         if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
@@ -45,19 +46,18 @@ struct LaplacianNode final : Node
             if (!m_filter || gpu != m_device)
             {
                 if (m_filter) { delete m_filter; m_filter = nullptr; }
-                m_filter = new ImGui::Laplacian_vulkan(gpu);
+                m_filter = new ImGui::Vibrance_vulkan(gpu);
             }
             if (!m_filter)
             {
                 return {};
             }
             m_device = gpu;
-            m_filter->SetParam(m_Strength);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             if (mat_in.device == IM_DD_VULKAN)
             {
                 ImGui::VkMat in_RGB = mat_in;
-                m_filter->filter(in_RGB, im_RGB);
+                m_filter->filter(in_RGB, im_RGB, m_vibrance);
                 im_RGB.time_stamp = mat_in.time_stamp;
                 im_RGB.rate = mat_in.rate;
                 im_RGB.flags = mat_in.flags;
@@ -65,7 +65,7 @@ struct LaplacianNode final : Node
             }
             else if (mat_in.device == IM_DD_CPU)
             {
-                m_filter->filter(mat_in, im_RGB);
+                m_filter->filter(mat_in, im_RGB, m_vibrance);
                 im_RGB.time_stamp = mat_in.time_stamp;
                 im_RGB.rate = mat_in.rate;
                 im_RGB.flags = mat_in.flags;
@@ -95,16 +95,17 @@ struct LaplacianNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         bool check = m_bEnabled;
-        int _Strength = m_Strength;
+        float val = m_vibrance;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_Laplacian",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("Laplacian");
+        if (ImGui::Checkbox("##enable_filter_Vibrance",&check)) { m_bEnabled = check; changed = true; }
+        ImGui::SameLine(); ImGui::TextUnformatted("Vibrance");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderInt("Strength##Laplacian", &_Strength, 0, 20, "%d", flags);
+        ImGui::SliderFloat("##slider_vibrance##Vibrance", &val, -1.2f, 1.2f, "%.2f", flags); ImGui::SameLine();
         ImGui::PopItemWidth();
-        if (_Strength != m_Strength) { m_Strength = _Strength; changed = true; }
+        if (val != m_vibrance) { m_vibrance = val; changed = true; }
+        if (ImGui::Button(ICON_RESET "##reset_vibrance")) { m_vibrance = 0.0; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }
@@ -127,11 +128,11 @@ struct LaplacianNode final : Node
             if (val.is_boolean())
                 m_bEnabled = val.get<imgui_json::boolean>();
         }
-        if (value.contains("strength"))
+        if (value.contains("vibrance"))
         {
-            auto& val = value["strength"];
+            auto& val = value["vibrance"];
             if (val.is_number()) 
-                m_Strength = val.get<imgui_json::number>();
+                m_vibrance = val.get<imgui_json::number>();
         }
         return ret;
     }
@@ -141,7 +142,7 @@ struct LaplacianNode final : Node
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
         value["enabled"] = imgui_json::boolean(m_bEnabled);
-        value["strength"] = imgui_json::number(m_Strength);
+        value["vibrance"] = imgui_json::number(m_vibrance);
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
@@ -161,10 +162,9 @@ struct LaplacianNode final : Node
 
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
-    int m_device        {-1};
-    bool m_bEnabled     {true};
-    int m_Strength      {2};
-    ImGui::Laplacian_vulkan * m_filter   {nullptr};
+    int m_device            {-1};
+    bool m_bEnabled         {true};
+    ImGui::Vibrance_vulkan * m_filter   {nullptr};
+    float m_vibrance        {0.0f};
 };
 } // namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER

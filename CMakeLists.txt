@@ -15,7 +15,6 @@ if (POLICY CMP0068)
 endif()
 
 option(IMGUI_BP_SDK_STATIC              "Build BluePrint as static library" OFF)
-option(IMGUI_BP_SDK_MEDIA_NODE          "Build BluePrint built-in node" OFF)
 
 set(IMGUI_BP_SDK_SRC
     src/BluePrint.cpp
@@ -64,14 +63,12 @@ foreach(f ${system_header_files})
     file(RELATIVE_PATH fr "${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes" ${f})
     list(APPEND incls "#include \"${fr}\"\n")
 endforeach()
-if(IMGUI_BP_SDK_MEDIA_NODE)
-add_definitions(-DIMGUI_BP_SDK_MEDIA_NODE)
+
 file(GLOB media_header_files "${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes/MediaNode/*.h")
 foreach(f ${media_header_files})
     file(RELATIVE_PATH fr "${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes" ${f})
     list(APPEND incls "#include \"${fr}\"\n")
 endforeach()
-endif()
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/BuildInNodes.h ${incls})
 
 include_directories(${IMGUI_BP_SDK_INC_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
@@ -92,8 +89,8 @@ add_library(
 set_property(TARGET BluePrintSDK PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 set(IMGUI_BP_SDK_VERSION_MAJOR 1)
-set(IMGUI_BP_SDK_VERSION_MINOR 6)
-set(IMGUI_BP_SDK_VERSION_PATCH 2)
+set(IMGUI_BP_SDK_VERSION_MINOR 7)
+set(IMGUI_BP_SDK_VERSION_PATCH 0)
 set(IMGUI_BP_SDK_VERSION_STRING ${IMGUI_BP_SDK_VERSION_MAJOR}.${IMGUI_BP_SDK_VERSION_MINOR}.${IMGUI_BP_SDK_VERSION_PATCH})
 #Please Set BluePrint.h VERSION_BLUEPRINT also
 

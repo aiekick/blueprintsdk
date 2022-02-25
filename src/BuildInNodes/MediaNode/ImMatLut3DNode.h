@@ -164,7 +164,7 @@ struct Lut3DNode final : Node
         int lut_mode = m_lut_mode;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_Lut3D",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(0); ImGui::SameLine(); ImGui::TextUnformatted("Lut3D");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
 

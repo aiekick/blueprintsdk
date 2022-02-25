@@ -100,11 +100,11 @@ struct GaussianBlurNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_GaussianBlur",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("GaussianBlur");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("Sigma", &_sigma, 0.0, 10.f, "%.1f", flags);
-        ImGui::SliderInt("Radius", &_blurRadius, 0, 20, "%d", flags);
+        ImGui::SliderFloat("Sigma##GaussianBlur", &_sigma, 0.0, 10.f, "%.1f", flags);
+        ImGui::SliderInt("Radius##GaussianBlur", &_blurRadius, 0, 20, "%d", flags);
         ImGui::PopItemWidth();
         if (_sigma != m_sigma) { m_sigma = _sigma; changed = true; }
         if (_blurRadius != m_blurRadius) { m_blurRadius = _blurRadius; changed = true; }

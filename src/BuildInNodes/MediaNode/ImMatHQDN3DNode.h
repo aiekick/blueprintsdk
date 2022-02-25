@@ -102,13 +102,13 @@ struct HQDN3DNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_HQDN3D",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("HQDN3D");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("Luma Spatial", &_lum_spac, 0, 50.f, "%.1f", flags);
-        ImGui::SliderFloat("Chroma Spatial", &_chrom_spac, 0, 50.f, "%.1f", flags);
-        ImGui::SliderFloat("Luma Temporal", &_lum_tmp, 0, 50.f, "%.1f", flags);
-        ImGui::SliderFloat("Chroma Temporal", &_chrom_tmp, 0, 50.f, "%.1f", flags);
+        ImGui::SliderFloat("Luma Spatial##HQDN3D", &_lum_spac, 0, 50.f, "%.1f", flags);
+        ImGui::SliderFloat("Chroma Spatial##HQDN3D", &_chrom_spac, 0, 50.f, "%.1f", flags);
+        ImGui::SliderFloat("Luma Temporal##HQDN3D", &_lum_tmp, 0, 50.f, "%.1f", flags);
+        ImGui::SliderFloat("Chroma Temporal##HQDN3D", &_chrom_tmp, 0, 50.f, "%.1f", flags);
         ImGui::PopItemWidth();
         if (_lum_spac != m_lum_spac) { m_lum_spac = _lum_spac; changed = true; }
         if (_chrom_spac != m_chrom_spac) { m_chrom_spac = _chrom_spac; changed = true; }

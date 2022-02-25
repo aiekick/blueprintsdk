@@ -100,12 +100,12 @@ struct BilateralNode final : Node
         float _sigma_color = m_sigma_color;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_Bilateral",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Bilateral");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderInt("Kernel Size", &_ksize, 2, 20, "%d", flags);
-        ImGui::SliderFloat("Spatial Sigma", &_sigma_spatial, 0.f, 100.f, "%.2f", flags);
-        ImGui::SliderFloat("Color Sigma", &_sigma_color, 0.f, 100.f, "%.2f", flags);
+        ImGui::SliderInt("Kernel Size##Bilateral", &_ksize, 2, 20, "%d", flags);
+        ImGui::SliderFloat("Spatial Sigma##Bilateral", &_sigma_spatial, 0.f, 100.f, "%.2f", flags);
+        ImGui::SliderFloat("Color Sigma##Bilateral", &_sigma_color, 0.f, 100.f, "%.2f", flags);
         ImGui::PopItemWidth();
         if (_ksize != m_ksize) { m_ksize = _ksize; changed = true; }
         if (_sigma_spatial != m_sigma_spatial) { m_sigma_spatial = _sigma_spatial; changed = true; }

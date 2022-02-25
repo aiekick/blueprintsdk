@@ -123,24 +123,31 @@ NodeRegistry::NodeRegistry()
         BranchNode::GetStaticTypeInfo(),
         FlipFlopNode::GetStaticTypeInfo(),
         PrintNode::GetStaticTypeInfo(),
-#ifdef IMGUI_BP_SDK_MEDIA_NODE
 #if IMGUI_VULKAN_SHADER
         AlmNode::GetStaticTypeInfo(),
         BilateralNode::GetStaticTypeInfo(),
+        BrightnessNode::GetStaticTypeInfo(),
         BoxBlurNode::GetStaticTypeInfo(),
         CannyNode::GetStaticTypeInfo(),
         CasNode::GetStaticTypeInfo(),
         ChromaKeyNode::GetStaticTypeInfo(),
+        ColorBalanceNode::GetStaticTypeInfo(),
         ColorInvertNode::GetStaticTypeInfo(),
+        ContrastNode::GetStaticTypeInfo(),
         DeBandNode::GetStaticTypeInfo(),
         DeinterlaceNode::GetStaticTypeInfo(),
+        ExposureNode::GetStaticTypeInfo(),
+        GammaNode::GetStaticTypeInfo(),
         GaussianBlurNode::GetStaticTypeInfo(),
         HQDN3DNode::GetStaticTypeInfo(),
+        HueNode::GetStaticTypeInfo(),
         LaplacianNode::GetStaticTypeInfo(),
         Lut3DNode::GetStaticTypeInfo(),
+        SaturationNode::GetStaticTypeInfo(),
         SobelNode::GetStaticTypeInfo(),
         USMNode::GetStaticTypeInfo(),
-#endif
+        WhiteBalanceNode::GetStaticTypeInfo(),
+        VibranceNode::GetStaticTypeInfo(),
 #endif
     })
 {

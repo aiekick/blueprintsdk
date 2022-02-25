@@ -109,18 +109,18 @@ struct ChromaKeyNode final : Node
         std::vector<float> _chromaColor = m_chromaColor;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter",&check)) { m_bEnabled = check; changed = true; }
+        if (ImGui::Checkbox("##enable_filter_ChromaKey",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("ChromaKey");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::Checkbox("Alpha Output",&_alpha_only);
-        ImGui::SliderFloat("Luma Mask", &_lumaMask, 0.f, 20.f, "%.1f", flags);
-        ImGui::SliderFloat("Alpha Cutoff Min", &_alphaCutoffMin, 0.f, 1.f, "%.2f", flags);
-        ImGui::SliderFloat("Alpha Scale", &_alphaScale, 0.f, 40.f, "%.1f", flags);
-        ImGui::SliderFloat("Alpha Exponent", &_alphaExponent, 0.f, 1.f, "%.2f", flags);
+        ImGui::Checkbox("Alpha Output##ChromaKey",&_alpha_only);
+        ImGui::SliderFloat("Luma Mask##ChromaKey", &_lumaMask, 0.f, 20.f, "%.1f", flags);
+        ImGui::SliderFloat("Alpha Cutoff Min##ChromaKey", &_alphaCutoffMin, 0.f, 1.f, "%.2f", flags);
+        ImGui::SliderFloat("Alpha Scale##ChromaKey", &_alphaScale, 0.f, 40.f, "%.1f", flags);
+        ImGui::SliderFloat("Alpha Exponent##ChromaKey", &_alphaExponent, 0.f, 1.f, "%.2f", flags);
         ImGui::PopItemWidth();
         ImGuiColorEditFlags misc_flags = ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex;
         ImGui::SetNextItemWidth(100);
-        ImGui::ColorPicker4("ChromaColor", (float *)_chromaColor.data(), misc_flags);
+        ImGui::ColorPicker4("ChromaColor##ChromaKey", (float *)_chromaColor.data(), misc_flags);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(100);
         if (_lumaMask != m_lumaMask) { m_lumaMask = _lumaMask; changed = true; }
