@@ -64,11 +64,13 @@ foreach(f ${system_header_files})
     list(APPEND incls "#include \"${fr}\"\n")
 endforeach()
 
+if(IMGUI_VULKAN_SHADER)
 file(GLOB media_header_files "${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes/MediaNode/*.h")
 foreach(f ${media_header_files})
     file(RELATIVE_PATH fr "${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes" ${f})
     list(APPEND incls "#include \"${fr}\"\n")
 endforeach()
+endif()
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/BuildInNodes.h ${incls})
 
 include_directories(${IMGUI_BP_SDK_INC_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
