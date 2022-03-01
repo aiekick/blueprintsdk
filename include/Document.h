@@ -106,6 +106,7 @@ struct IMGUI_API Document
 
     string                  m_Path;
     string                  m_Name;
+    string                  m_CatalogFilter;
     bool                    m_IsModified = false;
     vector<UndoState>       m_Undo;
     vector<UndoState>       m_Redo;

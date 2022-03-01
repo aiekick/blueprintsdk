@@ -30,6 +30,18 @@ enum class NodeStyle:int32_t
     Custom
 };
 
+static inline std::vector<std::string> GetCatalogInfo(std::string filter)
+{
+    std::vector<std::string> calalogs;
+    std::string s;
+    std::istringstream f(filter);
+    while (std::getline(f, s, '#'))
+    {
+        calalogs.push_back(s);
+    }
+    return calalogs;
+}
+
 struct LinkQueryResult
 {
     LinkQueryResult(bool result, std::string reason = "")
@@ -74,18 +86,6 @@ struct NodeTypeInfo
 	typedef int32_t version_t();
 	typedef NodeTypeInfo* create_t();
 	typedef void destroy_t(NodeTypeInfo*);
-
-    std::vector<std::string> GetCatalogInfo() const
-    {
-        std::vector<std::string> calalogs;
-        std::string s;
-        std::istringstream f(m_Catalog);
-        while (std::getline(f, s, '#'))
-        {
-            calalogs.push_back(s);
-        }
-        return calalogs;
-    }
 };
 
 struct IMGUI_API Node

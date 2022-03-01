@@ -265,8 +265,8 @@ public:
     bool File_Import();
     bool File_Export(Node * group_node);
     bool File_New();
-    bool File_New_Filter(imgui_json::value& bp, std::string name);
-    bool File_New_Fusion(imgui_json::value& bp, std::string name);
+    bool File_New_Filter(imgui_json::value& bp, std::string name, std::string sfilter);
+    bool File_New_Fusion(imgui_json::value& bp, std::string name, std::string sfilter);
     bool File_SaveAsEx(std::string path);
     bool File_SaveAs();
     bool File_Save();

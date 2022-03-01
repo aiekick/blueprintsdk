@@ -394,11 +394,19 @@ void NodeCreateDialog::Show(BluePrintUI& UI)
     {
         create_node_label = "##create_filter_node";
         catalog_filter = "Filter";
+        if (!UI.m_Document->m_CatalogFilter.empty())
+        {
+            catalog_filter += "#" + UI.m_Document->m_CatalogFilter;
+        }
     }
     else if (ImGui::IsPopupOpen("##create_fusion_node"))
     {
         create_node_label = "##create_fusion_node";
         catalog_filter = "Fusion";
+        if (!UI.m_Document->m_CatalogFilter.empty())
+        {
+            catalog_filter += "#" + UI.m_Document->m_CatalogFilter;
+        }
     }
     else if (ImGui::IsPopupOpen("##create_system_node"))
     {
@@ -2160,12 +2168,32 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
 
     if (!catalog_filter.empty())
     {
+        auto catalog_filters = GetCatalogInfo(catalog_filter);
         std::vector<const NodeTypeInfo *> array;
         for (auto nodetype : registryNode)
         {
-            auto catalogs = nodetype->GetCatalogInfo();
-            if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog_filter) == 0)
-                array.push_back(nodetype);
+            auto catalogs = GetCatalogInfo(nodetype->m_Catalog);
+            if (catalogs.size() > 0 && catalog_filters.size() > 0 && catalogs[0].compare("Dummy") != 0)
+            {
+                if (catalogs[0].compare(catalog_filters[0]) == 0)
+                {
+                    if (catalogs.size() > 1 && catalog_filters.size() > 1)
+                    {
+                        if (catalogs[1].compare(catalog_filters[1]) == 0)
+                        {
+                            if (catalogs.size() > 2 && catalog_filters.size() > 2)
+                            {
+                                if (catalogs[2].compare(catalog_filters[2]) == 0)
+                                    array.push_back(nodetype);
+                            }
+                            else
+                                array.push_back(nodetype);
+                        }
+                    }
+                    else
+                        array.push_back(nodetype);
+                }
+            }
         }
         string low_case_filter_str = filter_string.size() > 0 ? to_lower(filter_string) : "";
         for (auto nodetype : array)
@@ -2210,7 +2238,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
             std::vector<const NodeTypeInfo *> array;
             for (auto nodetype : registryNode)
             {
-                auto catalogs = nodetype->GetCatalogInfo();
+                auto catalogs = GetCatalogInfo(nodetype->m_Catalog);
                 if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog) == 0)
                     array.push_back(nodetype);
             }
@@ -2255,7 +2283,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
             std::vector<const NodeTypeInfo *> array;
             for (auto nodetype : registryNode)
             {
-                auto catalogs = nodetype->GetCatalogInfo();
+                auto catalogs = GetCatalogInfo(nodetype->m_Catalog);
                 if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog) == 0)
                     array.push_back(nodetype);
                 std::sort(array.begin(), array.end(),
@@ -2752,7 +2780,7 @@ bool BluePrintUI::File_New()
     return true;
 }
 
-bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name)
+bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name, std::string sfilter)
 {
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
@@ -2784,11 +2812,16 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name)
         m_Document->m_Name = "FilterBluePrint";
     else
         m_Document->m_Name = name;
+    if (sfilter.empty())
+        m_Document->m_CatalogFilter = "";
+    else
+        m_Document->m_CatalogFilter = sfilter;
+
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
-bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, std::string name)
+bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, std::string name, std::string sfilter)
 {
     ed::SetCurrentEditor(m_Editor);
     ed::ClearSelection();
@@ -2820,6 +2853,12 @@ bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, std::string name)
         m_Document->m_Name = "FusionBluePrint";
     else
         m_Document->m_Name = name;
+
+    if (sfilter.empty())
+        m_Document->m_CatalogFilter = "";
+    else
+        m_Document->m_CatalogFilter = sfilter;
+    
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
