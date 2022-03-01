@@ -148,6 +148,7 @@ NodeRegistry::NodeRegistry()
         USMNode::GetStaticTypeInfo(),
         WhiteBalanceNode::GetStaticTypeInfo(),
         VibranceNode::GetStaticTypeInfo(),
+        AudioGainNode::GetStaticTypeInfo(),
 #endif
     })
 {
