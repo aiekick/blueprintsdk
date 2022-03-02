@@ -511,7 +511,7 @@ int BP::Load(const imgui_json::value& value)
     if (!GetPtrTo(value, "nodes", nodeArray)) // required
         return BP_ERR_NODE_LOAD;
 
-    IDGenerator generator;
+    //IDGenerator generator;
     for (auto& nodeValue : *nodeArray)
     {
         int ret = 0;
