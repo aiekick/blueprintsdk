@@ -3364,9 +3364,16 @@ void BluePrintUI::ShowStyleEditor(bool* show)
 void BluePrintUI::ShowShortToolbar(bool* show)
 {
     auto& io = ImGui::GetIO();
-    ImVec2 window_pos = ImGui::GetCursorScreenPos();
+    ImVec2 window_pos = ImGui::GetWindowPos();
     ImVec2 window_size = ImGui::GetWindowSize();
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        const ImGuiViewport* viewport = ImGui::GetWindowViewport();
+        window_flags |= ImGuiWindowFlags_NoDocking;
+        io.ConfigViewportsNoDecoration = true;
+        ImGui::SetNextWindowViewport(viewport->ID);
+    }
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
     ImGui::PushStyleColor(ImGuiCol_Button, m_StyleColors[BluePrintStyleColor_ToolButton]);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, m_StyleColors[BluePrintStyleColor_ToolButtonHovered]);
@@ -3376,6 +3383,11 @@ void BluePrintUI::ShowShortToolbar(bool* show)
     ImGui::SetNextWindowPos(window_pos + ImVec2(window_size.x - 48, 8));
     if (ImGui::Begin("##embedded_toolbar", show, window_flags))
     {
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            auto viewport = ImGui::GetWindowViewport();
+            viewport->Flags |= ImGuiViewportFlags_TopMost;
+        }
         auto toolbarAction = [](Action& action)
         {
             ImGui::ScopedDisableItem disableAction(!action.IsEnabled());
@@ -3406,6 +3418,10 @@ void BluePrintUI::ShowShortToolbar(bool* show)
     ImGui::End();
     ImGui::PopStyleVar(1);
     ImGui::PopStyleColor(4);
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        io.ConfigViewportsNoDecoration = false;
+    }
 }
 
 void BluePrintUI::ShowToolbar(bool* show)
