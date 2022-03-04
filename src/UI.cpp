@@ -817,6 +817,8 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
     if (!m_Editor || !m_Document || ReadyToQuit)
         return true;
     auto& io = ImGui::GetIO();
+    bool multiviewport = io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable;
+    const ImGuiViewport* viewport = ImGui::GetMainViewport();
     if (!child_window)
     {
         m_isChildWindow = false;
@@ -827,9 +829,13 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             io.ConfigViewportsNoDecoration = false;
-            flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
-                                ImGuiWindowFlags_NoDocking;
-            Canvas_size = ImVec2(1440 * io.FontGlobalScale, 960 * io.FontGlobalScale);
+            flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
+                        ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | 
+                        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDocking;
+            Canvas_size = viewport->WorkSize;
+            ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::SetNextWindowSize(viewport->WorkSize);
+            ImGui::SetNextWindowViewport(viewport->ID);
         }
         else
         {
@@ -839,8 +845,9 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
             Canvas_size = io.DisplaySize;
             cond = ImGuiCond_None;
             ImGui::SetNextWindowPos(ImVec2(0, 0));
+            ImGui::SetNextWindowSize(io.DisplaySize, cond);
         }
-        ImGui::SetNextWindowSize(Canvas_size, cond);
+        
         ImGui::Begin("Content", nullptr, flags);
             ImVec2 debug_min = ImGui::GetItemRectMin();
             ImVec2 debug_max = Canvas_size;
@@ -3427,8 +3434,16 @@ void BluePrintUI::ShowShortToolbar(bool* show)
 void BluePrintUI::ShowToolbar(bool* show)
 {
     auto& io = ImGui::GetIO();
+    ImVec2 window_pos = ImGui::GetWindowPos();
+    ImVec2 window_size = ImGui::GetWindowSize();
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-    
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        const ImGuiViewport* viewport = ImGui::GetWindowViewport();
+        window_flags |= ImGuiWindowFlags_NoDocking;
+        io.ConfigViewportsNoDecoration = true;
+        ImGui::SetNextWindowViewport(viewport->ID);
+    }
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
     ImGui::PushStyleColor(ImGuiCol_Button, m_StyleColors[BluePrintStyleColor_ToolButton]);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, m_StyleColors[BluePrintStyleColor_ToolButtonHovered]);
@@ -3459,14 +3474,8 @@ void BluePrintUI::ShowToolbar(bool* show)
                 action.Execute();
             }
         };
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            toolbarAction(m_File_Exit); ImGui::ShowTooltipOnHover("%s", m_File_Exit.GetName().c_str());
-        }
-        else
-        {
-            ImGui::Dummy(ImVec2(20, 0));
-        }
+
+        ImGui::Dummy(ImVec2(20, 0));
         ImGui::SameLine();
         toolbarAction(m_File_Open); ImGui::ShowTooltipOnHover("%s", m_File_Open.GetName().c_str());
         ImGui::SameLine();
