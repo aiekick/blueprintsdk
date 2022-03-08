@@ -55,31 +55,15 @@ struct BoxBlurNode final : Node
             m_device = gpu;
             m_filter->SetParam(m_Size, m_Size);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            if (mat_in.device == IM_DD_VULKAN)
+            m_filter->filter(mat_in, im_RGB);
+            for (int i = 1; i < m_iteration; i++)
             {
-                ImGui::VkMat in_RGB = mat_in;
-                m_filter->filter(in_RGB, im_RGB);
-                for (int i = 1; i < m_iteration; i++)
-                {
-                    m_filter->filter(im_RGB, im_RGB);
-                }
-                im_RGB.time_stamp = mat_in.time_stamp;
-                im_RGB.rate = mat_in.rate;
-                im_RGB.flags = mat_in.flags;
-                m_MatOut.SetValue(im_RGB);
+                m_filter->filter(im_RGB, im_RGB);
             }
-            else if (mat_in.device == IM_DD_CPU)
-            {
-                m_filter->filter(mat_in, im_RGB);
-                for (int i = 1; i < m_iteration; i++)
-                {
-                    m_filter->filter(im_RGB, im_RGB);
-                }
-                im_RGB.time_stamp = mat_in.time_stamp;
-                im_RGB.rate = mat_in.rate;
-                im_RGB.flags = mat_in.flags;
-                m_MatOut.SetValue(im_RGB);
-            }
+            im_RGB.time_stamp = mat_in.time_stamp;
+            im_RGB.rate = mat_in.rate;
+            im_RGB.flags = mat_in.flags;
+            m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;
     }

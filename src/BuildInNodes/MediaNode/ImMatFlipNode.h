@@ -1,18 +1,19 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#if IMGUI_VULKAN_SHADER
+#include <imgui_logger.h>
+#include <imgui_json.h>
 #include <ImVulkanShader.h>
-
-#include "ALM_vulkan.h"
+#include <Flip_vulkan.h>
 
 namespace BluePrint
 {
-struct AlmNode final : Node
+struct FlipNode final : Node
 {
-    BP_NODE_WITH_NAME(AlmNode, "ALM Enhancement", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Enhance")
-    AlmNode(BP& blueprint): Node(blueprint) { m_Name = "Mat ALM"; }
-    ~AlmNode()
+    BP_NODE_WITH_NAME(FlipNode, "Flip", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Flip")
+    FlipNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Flip"; }
+
+    ~FlipNode()
     {
         if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
@@ -42,17 +43,20 @@ struct AlmNode final : Node
             }
             if (!m_filter || gpu != m_device)
             {
-                if (m_filter) { delete m_filter; m_filter = nullptr; }
-                m_filter = new ImGui::ALM_vulkan(gpu);
+                m_filter = new ImGui::Flip_vulkan(gpu);
+                if (!m_filter)
+                {
+                    return {};
+                }
             }
-            if (!m_filter)
+            if (!m_bx && !m_by)
             {
-                return {};
+                m_MatOut.SetValue(mat_in);
+                return m_Exit;
             }
             m_device = gpu;
-            m_filter->SetParam(m_strength, m_bias, m_gamma);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            m_filter->filter(mat_in, im_RGB);
+            m_filter->flip(mat_in, im_RGB, m_bx, m_by);
             im_RGB.time_stamp = mat_in.time_stamp;
             im_RGB.rate = mat_in.rate;
             im_RGB.flags = mat_in.flags;
@@ -81,22 +85,20 @@ struct AlmNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         bool check = m_bEnabled;
-        float _strength = m_strength;
-        float _bias = m_bias;
-        float _gamma = m_gamma;
-        static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
+        bool _bx = m_bx;
+        bool _by = m_by;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_ALM",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("ALM");
+        if (ImGui::Checkbox("##enable_filter_Flip",&check)) { m_bEnabled = check; changed = true; }
+        ImGui::SameLine(); ImGui::TextUnformatted("Flip");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("Strength##ALM", &_strength, 0, 1.f, "%.2f", flags);
-        ImGui::SliderFloat("Bias##ALM", &_bias, 0, 1.f, "%.2f", flags);
-        ImGui::SliderFloat("Gamma##ALM", &_gamma, 0, 4.f, "%.2f", flags);
+        ImGui::TextUnformatted("X Flip");ImGui::SameLine();
+        ImGui::ToggleButton("##xflip##Flip",&_bx);
+        ImGui::TextUnformatted("Y Flip");ImGui::SameLine();
+        ImGui::ToggleButton("##yflip##Flip",&_by);
         ImGui::PopItemWidth();
-        if (_strength != m_strength) { m_strength = _strength; changed = true; }
-        if (_bias != m_bias) { m_bias = _bias; changed = true; }
-        if (_gamma != m_gamma) { m_gamma = _gamma; changed = true; }
+        if (_bx != m_bx) { m_bx = _bx; changed = true; }
+        if (_by != m_by) { m_by = _by; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }
@@ -119,23 +121,17 @@ struct AlmNode final : Node
             if (val.is_boolean())
                 m_bEnabled = val.get<imgui_json::boolean>();
         }
-        if (value.contains("strength"))
+        if (value.contains("bx"))
         {
-            auto& val = value["strength"];
-            if (val.is_number()) 
-                m_strength = val.get<imgui_json::number>();
+            auto& val = value["bx"];
+            if (val.is_boolean()) 
+                m_bx = val.get<imgui_json::boolean>();
         }
-        if (value.contains("bias"))
+        if (value.contains("by"))
         {
-            auto& val = value["bias"];
-            if (val.is_number()) 
-                m_bias = val.get<imgui_json::number>();
-        }
-        if (value.contains("gamma"))
-        {
-            auto& val = value["gamma"];
-            if (val.is_number()) 
-                m_gamma = val.get<imgui_json::number>();
+            auto& val = value["by"];
+            if (val.is_boolean()) 
+                m_by = val.get<imgui_json::boolean>();
         }
         return ret;
     }
@@ -145,9 +141,8 @@ struct AlmNode final : Node
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
         value["enabled"] = imgui_json::boolean(m_bEnabled);
-        value["strength"] = imgui_json::number(m_strength);
-        value["bias"] = imgui_json::number(m_bias);
-        value["gamma"] = imgui_json::number(m_gamma);
+        value["bx"] = imgui_json::boolean(m_bx);
+        value["by"] = imgui_json::boolean(m_by);
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
@@ -167,12 +162,10 @@ struct AlmNode final : Node
 
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
-    int m_device        {-1};
-    bool m_bEnabled     {true};
-    float m_strength    {0.5};
-    float m_bias        {0.7};
-    float m_gamma       {2.2};
-    ImGui::ALM_vulkan * m_filter {nullptr};
+    int m_device            {-1};
+    bool m_bEnabled         {true};
+    ImGui::Flip_vulkan * m_filter {nullptr};
+    bool m_bx {false};
+    bool m_by {false};
 };
 } //namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER

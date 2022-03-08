@@ -137,6 +137,7 @@ NodeRegistry::NodeRegistry()
         DeBandNode::GetStaticTypeInfo(),
         DeinterlaceNode::GetStaticTypeInfo(),
         ExposureNode::GetStaticTypeInfo(),
+        FlipNode::GetStaticTypeInfo(),
         GammaNode::GetStaticTypeInfo(),
         GaussianBlurNode::GetStaticTypeInfo(),
         HQDN3DNode::GetStaticTypeInfo(),

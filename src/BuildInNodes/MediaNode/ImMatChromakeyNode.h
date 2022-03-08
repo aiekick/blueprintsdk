@@ -55,27 +55,13 @@ struct ChromaKeyNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            if (mat_in.device == IM_DD_VULKAN)
-            {
-                ImGui::VkMat in_RGB = mat_in;
-                m_filter->filter(in_RGB, im_RGB, m_lumaMask, m_chromaColor,
+            m_filter->filter(mat_in, im_RGB, m_lumaMask, m_chromaColor,
                                 m_alphaCutoffMin, m_alphaScale, m_alphaExponent,
                                 m_alpha_only ? CHROMAKEY_OUTPUT_ALPHA_RGBA : CHROMAKEY_OUTPUT_NORMAL);
-                im_RGB.time_stamp = mat_in.time_stamp;
-                im_RGB.rate = mat_in.rate;
-                im_RGB.flags = mat_in.flags;
-                m_MatOut.SetValue(im_RGB);
-            }
-            else if (mat_in.device == IM_DD_CPU)
-            {
-                m_filter->filter(mat_in, im_RGB, m_lumaMask, m_chromaColor,
-                                m_alphaCutoffMin, m_alphaScale, m_alphaExponent,
-                                m_alpha_only ? CHROMAKEY_OUTPUT_ALPHA_RGBA : CHROMAKEY_OUTPUT_NORMAL);
-                im_RGB.time_stamp = mat_in.time_stamp;
-                im_RGB.rate = mat_in.rate;
-                im_RGB.flags = mat_in.flags;
-                m_MatOut.SetValue(im_RGB);
-            }
+            im_RGB.time_stamp = mat_in.time_stamp;
+            im_RGB.rate = mat_in.rate;
+            im_RGB.flags = mat_in.flags;
+            m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;
     }

@@ -54,23 +54,11 @@ struct DeBandNode final : Node
             m_device = gpu;
             m_filter->SetParam(m_range, m_direction);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            if (mat_in.device == IM_DD_VULKAN)
-            {
-                ImGui::VkMat in_RGB = mat_in;
-                m_filter->filter(in_RGB, im_RGB, m_threshold, m_blur);
-                im_RGB.time_stamp = mat_in.time_stamp;
-                im_RGB.rate = mat_in.rate;
-                im_RGB.flags = mat_in.flags;
-                m_MatOut.SetValue(im_RGB);
-            }
-            else if (mat_in.device == IM_DD_CPU)
-            {
-                m_filter->filter(mat_in, im_RGB, m_threshold, m_blur);
-                im_RGB.time_stamp = mat_in.time_stamp;
-                im_RGB.rate = mat_in.rate;
-                im_RGB.flags = mat_in.flags;
-                m_MatOut.SetValue(im_RGB);
-            }
+            m_filter->filter(mat_in, im_RGB, m_threshold, m_blur);
+            im_RGB.time_stamp = mat_in.time_stamp;
+            im_RGB.rate = mat_in.rate;
+            im_RGB.flags = mat_in.flags;
+            m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;
     }
