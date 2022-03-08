@@ -1755,7 +1755,7 @@ void BluePrintUI::DrawNodes()
     // Handle new node menu last line drawing
     if (m_isNewNodePopuped && m_newNodeLinkPin != nullptr)
     {
-        ed::DrawLastLine(m_Style == BluePrintStyle::BP_Style_BluePrint);
+        ed::DrawLastLine(m_Style == BluePrintStyle::BP_Style_Light);
     }
     m_DebugOverlay->End();
 }
