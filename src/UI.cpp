@@ -608,8 +608,8 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
         }
     }
 
-    //m_DebugOverlay = new DebugOverlay();
-    //m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    m_DebugOverlay = new DebugOverlay();
+    m_DebugOverlay->Init(&m_Document->m_Blueprint);
     std::string theme = ed::GetTheme();
     SetStyle(BPStyleFromName(theme));
     ed::SetCurrentEditor(nullptr);
@@ -3139,12 +3139,14 @@ bool BluePrintUI::Blueprint_Run()
         return false;
     auto entryNode = FindEntryPointNode();
     auto result = m_Document->m_Blueprint.Execute(*entryNode);
-    if (result == StepResult::Done)
-        LOGI("Execution: Running");
-    else if (result == StepResult::Error)
+    if (result == StepResult::Error)
     {
         LOGI("Execution: Failed at step %" PRIu32, m_Document->m_Blueprint.StepCount());
         return false;
+    }
+    else if (result == StepResult::Done)
+    {
+        LOGI("Execution: Running");
     }
     return true;
 }
@@ -3162,12 +3164,14 @@ bool BluePrintUI::Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output)
     MatExitPointNode * exitNode = (MatExitPointNode *)exit_node;
     entryNode->m_MatOut.SetValue(input);
     auto result = m_Document->m_Blueprint.Run(*entryNode);
-    if (result == StepResult::Done)
-        LOGI("Execution: Running");
-    else if (result == StepResult::Error)
+    if (result == StepResult::Error)
     {
         LOGI("Execution: Failed at step %" PRIu32, m_Document->m_Blueprint.StepCount());
         return false;
+    }
+    else if (result == StepResult::Done)
+    {
+        LOGI("Execution: Running");
     }
     auto output_val = exitNode->m_MatIn.GetValue();
     output = output_val.As<ImGui::ImMat>();
