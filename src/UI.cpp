@@ -593,20 +593,23 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
     if (bp_file) m_Document->SetPath(bp_file);
     m_Document->OnMakeCurrent();
 
-    for (auto nodeTypeInfo : m_Document->m_Blueprint.GetNodeRegistry()->GetTypes())
-            m_OverlayLogger->AddKeyword(nodeTypeInfo->m_Name);
-
-    for (auto node : m_Document->m_Blueprint.GetNodes())
+    if (m_OverlayLogger)
     {
-        if (node->GetType() == NodeType::External && 
-            node->NeedOverlayLogger())
+        for (auto nodeTypeInfo : m_Document->m_Blueprint.GetNodeRegistry()->GetTypes())
+                m_OverlayLogger->AddKeyword(nodeTypeInfo->m_Name);
+
+        for (auto node : m_Document->m_Blueprint.GetNodes())
         {
-            node->SetLogger(m_OverlayLogger);
+            if (node->GetType() == NodeType::External && 
+                node->NeedOverlayLogger())
+            {
+                node->SetLogger(m_OverlayLogger);
+            }
         }
     }
 
-    m_DebugOverlay = new DebugOverlay();
-    m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    //m_DebugOverlay = new DebugOverlay();
+    //m_DebugOverlay->Init(&m_Document->m_Blueprint);
     std::string theme = ed::GetTheme();
     SetStyle(BPStyleFromName(theme));
     ed::SetCurrentEditor(nullptr);
@@ -822,7 +825,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
     if (!child_window)
     {
         m_isChildWindow = false;
-        m_DebugOverlay->Enable(true);
+        if (m_DebugOverlay) m_DebugOverlay->Enable(true);
         ImVec2 Canvas_size;
         ImGuiWindowFlags flags = ImGuiWindowFlags_None;
         ImGuiCond cond = ImGuiCond_Once;
@@ -860,7 +863,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
             UpdateActions();
             ShowToolbar();
             //Thumbnails();
-            m_OverlayLogger->Draw(debug_min, debug_max); // Put here will show logger on background
+            if (m_OverlayLogger) m_OverlayLogger->Draw(debug_min, debug_max); // Put here will show logger on background
             ed::Begin("###main_editor");
                 if (show_node)
                     DrawNodes();
@@ -873,7 +876,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
                 DrawInfoTooltip();
             ed::End();
             FileDialogs();
-            m_OverlayLogger->Update(ImGui::GetIO().DeltaTime);
+            if (m_OverlayLogger) m_OverlayLogger->Update(ImGui::GetIO().DeltaTime);
             //m_OverlayLogger->Draw(ImGui::GetItemRectMin(), io.DisplaySize); // Put here will show logger on foreground
             ed::SetCurrentEditor(nullptr); // Don't Stop ed?
 
@@ -883,7 +886,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
     else
     {
         m_isChildWindow = true;
-        m_DebugOverlay->Enable(false);
+        if (m_DebugOverlay) m_DebugOverlay->Enable(false);
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
         ShowShortToolbar();
@@ -1237,7 +1240,7 @@ void BluePrintUI::DrawNodes()
     if (!m_Document)
         return;
     const auto iconSize = ImVec2(ImGui::GetTextLineHeight(), ImGui::GetTextLineHeight());
-    m_DebugOverlay->Begin();
+    if (m_DebugOverlay) m_DebugOverlay->Begin();
     Node* need_clone_node = nullptr;
     // Commit all nodes to editor
     // Handling Comment/Group Node
@@ -1462,7 +1465,7 @@ void BluePrintUI::DrawNodes()
                             ImColor(PinTypeToColor(this, pin->GetValueType())),
                             ImColor(ImVec4(0, 0, 0, 0)));
                     ed::EndPin();
-                    m_DebugOverlay->DrawOutputPin(this, *pin);
+                    if (m_DebugOverlay) m_DebugOverlay->DrawOutputPin(this, *pin);
                     PinMin += ImVec2(0, iconSize.y + 4);
                     //ImGui::Debug_DrawItemRect();
                 }
@@ -1501,7 +1504,7 @@ void BluePrintUI::DrawNodes()
         }
         ed::EndGroupHint();
 
-        m_DebugOverlay->DrawNode(this, *node);
+        if (m_DebugOverlay) m_DebugOverlay->DrawNode(this, *node);
     }
 
     // Handling Default and SimpleNode
@@ -1636,7 +1639,7 @@ void BluePrintUI::DrawNodes()
             
             ed::EndPin();
             // [Debug Overlay] Show value of the pin if node is currently executed
-            m_DebugOverlay->DrawInputPin(this, *pin);
+            if (m_DebugOverlay) m_DebugOverlay->DrawInputPin(this, *pin);
             layout.NextRow();
         }
         if (CheckNodeStyle(node, NodeStyle::Simple))
@@ -1704,7 +1707,7 @@ void BluePrintUI::DrawNodes()
                 PinTypeToColor(this, pin->GetValueType()));
             ed::EndPin();
             // [Debug Overlay] Show value of the pin if node is currently executed
-            m_DebugOverlay->DrawOutputPin(this, *pin);
+            if (m_DebugOverlay) m_DebugOverlay->DrawOutputPin(this, *pin);
             layout.NextRow();
         }
         layout.End();
@@ -1725,7 +1728,7 @@ void BluePrintUI::DrawNodes()
         ImGui::Debug_DrawItemRect();
 #endif
         // [Debug Overlay] Show cursor over node
-        m_DebugOverlay->DrawNode(this, *node);
+        if (m_DebugOverlay) m_DebugOverlay->DrawNode(this, *node);
     }
 
     // Commit all links to editor
@@ -1757,7 +1760,7 @@ void BluePrintUI::DrawNodes()
     {
         ed::DrawLastLine(m_Style == BluePrintStyle::BP_Style_Light);
     }
-    m_DebugOverlay->End();
+    if (m_DebugOverlay) m_DebugOverlay->End();
 }
 
 void BluePrintUI::DrawInfoTooltip()
@@ -2682,13 +2685,20 @@ Node* BluePrintUI::FindExitPointNode()
 
 void BluePrintUI::CleanStateStorage()
 {
-    auto storage = ImGui::GetStateStorage();
-    storage->SetVoidPtr(ImGui::GetID("##node-context-menu-node"), nullptr);
-    storage->SetVoidPtr(ImGui::GetID("##pin-context-menu-pin"), nullptr);
-    storage->SetVoidPtr(ImGui::GetID("##link-context-menu-pin"), nullptr);
-    storage->SetVoidPtr(ImGui::GetID("##setting-node"), nullptr);
-    storage->SetVoidPtr(ImGui::GetID("##delete-node"), nullptr);
-    storage->SetVoidPtr(ImGui::GetID("##create_node_pin"), nullptr);
+    auto window = ImGui::GetCurrentWindowRead();
+    if (window)
+    {
+        auto storage = ImGui::GetStateStorage();
+        if (storage)
+        {
+            storage->SetVoidPtr(ImGui::GetID("##node-context-menu-node"), nullptr);
+            storage->SetVoidPtr(ImGui::GetID("##pin-context-menu-pin"), nullptr);
+            storage->SetVoidPtr(ImGui::GetID("##link-context-menu-pin"), nullptr);
+            storage->SetVoidPtr(ImGui::GetID("##setting-node"), nullptr);
+            storage->SetVoidPtr(ImGui::GetID("##delete-node"), nullptr);
+            storage->SetVoidPtr(ImGui::GetID("##create_node_pin"), nullptr);
+        }
+    }
 }
 
 bool BluePrintUI::Blueprint_IsValid()
@@ -2732,7 +2742,7 @@ bool BluePrintUI::File_Open(std::string path, string* error)
     mostRecentlyOpenFiles.Add(path);
     //m_Document->SetPath(path);
     m_Document->OnMakeCurrent();
-    m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    if (m_DebugOverlay) m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
@@ -2783,7 +2793,7 @@ bool BluePrintUI::File_New()
     ed::NavigateToOrigin();
     CreateNewDocument();
     m_Document->m_Name = "NONAMED";
-    m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    if (m_DebugOverlay) m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
@@ -2824,7 +2834,7 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name, std::
     else
         m_Document->m_CatalogFilter = sfilter;
 
-    m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    if (m_DebugOverlay) m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
@@ -2866,7 +2876,7 @@ bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, std::string name, std::
     else
         m_Document->m_CatalogFilter = sfilter;
     
-    m_DebugOverlay->Init(&m_Document->m_Blueprint);
+    if (m_DebugOverlay) m_DebugOverlay->Init(&m_Document->m_Blueprint);
     return true;
 }
 
@@ -2939,7 +2949,7 @@ bool BluePrintUI::Edit_Undo()
                 node->SetLogger(m_OverlayLogger);
             }
         }
-        m_DebugOverlay->Init(&m_Document->m_Blueprint);
+        if (m_DebugOverlay) m_DebugOverlay->Init(&m_Document->m_Blueprint);
     }
     return ret;
 }
