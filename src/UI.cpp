@@ -2118,12 +2118,16 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
     auto registryNode = m_Document->m_Blueprint.GetNodeRegistry()->GetTypes();
     auto registryCatalog = m_Document->m_Blueprint.GetNodeRegistry()->GetCatalogs();
     bool need_root = true;
+    int start_level = 0;
     std::vector<const BluePrint::NodeTypeInfo*> nodes;
     if (!catalog_filter.empty())
     {
         auto catalog_filters = GetCatalogInfo(catalog_filter);
         if (catalog_filters.size() > 0)
+        {
             need_root = false;
+            start_level = catalog_filters.size();
+        }
         std::vector<const NodeTypeInfo *> array;
         for (auto nodetype : registryNode)
         {
@@ -2326,7 +2330,13 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
         }
 
         // draw node tree
-        for (auto sub : node_tree.childrens)
+        stree * start = &node_tree;
+        for (int i = 0; i < start_level - 1; i++)
+        {
+            start = start->childrens.size() > 0 ? &start->childrens[0] : start;
+        }
+
+        for (auto sub : start->childrens)
         {
             if (sub.data)
             {
@@ -2371,151 +2381,6 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
             }
         }
     }
-/*
-    if (!catalog_filter.empty())
-    {
-        auto catalog_filters = GetCatalogInfo(catalog_filter);
-        std::vector<const NodeTypeInfo *> array;
-        for (auto nodetype : registryNode)
-        {
-            auto catalogs = GetCatalogInfo(nodetype->m_Catalog);
-            if (catalogs.size() > 0 && catalog_filters.size() > 0 && catalogs[0].compare("Dummy") != 0)
-            {
-                if (catalogs[0].compare(catalog_filters[0]) == 0)
-                {
-                    if (catalogs.size() > 1 && catalog_filters.size() > 1)
-                    {
-                        if (catalogs[1].compare(catalog_filters[1]) == 0)
-                        {
-                            if (catalogs.size() > 2 && catalog_filters.size() > 2)
-                            {
-                                if (catalogs[2].compare(catalog_filters[2]) == 0)
-                                    array.push_back(nodetype);
-                            }
-                            else
-                                array.push_back(nodetype);
-                        }
-                    }
-                    else
-                        array.push_back(nodetype);
-                }
-            }
-        }
-        string low_case_filter_str = filter_string.size() > 0 ? to_lower(filter_string) : "";
-        for (auto nodetype : array)
-        {
-            string low_case_node_type_name = to_lower(nodetype->m_Name);
-            if (filter_string.size() == 0 || low_case_node_type_name.find(low_case_filter_str) != string::npos)
-            {
-                ImGui::Bullet();
-                if (ImGui::MenuItem(nodetype->m_Name.c_str(), nullptr, false, true, nodetype->m_Type == NodeType::External ? ICON_NODE_DLL : nullptr))
-                {
-                    auto transaction = m_Document->BeginUndoTransaction("CreateNode");
-                    node = m_Document->m_Blueprint.CreateNode(nodetype->m_ID);
-                    LOGI("[NodeCreate] %" PRI_node " created", FMT_node(node));
-                    if (popupPosition.x == 0 || popupPosition.y == 0)
-                    {
-                        ImVec2 w_pos = ImGui::GetCursorPos();
-                        ImVec2 c_pos = ImGui::GetWindowPos();
-                        popupPosition = ImVec2(w_pos.x + c_pos.x, w_pos.y + c_pos.y);
-                    }
-                    auto nodePosition = ed::ScreenToCanvas(popupPosition);
-                    ed::SetNodePosition(node->m_ID, nodePosition);
-                    ed::SelectNode(node->m_ID);
-                    transaction->AddAction("%" PRI_node " created", FMT_node(node));
-                    m_isNewNodePopuped = false;
-                    m_newNodeLinkPin = nullptr;
-                }
-            }
-        }
-    }
-    else if (filter_string.size() > 0)
-    {
-        string low_case_filter_str = to_lower(filter_string);
-
-        for (size_t i = 0; i < registryCatalog.size(); i++)
-        {
-            auto catalog = registryCatalog[i];
-            std::vector<const NodeTypeInfo *> array;
-            for (auto nodetype : registryNode)
-            {
-                auto catalogs = GetCatalogInfo(nodetype->m_Catalog);
-                if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog) == 0)
-                    array.push_back(nodetype);
-            }
-            for (auto nodetype : array)
-            {
-                string low_case_node_type_name = to_lower(nodetype->m_Name);
-                if (low_case_node_type_name.find(low_case_filter_str) != string::npos)
-                {
-                    ImGui::Bullet();
-                    if (ImGui::MenuItem(nodetype->m_Name.c_str(), nullptr, false, true, nodetype->m_Type == NodeType::External ? ICON_NODE_DLL : nullptr))
-                    {
-                        auto transaction = m_Document->BeginUndoTransaction("CreateNode");
-                        node = m_Document->m_Blueprint.CreateNode(nodetype->m_ID);
-                        LOGI("[NodeCreate] %" PRI_node " created", FMT_node(node));
-                        if (popupPosition.x == 0 || popupPosition.y == 0)
-                        {
-                            ImVec2 w_pos = ImGui::GetCursorPos();
-                            ImVec2 c_pos = ImGui::GetWindowPos();
-                            popupPosition = ImVec2(w_pos.x + c_pos.x, w_pos.y + c_pos.y);
-                        }
-                        auto nodePosition = ed::ScreenToCanvas(popupPosition);
-                        ed::SetNodePosition(node->m_ID, nodePosition);
-                        ed::SelectNode(node->m_ID);
-                        transaction->AddAction("%" PRI_node " created", FMT_node(node));
-                        m_isNewNodePopuped = false;
-                        m_newNodeLinkPin = nullptr;
-                    }
-                }
-            }
-        }
-    }
-    else
-    {
-        for (size_t i = 0; i < registryCatalog.size(); i++)
-        {
-            auto catalog = registryCatalog[i];
-            std::vector<const NodeTypeInfo *> array;
-            for (auto nodetype : registryNode)
-            {
-                auto catalogs = GetCatalogInfo(nodetype->m_Catalog);
-                if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog) == 0)
-                    array.push_back(nodetype);
-                std::sort(array.begin(), array.end(),
-                            [](const NodeTypeInfo * a, const NodeTypeInfo * b) {
-                                return a->m_Name < b->m_Name;
-                        });
-            }
-            if (array.size() > 0 && ImGui::BeginMenu(catalog.c_str()))
-            {
-                for (auto nodetype : array)
-                {
-                    ImGui::Bullet();
-                    if (ImGui::MenuItem(nodetype->m_Name.c_str(), nullptr, false, true, nodetype->m_Type == NodeType::External ? ICON_NODE_DLL : nullptr))
-                    {
-                        auto transaction = m_Document->BeginUndoTransaction("CreateNode");
-                        node = m_Document->m_Blueprint.CreateNode(nodetype->m_ID);
-                        LOGI("[NodeCreate] %" PRI_node " created", FMT_node(node));
-                        if (popupPosition.x == 0 || popupPosition.y == 0)
-                        {
-                            ImVec2 w_pos = ImGui::GetCursorPos();
-                            ImVec2 c_pos = ImGui::GetWindowPos();
-                            popupPosition = ImVec2(w_pos.x + c_pos.x, w_pos.y + c_pos.y);
-                        }
-                        auto nodePosition = ed::ScreenToCanvas(popupPosition);
-                        ed::SetNodePosition(node->m_ID, nodePosition);
-                        ed::SelectNode(node->m_ID);
-                        transaction->AddAction("%" PRI_node " created", FMT_node(node));
-                        m_isNewNodePopuped = false;
-                        m_newNodeLinkPin = nullptr;
-                    }
-                }
-                ImGui::EndMenu();
-            }
-        }
-    }
-    */
     return node;
 }
 
