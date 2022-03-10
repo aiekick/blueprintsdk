@@ -40,6 +40,7 @@
 #define ICON_NODE_OPEN          ICON_MD_FOLDER_OPEN
 #define ICON_NODE_FILE          "\ue173"
 #define ICON_NODE_CLEAR         ICON_MD_CLEAR_ALL
+#define ICON_NODE_NEXT          "\uf0da"
 #else
 #define ICON_OPEN_BLUEPRINT     "Open"
 #define ICON_NEW_BLUEPRINT      "New"
@@ -64,6 +65,7 @@
 #define ICON_NODE_FILE          ">"
 #define ICON_NODE_CLEAR         "x"
 #define ICON_NODE_SEARCH        "f"
+#define ICON_NODE_NEXT          ">"
 #endif
 
 namespace ed = ax::NodeEditor;
