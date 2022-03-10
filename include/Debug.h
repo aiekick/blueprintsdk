@@ -6,6 +6,21 @@
 #include <BluePrint.h>
 #include <Node.h>
 
+enum class LogLevel: int32_t
+{
+    Verbose,
+    Info,
+    Debug,
+    Warning,
+    Error,
+};
+
+# define LOGV(...)
+# define LOGD(...)
+# define LOGI(...)
+# define LOGW(...)
+# define LOGE(...)
+
 namespace BluePrint
 {
 struct BluePrintUI;

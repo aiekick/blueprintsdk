@@ -1,8 +1,6 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#if IMGUI_VULKAN_SHADER
-#include <imgui_logger.h>
 #include <imgui_json.h>
 #include <ImVulkanShader.h>
 #include <GaussianBlur.h>
@@ -167,4 +165,3 @@ private:
     ImGui::GaussianBlur_vulkan * m_filter   {nullptr};
 };
 } // namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER

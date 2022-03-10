@@ -1,6 +1,6 @@
 #include <Document.h>
 #include <Utils.h>
-#include <imgui_logger.h>
+#include <Debug.h>
 
 namespace BluePrint
 {

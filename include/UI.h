@@ -6,7 +6,6 @@
 #include <ImGuiFileDialog.h>
 #include <dir_iterate.h>
 #include <imgui_node_editor.h>
-#include <imgui_logger.h>
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
@@ -67,7 +66,6 @@
 #define ICON_NODE_SEARCH        "f"
 #endif
 
-using namespace imgui_logger;
 namespace ed = ax::NodeEditor;
 
 enum BluePrintStyleColor
@@ -235,7 +233,6 @@ struct BluePrintUI
     enum BluePrintStyle             m_Style {BluePrintStyle::BP_Style_BluePrint};
 private:
     DebugOverlay*                   m_DebugOverlay {nullptr};
-    OverlayLogger*                  m_OverlayLogger {nullptr};
 
 private:
     ContextMenu         m_ContextMenu;

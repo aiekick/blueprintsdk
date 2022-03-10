@@ -68,7 +68,7 @@ struct LinkQueryResult;
 struct FlowPin;
 struct PinValue
 {
-    using ValueType = nonstd::variant<monostate, FlowPin*, bool, int32_t, int64_t, float, double, string, uintptr_t, ImVec2, ImVec4, ImGui::ImMat, imgui_json::array, PinValueEx*>;
+    using ValueType = nonstd::variant<nonstd::monostate, FlowPin*, bool, int32_t, int64_t, float, double, std::string, uintptr_t, ImVec2, ImVec4, ImGui::ImMat, imgui_json::array, PinValueEx*>;
 
     PinValue() = default;
     PinValue(const PinValue&) = default;
@@ -83,9 +83,9 @@ struct PinValue
     PinValue(float value): m_Value(value) {}
     PinValue(double value): m_Value(value) {}
     PinValue(uintptr_t value): m_Value(value) {}
-    PinValue(string&& value): m_Value(std::move(value)) {}
-    PinValue(const string& value): m_Value(value) {}
-    PinValue(const char* value): m_Value(string(value)) {}
+    PinValue(std::string&& value): m_Value(std::move(value)) {}
+    PinValue(const std::string& value): m_Value(value) {}
+    PinValue(const char* value): m_Value(std::string(value)) {}
     PinValue(const ImVec2 value): m_Value(value) {}
     PinValue(const ImVec4 value): m_Value(value) {}
     PinValue(ImGui::ImMat value): m_Value(value) {}
@@ -329,7 +329,7 @@ struct IMGUI_API AnyPin final : Pin
     bool Load(const imgui_json::value& value) override;
     void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const override;
 
-    unique_ptr<Pin> m_InnerPin;
+    std::unique_ptr<Pin> m_InnerPin;
 };
 
 // Boolean type pin

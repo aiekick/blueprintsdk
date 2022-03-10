@@ -511,19 +511,6 @@ BluePrintUI::BluePrintUI()
 
 void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
 {
-    m_OverlayLogger = new OverlayLogger();
-    OverlayLogger::SetCurrent(m_OverlayLogger);
-    m_OverlayLogger->AddKeyword("Node");
-    m_OverlayLogger->AddKeyword("Pin");
-    m_OverlayLogger->AddKeyword("Link");
-    m_OverlayLogger->AddKeyword("ContextMenu");
-    m_OverlayLogger->AddKeyword("NodeContextMenu");
-    m_OverlayLogger->AddKeyword("PinContextMenu");
-    m_OverlayLogger->AddKeyword("LinkContextMenu");
-    m_OverlayLogger->AddKeyword("NodeDeleteDialog");
-    m_OverlayLogger->AddKeyword("NodeCreateDialog");
-    m_OverlayLogger->AddKeyword("NodeSettingDialog");
-
     ImGui::MostRecentlyUsedList::Install(ImGui::GetCurrentContext());
 
 #if !defined(__EMSCRIPTEN__)
@@ -533,7 +520,6 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
     m_Editor = ed::CreateEditor(&m_Config);
     ed::SetCurrentEditor(m_Editor);
     m_Document = make_unique<BluePrint::Document>();
-    m_Document->m_OverlayLogger = m_OverlayLogger;
 
     // load dynamic node
     auto nodeRegistry = m_Document->m_Blueprint.GetNodeRegistry();
@@ -593,21 +579,6 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
     if (bp_file) m_Document->SetPath(bp_file);
     m_Document->OnMakeCurrent();
 
-    if (m_OverlayLogger)
-    {
-        for (auto nodeTypeInfo : m_Document->m_Blueprint.GetNodeRegistry()->GetTypes())
-                m_OverlayLogger->AddKeyword(nodeTypeInfo->m_Name);
-
-        for (auto node : m_Document->m_Blueprint.GetNodes())
-        {
-            if (node->GetType() == NodeType::External && 
-                node->NeedOverlayLogger())
-            {
-                node->SetLogger(m_OverlayLogger);
-            }
-        }
-    }
-
     m_DebugOverlay = new DebugOverlay();
     m_DebugOverlay->Init(&m_Document->m_Blueprint);
     std::string theme = ed::GetTheme();
@@ -627,7 +598,6 @@ void BluePrintUI::Finalize()
     ed::SetCurrentEditor(nullptr);
     ed::DestroyEditor(m_Editor);
     m_Editor = nullptr;
-    if (m_OverlayLogger) { delete m_OverlayLogger; m_OverlayLogger = nullptr; }
     if (m_DebugOverlay) { delete m_DebugOverlay; m_DebugOverlay = nullptr; }
 #ifdef USE_BOOKMARK
 	// save bookmarks
@@ -683,22 +653,6 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
             editorStyle.Colors[ed::StyleColor_Flow]         = ImColor( 64, 128,  64, 255);
             editorStyle.Colors[ed::StyleColor_FlowDMarker]  = ImColor(255, 128,  10, 255);
             editorStyle.Colors[ed::StyleColor_FlowMarker]   = ImColor(128, 255, 128, 255);
-            if (m_OverlayLogger)
-            {
-                m_OverlayLogger->SetLogColor(LogColor_LogTimeColor,     ImColor(150, 209,   0, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogSymbolColor,   ImColor(192, 192, 192, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogStringColor,   ImColor(255, 174, 133, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogTagColor,      ImColor(255, 214, 143, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogKeywordColor,  ImColor(255, 255, 255, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogTextColor,     ImColor(192, 192, 192, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogOutlineColor,  ImColor(  0,   0,   0, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogNumberColor,   ImColor(255, 255, 128, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogVerboseColor,  ImColor(128, 255, 128, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogWarningColor,  ImColor(255, 255, 192, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogErrorColor,    ImColor(255, 152, 152, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogInfoColor,     ImColor(138, 197, 255, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogAssertColor,   ImColor(255,  61,  68, 255));
-            }
         }
         break;
     case BluePrintStyle::BP_Style_Light:
@@ -735,20 +689,6 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
             editorStyle.Colors[ed::StyleColor_Flow]         = ImColor(  64, 128,  64, 255);
             editorStyle.Colors[ed::StyleColor_FlowDMarker]  = ImColor( 255, 128,  10, 255);
             editorStyle.Colors[ed::StyleColor_FlowMarker]   = ImColor( 128, 255, 128, 255);
-            if (m_OverlayLogger)
-            {
-                m_OverlayLogger->SetLogColor(LogColor_LogTimeColor,     ImColor( 75, 105,   0, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogStringColor,   ImColor(128,  87,  66, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogKeywordColor,  ImColor(  0,   0,   0, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogTextColor,     ImColor( 96,  96,  96, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogOutlineColor,  ImColor( 20,  20,  20,  64));
-                m_OverlayLogger->SetLogColor(LogColor_LogNumberColor,   ImColor(128, 128,  64, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogVerboseColor,  ImColor( 64, 128,  64, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogWarningColor,  ImColor(128, 128,  96, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogErrorColor,    ImColor(128,  76,  76, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogInfoColor,     ImColor( 69,  99, 128, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogAssertColor,   ImColor(128,  30,  34, 255));
-            }
         }
         break;
     case BluePrintStyle::BP_Style_Mono:
@@ -786,20 +726,6 @@ void BluePrintUI::SetStyle(enum BluePrintStyle style)
             editorStyle.Colors[ed::StyleColor_Flow]         = ImColor(  64,  64,  64, 255);
             editorStyle.Colors[ed::StyleColor_FlowDMarker]  = ImColor(  32,  32,  32, 255);
             editorStyle.Colors[ed::StyleColor_FlowMarker]   = ImColor(  10,  10,  10, 128);
-            if (m_OverlayLogger)
-            {
-                m_OverlayLogger->SetLogColor(LogColor_LogTimeColor,     ImColor( 75,  75,  75, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogStringColor,   ImColor(128, 128, 128, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogKeywordColor,  ImColor(  0,   0,   0, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogTextColor,     ImColor( 96,  96,  96, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogOutlineColor,  ImColor( 20,  20,  20,  64));
-                m_OverlayLogger->SetLogColor(LogColor_LogNumberColor,   ImColor(128, 128, 128, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogVerboseColor,  ImColor( 64,  64,  64, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogWarningColor,  ImColor( 96,  96,  96, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogErrorColor,    ImColor( 76,  76,  76, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogInfoColor,     ImColor( 69,  69,  69, 255));
-                m_OverlayLogger->SetLogColor(LogColor_LogAssertColor,   ImColor( 30,  30,  30, 255));
-            }
         }
         break;
     default:
@@ -863,7 +789,6 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
             UpdateActions();
             ShowToolbar();
             //Thumbnails();
-            if (m_OverlayLogger) m_OverlayLogger->Draw(debug_min, debug_max); // Put here will show logger on background
             ed::Begin("###main_editor");
                 if (show_node)
                     DrawNodes();
@@ -876,8 +801,6 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
                 DrawInfoTooltip();
             ed::End();
             FileDialogs();
-            if (m_OverlayLogger) m_OverlayLogger->Update(ImGui::GetIO().DeltaTime);
-            //m_OverlayLogger->Draw(ImGui::GetItemRectMin(), io.DisplaySize); // Put here will show logger on foreground
             ed::SetCurrentEditor(nullptr); // Don't Stop ed?
 
         ImGui::End();
@@ -1740,7 +1663,7 @@ void BluePrintUI::DrawNodes()
         ed::Suspend();
         LOGI("[HandleNodeToolBar] Clone from %" PRI_node, FMT_node(need_clone_node));
         auto nodeStart = ed::GetNodePosition(need_clone_node->m_ID);
-        auto clone_node = m_Document->m_Blueprint.CloneNode(need_clone_node, m_OverlayLogger);
+        auto clone_node = m_Document->m_Blueprint.CloneNode(need_clone_node);
         ed::SetNodePosition(clone_node->m_ID, ImVec2(nodeStart.x + 40, nodeStart.y + 80));
         ed::Resume();
     }
@@ -2226,11 +2149,6 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
                     auto nodePosition = ed::ScreenToCanvas(popupPosition);
                     ed::SetNodePosition(node->m_ID, nodePosition);
                     ed::SelectNode(node->m_ID);
-                    if (node->GetType() == NodeType::External && 
-                        node->NeedOverlayLogger())
-                    {
-                        node->SetLogger(m_Document->m_OverlayLogger);
-                    }
                     transaction->AddAction("%" PRI_node " created", FMT_node(node));
                     m_isNewNodePopuped = false;
                     m_newNodeLinkPin = nullptr;
@@ -2272,11 +2190,6 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
                         auto nodePosition = ed::ScreenToCanvas(popupPosition);
                         ed::SetNodePosition(node->m_ID, nodePosition);
                         ed::SelectNode(node->m_ID);
-                        if (node->GetType() == NodeType::External && 
-                            node->NeedOverlayLogger())
-                        {
-                            node->SetLogger(m_Document->m_OverlayLogger);
-                        }
                         transaction->AddAction("%" PRI_node " created", FMT_node(node));
                         m_isNewNodePopuped = false;
                         m_newNodeLinkPin = nullptr;
@@ -2320,11 +2233,6 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
                         auto nodePosition = ed::ScreenToCanvas(popupPosition);
                         ed::SetNodePosition(node->m_ID, nodePosition);
                         ed::SelectNode(node->m_ID);
-                        if (node->GetType() == NodeType::External && 
-                            node->NeedOverlayLogger())
-                        {
-                            node->SetLogger(m_Document->m_OverlayLogger);
-                        }
                         transaction->AddAction("%" PRI_node " created", FMT_node(node));
                         m_isNewNodePopuped = false;
                         m_newNodeLinkPin = nullptr;
@@ -2941,14 +2849,6 @@ bool BluePrintUI::Edit_Undo()
     if (m_Document)
     {
         ret = m_Document->Undo();
-        for (auto node : m_Document->m_Blueprint.GetNodes())
-        {
-            if (node->GetType() == NodeType::External && 
-                node->NeedOverlayLogger())
-            {
-                node->SetLogger(m_OverlayLogger);
-            }
-        }
         if (m_DebugOverlay) m_DebugOverlay->Init(&m_Document->m_Blueprint);
     }
     return ret;
@@ -3000,11 +2900,6 @@ bool BluePrintUI::Edit_Paste()
         ed::SetGroupSize(clone_node->m_ID, clip.m_GroupSize);
         ed::SelectNode(clone_node->m_ID, true);
         clone_node->SetName(clip.m_Name);
-        if (clone_node->GetType() == NodeType::External && 
-            clone_node->NeedOverlayLogger())
-        {
-            clone_node->SetLogger(m_OverlayLogger);
-        }
         LOGI("[Edit]: Paste Node %s", clip.m_Name.c_str());
     }
     return m_ClipBoard.size() > 0;

@@ -1,7 +1,6 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#include <imgui_logger.h>
 #include <imgui_json.h>
 #include <ImVulkanShader.h>
 #include <Gamma_vulkan.h>

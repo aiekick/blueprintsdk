@@ -1,13 +1,12 @@
 #pragma once
 #include <BluePrint.h>
 #include <Pin.h>
-#include <imgui_logger.h>
+#include <Debug.h>
 #include <imgui_node_editor.h>
 #include <inttypes.h>
 #include <DynObjectLoader.h>
 
 namespace ed = ax::NodeEditor;
-using namespace imgui_logger;
 
 namespace BluePrint
 {
@@ -192,11 +191,9 @@ struct IMGUI_API Node
     virtual std::string     GetCatalog() const;
     virtual bool            HasSetting() const;
     virtual bool            CustomLayout() const;
-    virtual bool            NeedOverlayLogger() const;
     virtual std::string     GetName() const;
     virtual void            SetName(std::string name);
     virtual void            SetBreakPoint(bool breaken);
-    virtual void            SetLogger(OverlayLogger* instance);
 
     virtual LinkQueryResult AcceptLink(const Pin& receiver, const Pin& provider) const; // Checks if node accept link between these two pins. There node can filter out unsupported link types.
     virtual void            WasLinked(const Pin& receiver, const Pin& provider); // Notifies node that link involving one of its pins has been made.
@@ -222,10 +219,8 @@ struct IMGUI_API Node
     string          m_Name              {""};
     BP*             m_Blueprint         {nullptr};
     int             m_IconHovered       {-1};
-    OverlayLogger*  m_logger            {nullptr};
     bool            m_HasSetting        {false};
     bool            m_HasCustomLayout   {false};
-    bool            m_NeedOverlayLogger {false};
     bool            m_BreakPoint        {false};
     bool            m_NoBackGround      {false};
     ID_TYPE         m_GroupID           {0};
@@ -247,7 +242,6 @@ struct ClipNode
         m_GroupSize = ed::GetGroupSize(node->m_ID);
         m_HasSetting = node->m_HasSetting;
         m_HasCustomLayout = node->m_HasCustomLayout;
-        m_NeedOverlayLogger = node->m_NeedOverlayLogger;
     }
 
     NodeTypeInfo    m_NodeInfo;
@@ -257,7 +251,6 @@ struct ClipNode
     string          m_Name              {""};
     bool            m_HasSetting        {false};
     bool            m_HasCustomLayout   {false};
-    bool            m_NeedOverlayLogger {false};
 };
 
 struct IMGUI_API NodeRegistry

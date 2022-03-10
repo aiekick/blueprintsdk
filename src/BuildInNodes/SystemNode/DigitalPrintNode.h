@@ -45,23 +45,9 @@ struct PrintNode final : Node
             {
                 s_PrintFunction(*this, m_string);
             }
-            if (m_logger && !threading)
-            {
-                LOGI("PrintNode: %s\n", m_string.c_str()); // need disable on run thread mode
-            }
+            LOGD("PrintNode: %s\n", m_string.c_str()); // need disable on run thread mode
         }
         return m_Exit;
-    }
-
-    bool NeedOverlayLogger() const override
-    {
-        return true;
-    }
-
-    void SetLogger(OverlayLogger* instance) override
-    {
-        m_logger = instance;
-        imgui_logger::OverlayLogger::SetCurrent(m_logger);
     }
 
     bool CustomLayout() const override

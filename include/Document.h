@@ -2,7 +2,6 @@
 #include <imgui.h>
 #include <imgui_node_editor.h>
 #include <imgui_json.h>
-#include <imgui_logger.h>
 #include <BluePrint.h>
 #include <vector>
 #include <map>
@@ -10,7 +9,6 @@
 #include <string>
 #include <stdint.h>
 
-using namespace imgui_logger;
 namespace ed = ax::NodeEditor;
 namespace BluePrint
 {
@@ -119,7 +117,6 @@ struct IMGUI_API Document
     shared_ptr<UndoTransaction> m_SaveTransaction = nullptr;
 
     BP                      m_Blueprint;
-    OverlayLogger*          m_OverlayLogger = nullptr;
 };
 
 } // namespace BluePrint

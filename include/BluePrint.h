@@ -11,7 +11,6 @@
 #include <map>
 #include <memory>
 #include <imgui_json.h>
-#include <imgui_logger.h>
 #include <variant.hpp> // variant
 # define span_FEATURE_MAKE_SPAN 1
 #include <span.hpp>
@@ -44,7 +43,6 @@ using std::make_shared;
 using std::make_unique;
 using std::shared_ptr;
 using std::unique_ptr;
-using namespace imgui_logger;
 
 #include "Pin.h"
 
@@ -320,7 +318,7 @@ struct IMGUI_API BP
     Node* CreateNode(ID_TYPE nodeTypeId);
     Node* CreateNode(std::string nodeTypeName);
     void DeleteNode(Node* node);
-    Node* CloneNode(Node* node, OverlayLogger* logger = nullptr);
+    Node* CloneNode(Node* node);
     void InsertNode(Node* node);
 
     void ForgetPin(Pin* pin);

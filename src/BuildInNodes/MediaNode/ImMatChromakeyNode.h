@@ -1,9 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#include <imgui_logger.h>
 #include <imgui_json.h>
-#if IMGUI_VULKAN_SHADER
 #include <ImVulkanShader.h>
 #include <ChromaKey_vulkan.h>
 #include <imgui_node_editor_internal.h>
@@ -218,4 +216,3 @@ private:
     float m_alphaExponent       {0.1f};
 };
 } //namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER
