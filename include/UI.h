@@ -228,6 +228,7 @@ struct BluePrintUI
     std::vector<ClipNode>           m_ClipBoard;
     bool                            m_isNewNodePopuped {false};
     bool                            m_isChildWindow {false};
+    bool                            m_isShowInfoTooltips {false};
     Pin*                            m_newNodeLinkPin {nullptr};
     ImVec4                          m_StyleColors[BluePrintStyleColor_Count];
     ImVec2                          m_PopupMousePos {};

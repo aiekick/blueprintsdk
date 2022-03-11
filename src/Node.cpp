@@ -445,7 +445,7 @@ bool Node::DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin)
 LinkQueryResult Node::AcceptLink(const Pin& receiver, const Pin& provider) const
 {
     if (!receiver.IsMappedPin() && !provider.IsMappedPin() && receiver.m_Node == provider.m_Node)
-        return { false, "Pins of same node cannot be connected"};
+        return { false, "Please drag pin link to other pin"};
 
     const auto receiverIsFlow = receiver.GetType() == PinType::Flow;
     const auto providerIsFlow = provider.GetType() == PinType::Flow;

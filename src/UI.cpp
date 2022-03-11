@@ -1707,10 +1707,9 @@ void BluePrintUI::DrawNodes()
 
 void BluePrintUI::DrawInfoTooltip()
 {
-    if (!m_Document)
+    if (!m_Document || !ed::IsActive())
         return;
-    if (!ed::IsActive())
-        return;
+
     auto hoveredNode = m_Document->m_Blueprint.FindNode(static_cast<ID_TYPE>(ed::GetHoveredNode().Get()));
     auto hoveredPin  = m_Document->m_Blueprint.FindPin(static_cast<ID_TYPE>(ed::GetHoveredPin().Get()));
     if (!hoveredNode && hoveredPin)
@@ -1901,9 +1900,9 @@ void BluePrintUI::DrawInfoTooltip()
         auto nodeCatalog = !isDummy ? hoveredNode->GetCatalog() : ((DummyNode *)hoveredNode)->m_catalog;
         auto nodeVersion = hoveredNode->GetVersion();
         ed::Suspend();
-        ImGui::BeginTooltip();
         if (hoveredNode->m_IconHovered >= 0)
         {
+            ImGui::BeginTooltip();
             switch (hoveredNode->m_IconHovered)
             {
                 case 0: ImGui::TextUnformatted("Node Clone"); break;
@@ -1912,9 +1911,11 @@ void BluePrintUI::DrawInfoTooltip()
                 case 3: ImGui::TextUnformatted("Save Group"); break;
                 default: break;
             }
+            ImGui::EndTooltip();
         }
-        else
+        else if (m_isShowInfoTooltips)
         {
+            ImGui::BeginTooltip();
             if (hoveredPin)
             {
                 if (ImGui::IsMouseDoubleClicked(0))
@@ -1960,41 +1961,44 @@ void BluePrintUI::DrawInfoTooltip()
                 std::string tick_text = oss.str() + (hoveredNode->m_Tick > 1000000 ? "s" : hoveredNode->m_Tick > 1000 ? "ms" : "us");
                 ImGui::Bullet(); ImGui::Text("   Ticks: %s", tick_text.c_str());
             }
+            ImGui::EndTooltip();
         }
-        ImGui::EndTooltip();
         ed::Resume();
     }
     else if (auto hoveredLinkId = ed::GetHoveredLink())
     {
-        ed::PinId firstPinId, secondPinId;
-        ed::GetLinkPins(hoveredLinkId, &firstPinId, &secondPinId);
-        // inverse flow pin order since we create link using sample mode
-        Pin * startPin = nullptr;
-        Pin * endPin = nullptr;
-        auto firstPin = m_Document->m_Blueprint.FindPin(static_cast<ID_TYPE>(firstPinId.Get()));
-        auto secondPin = m_Document->m_Blueprint.FindPin(static_cast<ID_TYPE>(secondPinId.Get()));
-        if (firstPin && secondPin)
+        if (m_isShowInfoTooltips)
         {
-            if (firstPin->GetType() == PinType::Flow && secondPin->GetType() == PinType::Flow)
+            ed::PinId firstPinId, secondPinId;
+            ed::GetLinkPins(hoveredLinkId, &firstPinId, &secondPinId);
+            // inverse flow pin order since we create link using sample mode
+            Pin * startPin = nullptr;
+            Pin * endPin = nullptr;
+            auto firstPin = m_Document->m_Blueprint.FindPin(static_cast<ID_TYPE>(firstPinId.Get()));
+            auto secondPin = m_Document->m_Blueprint.FindPin(static_cast<ID_TYPE>(secondPinId.Get()));
+            if (firstPin && secondPin)
             {
-                startPin = firstPin;
-                endPin = secondPin;
+                if (firstPin->GetType() == PinType::Flow && secondPin->GetType() == PinType::Flow)
+                {
+                    startPin = firstPin;
+                    endPin = secondPin;
+                }
+                else
+                {
+                    startPin = secondPin;
+                    endPin = firstPin;
+                }
+                ed::Suspend();
+                ImGui::BeginTooltip();
+                ImGui::Text("Link ID: 0x%08" PRIX32, startPin->m_ID);
+                ImGui::Text("Type: %s", PinTypeToString(startPin->GetValueType()).c_str());
+                ImGui::Separator();
+                pinTooltip("Start Pin:", *startPin, true);
+                ImGui::Separator();
+                pinTooltip("End Pin:", *endPin, true);
+                ImGui::EndTooltip();
+                ed::Resume();
             }
-            else
-            {
-                startPin = secondPin;
-                endPin = firstPin;
-            }
-            ed::Suspend();
-            ImGui::BeginTooltip();
-            ImGui::Text("Link ID: 0x%08" PRIX32, startPin->m_ID);
-            ImGui::Text("Type: %s", PinTypeToString(startPin->GetValueType()).c_str());
-            ImGui::Separator();
-            pinTooltip("Start Pin:", *startPin, true);
-            ImGui::Separator();
-            pinTooltip("End Pin:", *endPin, true);
-            ImGui::EndTooltip();
-            ed::Resume();
         }
     }
 }
@@ -3468,6 +3472,12 @@ void BluePrintUI::ShowShortToolbar(bool* show)
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
         toolbarAction(m_Edit_Undo); ImGui::ShowTooltipOnHover("%s", m_Edit_Undo.GetName().c_str());
         toolbarAction(m_Edit_Redo); ImGui::ShowTooltipOnHover("%s", m_Edit_Redo.GetName().c_str());
+        
+        // Show Info tooltip
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+        string info_button_title = string(ICON_MD_INFO_OUTLINE) + "##info_tooltips";
+        ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips);
+        ImGui::ShowTooltipOnHover("Show Info in tooltips");
     }
     ImGui::End();
     ImGui::PopStyleVar(1);
