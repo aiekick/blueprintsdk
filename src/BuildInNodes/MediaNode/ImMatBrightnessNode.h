@@ -84,14 +84,13 @@ struct BrightnessNode final : Node
         bool check = m_bEnabled;
         float val = m_brightness;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::PushItemWidth(300);
         if (ImGui::Checkbox("##enable_filter_Brightness",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Brightness");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slider_brightness##Brightness", &val, -1.0, 1.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::LumianceSelector("##slider_brightness##Brightness", ImVec2(300, 20), &val, 0.0f, zoom);
         if (val != m_brightness) { m_brightness = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_brightness##Brightness")) { m_brightness = 0.0; changed = true; }
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         return changed;

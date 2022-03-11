@@ -84,15 +84,14 @@ struct ContrastNode final : Node
         bool check = m_bEnabled;
         float val = m_contrast;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::PushItemWidth(300);
         if (ImGui::Checkbox("##enable_filter_Contrast",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Contrast");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slider_contrast##Contrast", &val, 0.0f, 4.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::ContrastSelector("##slider_contrast##Contrast", ImVec2(300, 20), &val, 1.0, zoom);
         ImGui::PopItemWidth();
         if (val != m_contrast) { m_contrast = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_contrast"))  { m_contrast = 1.0; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }

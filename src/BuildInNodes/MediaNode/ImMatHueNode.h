@@ -82,17 +82,19 @@ struct HueNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         bool check = m_bEnabled;
-        float val = m_hue;
+        float val = m_hue / 360.0;;
+        static float hue_width = 0.1f;
+        static float featherLeft = 0.125f;
+		static float featherRight = 0.125f;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::PushItemWidth(300);
         if (ImGui::Checkbox("##enable_filter_Hue",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Hue");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slideer_hue##Hue", &val, 0.0f, 360.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::HueSelector("##slideer_hue##Hue", ImVec2(300, 20), &val, &hue_width, &featherLeft, &featherRight, 0.0f, zoom, 32, 1.0f, 0.0f);
         ImGui::PopItemWidth();
-        if (val != m_hue) { m_hue = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_hue")) { m_hue = 0.0; changed = true; }
+        if (val != m_hue / 360.0) { m_hue = val * 360.0; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }

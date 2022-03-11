@@ -82,17 +82,16 @@ struct SaturationNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         bool check = m_bEnabled;
-        float val = m_saturation;
+        float val = m_saturation - 1.0;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::PushItemWidth(300);
         if (ImGui::Checkbox("##enable_filter_Saturation",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Saturation");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slider_saturation##Saturation", &val, 0.0f, 2.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::SaturationSelector("##slider_saturation##Saturation", ImVec2(300, 40), &val, 0.0f, zoom, 32, 1.0f, true);
         ImGui::PopItemWidth();
-        if (val != m_saturation) { m_saturation = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_saturation")) { m_saturation = 1.0; changed = true; }
+        if (val != m_saturation - 1.0) { m_saturation = val + 1.0; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }

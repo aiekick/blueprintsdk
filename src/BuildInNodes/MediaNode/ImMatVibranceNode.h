@@ -84,15 +84,14 @@ struct VibranceNode final : Node
         bool check = m_bEnabled;
         float val = m_vibrance;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::PushItemWidth(300);
         if (ImGui::Checkbox("##enable_filter_Vibrance",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Vibrance");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slider_vibrance##Vibrance", &val, -4.0f, 4.0f, "%.2f", flags); ImGui::SameLine();
+        ImGui::SaturationSelector("##slider_vibrance##Vibrance", ImVec2(300, 40), &val, 0.0f, zoom, 32, 1.0f, true);
         ImGui::PopItemWidth();
         if (val != m_vibrance) { m_vibrance = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_vibrance")) { m_vibrance = 0.0; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }

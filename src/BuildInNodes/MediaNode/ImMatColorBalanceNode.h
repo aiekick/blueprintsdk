@@ -91,23 +91,20 @@ struct ColorBalanceNode final : Node
         ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter_ColorBalance",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("Color Balance");
-        ImGui::Dummy(ImVec2(200, 8));
+        //ImGui::Dummy(ImVec2(300, 8));
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::Bullet(); ImGui::TextUnformatted("Shadow");
-        ImGui::SliderFloat("R Shadow", &_shadows[0], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_shadow0")) {_shadows[0] = 0;} 
-        ImGui::SliderFloat("G Shadow", &_shadows[1], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_shadow1")) {_shadows[1] = 0;} 
-        ImGui::SliderFloat("B Shadow", &_shadows[2], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_shadow2")) {_shadows[2] = 0;} 
-        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::TextUnformatted("R:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#RShadow", ImVec2(200, 20), &_shadows[0], 0.0f, zoom, 32, 1.0, false, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+        ImGui::TextUnformatted("G:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#GShadow", ImVec2(200, 20), &_shadows[1], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+        ImGui::TextUnformatted("B:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#BShadow", ImVec2(200, 20), &_shadows[2], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
         ImGui::Bullet(); ImGui::TextUnformatted("Midtones");
-        ImGui::SliderFloat("R Midtones", &_midtones[0], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_midtone0")) {_midtones[0] = 0;} 
-        ImGui::SliderFloat("G Midtones", &_midtones[1], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_midtone1")) {_midtones[1] = 0;} 
-        ImGui::SliderFloat("B Midtones", &_midtones[2], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_midtone2")) {_midtones[2] = 0;} 
-        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::TextUnformatted("R:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#RMidtones", ImVec2(200, 20), &_midtones[0], 0.0f, zoom, 32, 1.0, false, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+        ImGui::TextUnformatted("G:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#GMidtones", ImVec2(200, 20), &_midtones[1], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+        ImGui::TextUnformatted("B:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#BMidtones", ImVec2(200, 20), &_midtones[2], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
         ImGui::Bullet(); ImGui::TextUnformatted("Highlights");
-        ImGui::SliderFloat("R Highlights", &_highlights[0], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_highlight0")) {_highlights[0] = 0;} 
-        ImGui::SliderFloat("G Highlights", &_highlights[1], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_highlight1")) {_highlights[1] = 0;} 
-        ImGui::SliderFloat("B Highlights", &_highlights[2], -1.f, 1.f, "%.01f", flags); ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_highlight2")) {_highlights[2] = 0;} 
-        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::TextUnformatted("R:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#RHighlights", ImVec2(200, 20), &_highlights[0], 0.0f, zoom, 32, 1.0, false, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
+        ImGui::TextUnformatted("G:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#GHighlights", ImVec2(200, 20), &_highlights[1], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
+        ImGui::TextUnformatted("B:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#BHighlights", ImVec2(200, 20), &_highlights[2], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
         ImGui::PopItemWidth();
         if (ImGui::Checkbox("Preserve Lightness", &_preserve_lightness)) {m_preserve_lightness = _preserve_lightness; changed = true; }
         if (_shadows != m_shadows) { m_shadows = _shadows; changed = true; }
