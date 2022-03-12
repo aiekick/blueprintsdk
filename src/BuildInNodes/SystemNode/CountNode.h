@@ -1,5 +1,7 @@
 #pragma once
 #include <imgui.h>
+#include <imgui_widget.h>
+
 namespace BluePrint
 {
 struct CountNode final : Node

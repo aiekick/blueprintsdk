@@ -20,26 +20,6 @@ const string titlebar_icons[] = {ICON_NODE_COPY, ICON_NODE_DELETE, ICON_NODE_SET
 
 namespace BluePrint
 {
-struct stree
-{
-    std::string name;
-    std::vector<stree> childrens;
-    void * data {nullptr};
-    stree() {}
-    stree(std::string _name, void * _data = nullptr) { name = _name; data = _data; }
-    stree* FindChildren(std::string _name)
-    {
-        auto iter = std::find_if(childrens.begin(), childrens.end(), [_name](const stree& tree)
-        {
-            return tree.name.compare(_name) == 0;
-        });
-        if (iter != childrens.end())
-            return &(*iter);
-        else
-            return nullptr;
-    }
-};
-
 BluePrintStyle BPStyleFromName(string name)
 {
     if (name.compare("Default") == 0)
@@ -2255,7 +2235,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
     else
     {
         // make node type as tree, max 4 levels
-        stree node_tree;
+        ImGui::ImTree node_tree;
         node_tree.name = "Nodes";
         if (need_root)
         {
@@ -2268,7 +2248,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
                     auto children = node_tree.FindChildren(catalogs[0]);
                     if (!children)
                     {
-                        stree subtree(catalogs[0]);
+                        ImGui::ImTree subtree(catalogs[0]);
                         node_tree.childrens.push_back(subtree);
                     }
                 }
@@ -2279,23 +2259,23 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
             auto catalog = BluePrint::GetCatalogInfo(type->m_Catalog);
             if (!catalog.size())
                 continue;
-            stree * root = need_root ? node_tree.FindChildren(catalog[0]) : &node_tree;
+            ImGui::ImTree * root = need_root ? node_tree.FindChildren(catalog[0]) : &node_tree;
             if (catalog.size() > 1)
             {
                 auto children = root->FindChildren(catalog[1]);
                 if (!children)
                 {
-                    stree subtree(catalog[1]);
+                    ImGui::ImTree subtree(catalog[1]);
                     if (catalog.size() > 2)
                     {
-                        stree sub_sub_tree(catalog[2]);
-                        stree end_sub(type->m_Name, (void *)type);
+                        ImGui::ImTree sub_sub_tree(catalog[2]);
+                        ImGui::ImTree end_sub(type->m_Name, (void *)type);
                         sub_sub_tree.childrens.push_back(end_sub);
                         subtree.childrens.push_back(sub_sub_tree);
                     }
                     else
                     {
-                        stree end_sub(type->m_Name, (void *)type);
+                        ImGui::ImTree end_sub(type->m_Name, (void *)type);
                         subtree.childrens.push_back(end_sub);
                     }
 
@@ -2308,33 +2288,33 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
                         auto sub_children = children->FindChildren(catalog[2]);
                         if (!sub_children)
                         {
-                            stree subtree(catalog[2]);
-                            stree end_sub(type->m_Name, (void *)type);
+                            ImGui::ImTree subtree(catalog[2]);
+                            ImGui::ImTree end_sub(type->m_Name, (void *)type);
                             subtree.childrens.push_back(end_sub);
                             children->childrens.push_back(subtree);
                         }
                         else
                         {
-                            stree end_sub(type->m_Name, (void *)type);
+                            ImGui::ImTree end_sub(type->m_Name, (void *)type);
                             sub_children->childrens.push_back(end_sub);
                         }
                     }
                     else
                     {
-                        stree end_sub(type->m_Name, (void *)type);
+                        ImGui::ImTree end_sub(type->m_Name, (void *)type);
                         children->childrens.push_back(end_sub);
                     }
                 }
             }
             else
             {
-                stree end_sub(type->m_Name, (void *)type);
+                ImGui::ImTree end_sub(type->m_Name, (void *)type);
                 root->childrens.push_back(end_sub);
             }
         }
 
         // draw node tree
-        stree * start = &node_tree;
+        ImGui::ImTree * start = &node_tree;
         for (int i = 0; i < start_level - 1; i++)
         {
             start = start->childrens.size() > 0 ? &start->childrens[0] : start;
