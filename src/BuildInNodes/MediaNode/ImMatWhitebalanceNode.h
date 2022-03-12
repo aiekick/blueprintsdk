@@ -82,17 +82,17 @@ struct WhiteBalanceNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         bool check = m_bEnabled;
-        float val = m_temperature;
+        int val = m_temperature;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         if (ImGui::Checkbox("##enable_filter_WhiteBalance",&check)) { m_bEnabled = check; changed = true; }
         ImGui::SameLine(); ImGui::TextUnformatted("WhiteBalance");
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slider_temperature##WhiteBalance", &val, 3000.f, 8000.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::SliderInt("##slider_temperature##WhiteBalance", &val, 3000, 8000, "%d", flags); ImGui::SameLine();
         ImGui::PopItemWidth();
         if (val != m_temperature) { m_temperature = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_temperature")) { m_temperature = 5000.0; changed = true; }
+        if (ImGui::Button(ICON_RESET "##reset_temperature")) { m_temperature = 5000; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }
@@ -152,6 +152,6 @@ private:
     int m_device            {-1};
     bool m_bEnabled         {true};
     ImGui::WhiteBalance_vulkan * m_filter   {nullptr};
-    float m_temperature     {5000.f};
+    int m_temperature       {5000};
 };
 } // namespace BluePrint
