@@ -2,6 +2,7 @@
 #include <Node.h>
 #include <Pin.h>
 #include <imgui_json.h>
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Sobel_vulkan.h>
 
@@ -84,8 +85,8 @@ struct SobelNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_Sobel",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("Sobel");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_Sobel",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::SliderFloat("Strength##Sobel", &_strength, 0.1, 8.f, "%.2f", flags);
         ImGui::PopItemWidth();

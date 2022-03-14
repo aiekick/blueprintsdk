@@ -2,6 +2,7 @@
 #include <Node.h>
 #include <Pin.h>
 #include <imgui_json.h>
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Vibrance_vulkan.h>
 
@@ -86,8 +87,8 @@ struct VibranceNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        if (ImGui::Checkbox("##enable_filter_Vibrance",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("Vibrance");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_Vibrance",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::SaturationSelector("##slider_vibrance##Vibrance", ImVec2(300, 40), &val, 0.0f, zoom, 32, 1.0f, true);
         ImGui::PopItemWidth();

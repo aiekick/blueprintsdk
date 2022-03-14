@@ -2,6 +2,7 @@
 #include <Node.h>
 #include <Pin.h>
 #include <imgui_json.h>
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Gamma_vulkan.h>
 
@@ -86,8 +87,8 @@ struct GammaNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_Gamma",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("Gamma");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_Gamma",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::SliderFloat("##slider_gamma##Gamma", &val, 0.0f, 4.f, "%.2f", flags); ImGui::SameLine();
         ImGui::PopItemWidth();

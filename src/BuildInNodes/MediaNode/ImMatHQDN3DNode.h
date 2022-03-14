@@ -1,7 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#if IMGUI_VULKAN_SHADER
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include "HQDN3D_vulkan.h"
 
@@ -90,8 +90,8 @@ struct HQDN3DNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_HQDN3D",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("HQDN3D");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_HQDN3D",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::SliderFloat("Luma Spatial##HQDN3D", &_lum_spac, 0, 50.f, "%.1f", flags);
         ImGui::SliderFloat("Chroma Spatial##HQDN3D", &_chrom_spac, 0, 50.f, "%.1f", flags);
@@ -188,4 +188,3 @@ private:
     ImGui::HQDN3D_vulkan * m_filter   {nullptr};
 };
 } //namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER

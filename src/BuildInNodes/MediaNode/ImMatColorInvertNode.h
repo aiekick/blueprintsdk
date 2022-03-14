@@ -2,6 +2,7 @@
 #include <Node.h>
 #include <Pin.h>
 #include <imgui_json.h>
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <ColorInvert_vulkan.h>
 
@@ -82,8 +83,8 @@ struct ColorInvertNode final : Node
         bool check = m_bEnabled;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_Color_Invert",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("Color Invert");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_Color_Invert",&check)) { m_bEnabled = check; changed = true; }
         ImGui::PopItemWidth();
         return changed;
     }

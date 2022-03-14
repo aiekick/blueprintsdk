@@ -2,6 +2,7 @@
 #include <Node.h>
 #include <Pin.h>
 #include <imgui_json.h>
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Hue_vulkan.h>
 
@@ -89,8 +90,8 @@ struct HueNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        if (ImGui::Checkbox("##enable_filter_Hue",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("Hue");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_Hue",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::HueSelector("##slideer_hue##Hue", ImVec2(300, 20), &val, &hue_width, &featherLeft, &featherRight, 0.0f, zoom, 32, 1.0f, 0.0f);
         ImGui::PopItemWidth();

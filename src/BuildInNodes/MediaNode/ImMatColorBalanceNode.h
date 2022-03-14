@@ -2,6 +2,7 @@
 #include <Node.h>
 #include <Pin.h>
 #include <imgui_json.h>
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <ColorBalance_vulkan.h>
 
@@ -89,9 +90,8 @@ struct ColorBalanceNode final : Node
         bool _preserve_lightness = m_preserve_lightness;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_ColorBalance",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("Color Balance");
-        //ImGui::Dummy(ImVec2(300, 8));
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_ColorBalance",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::Bullet(); ImGui::TextUnformatted("Shadow");
         ImGui::TextUnformatted("R:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#RShadow", ImVec2(200, 20), &_shadows[0], 0.0f, zoom, 32, 1.0, false, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));

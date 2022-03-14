@@ -1,7 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#if IMGUI_VULKAN_SHADER
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <DeInterlace_vulkan.h>
 
@@ -82,8 +82,8 @@ struct DeinterlaceNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_Interlace",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("Interlace");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_Interlace",&check)) { m_bEnabled = check; changed = true; }
         return false;
     }
 
@@ -137,4 +137,3 @@ private:
     ImGui::DeInterlace_vulkan * m_filter {nullptr};
 };
 } //namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER

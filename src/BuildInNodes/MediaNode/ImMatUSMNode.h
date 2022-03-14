@@ -1,7 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#if IMGUI_VULKAN_SHADER
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <USM_vulkan.h>
 
@@ -85,8 +85,8 @@ struct USMNode final : Node
         float _threshold = m_threshold;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_USM",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("USM");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_USM",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::SliderFloat("Sigma##USM", &_sigma, 0, 10.f, "%.1f", flags);
         ImGui::SliderFloat("Amount##USM", &_amount, 0, 3.f, "%.1f", flags);
@@ -173,4 +173,3 @@ private:
     ImGui::USM_vulkan * m_filter {nullptr};
 };
 } //namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER

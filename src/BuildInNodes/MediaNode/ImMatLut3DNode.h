@@ -1,7 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#if IMGUI_VULKAN_SHADER
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include "Lut3D.h"
 #if IMGUI_ICONS
@@ -148,10 +148,9 @@ struct Lut3DNode final : Node
         int lut_mode = m_lut_mode;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_Lut3D",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(0); ImGui::SameLine(); ImGui::TextUnformatted("Lut3D");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_Lut3D",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-
         if (!m_file_name.empty())
             ImGui::Text("Lut from file: %s", m_file_name.c_str());
         else
@@ -268,4 +267,3 @@ private:
     bool  m_setting_changed {false};
 };
 } // namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER

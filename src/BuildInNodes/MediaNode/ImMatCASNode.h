@@ -1,7 +1,7 @@
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
-#if IMGUI_VULKAN_SHADER
+#include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <CAS_vulkan.h>
 
@@ -83,8 +83,8 @@ struct CasNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        if (ImGui::Checkbox("##enable_filter_CAS",&check)) { m_bEnabled = check; changed = true; }
-        ImGui::SameLine(); ImGui::TextUnformatted("CAS");
+        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
+        if (ImGui::ToggleButton("##enable_filter_CAS",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
         ImGui::SliderFloat("Strength##CAS", &_strength, 0, 1.f, "%.2f", flags);
         ImGui::PopItemWidth();
@@ -151,4 +151,3 @@ private:
     ImGui::CAS_vulkan * m_filter {nullptr};
 };
 } //namespace BluePrint
-#endif // IMGUI_VULKAN_SHADER
