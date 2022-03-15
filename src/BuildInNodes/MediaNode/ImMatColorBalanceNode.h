@@ -84,27 +84,20 @@ struct ColorBalanceNode final : Node
         ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         bool changed = false;
         bool check = m_bEnabled;
-        std::vector<float> _shadows = m_shadows;
-        std::vector<float> _midtones = m_midtones;
-        std::vector<float> _highlights = m_highlights;
+        ImVec4 _shadows = m_shadows;
+        ImVec4 _midtones = m_midtones;
+        ImVec4 _highlights = m_highlights;
         bool _preserve_lightness = m_preserve_lightness;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::TextUnformatted("Enable"); ImGui::SameLine();
         if (ImGui::ToggleButton("##enable_filter_ColorBalance",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::Bullet(); ImGui::TextUnformatted("Shadow");
-        ImGui::TextUnformatted("R:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#RShadow", ImVec2(200, 20), &_shadows[0], 0.0f, zoom, 32, 1.0, false, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-        ImGui::TextUnformatted("G:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#GShadow", ImVec2(200, 20), &_shadows[1], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-        ImGui::TextUnformatted("B:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#BShadow", ImVec2(200, 20), &_shadows[2], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-        ImGui::Bullet(); ImGui::TextUnformatted("Midtones");
-        ImGui::TextUnformatted("R:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#RMidtones", ImVec2(200, 20), &_midtones[0], 0.0f, zoom, 32, 1.0, false, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-        ImGui::TextUnformatted("G:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#GMidtones", ImVec2(200, 20), &_midtones[1], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-        ImGui::TextUnformatted("B:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#BMidtones", ImVec2(200, 20), &_midtones[2], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
-        ImGui::Bullet(); ImGui::TextUnformatted("Highlights");
-        ImGui::TextUnformatted("R:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#RHighlights", ImVec2(200, 20), &_highlights[0], 0.0f, zoom, 32, 1.0, false, ImVec4(1.0f, 0.0f, 0.0f, 1.0f));
-        ImGui::TextUnformatted("G:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#GHighlights", ImVec2(200, 20), &_highlights[1], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 1.0f, 0.0f, 1.0f));
-        ImGui::TextUnformatted("B:"); ImGui::SameLine(); ImGui::LumianceSelector("##color_balance#BHighlights", ImVec2(200, 20), &_highlights[2], 0.0f, zoom, 32, 1.0, false, ImVec4(0.0f, 0.0f, 1.0f, 1.0f));
+        ImGui::BalanceSelector("Shadow", ImVec2(100, 100), &_shadows, ImVec4(0, 0, 0, 0), zoom);
+        ImGui::SameLine(); ImGui::Spacing(); ImGui::SameLine();
+        ImGui::BalanceSelector("Midtones", ImVec2(100, 100), &_midtones, ImVec4(0, 0, 0, 0), zoom);
+        ImGui::SameLine(); ImGui::Spacing(); ImGui::SameLine();
+        ImGui::BalanceSelector("Highlights", ImVec2(100, 100), &_highlights, ImVec4(0, 0, 0, 0), zoom);
         ImGui::PopItemWidth();
         if (ImGui::Checkbox("Preserve Lightness", &_preserve_lightness)) {m_preserve_lightness = _preserve_lightness; changed = true; }
         if (_shadows != m_shadows) { m_shadows = _shadows; changed = true; }
@@ -135,26 +128,26 @@ struct ColorBalanceNode final : Node
         if (value.contains("shadows"))
         { 
             auto& val = value["shadows"];
-            if (val.contains("r")) {auto& fvalue = val["r"]; if (fvalue.is_number()) m_shadows[0] = fvalue.get<imgui_json::number>();}
-            if (val.contains("g")) {auto& fvalue = val["g"]; if (fvalue.is_number()) m_shadows[1] = fvalue.get<imgui_json::number>();}
-            if (val.contains("b")) {auto& fvalue = val["b"]; if (fvalue.is_number()) m_shadows[2] = fvalue.get<imgui_json::number>();}
-            if (val.contains("a")) {auto& fvalue = val["a"]; if (fvalue.is_number()) m_shadows[3] = fvalue.get<imgui_json::number>();}
+            if (val.contains("r")) {auto& fvalue = val["r"]; if (fvalue.is_number()) m_shadows.x = fvalue.get<imgui_json::number>();}
+            if (val.contains("g")) {auto& fvalue = val["g"]; if (fvalue.is_number()) m_shadows.y = fvalue.get<imgui_json::number>();}
+            if (val.contains("b")) {auto& fvalue = val["b"]; if (fvalue.is_number()) m_shadows.z = fvalue.get<imgui_json::number>();}
+            if (val.contains("a")) {auto& fvalue = val["a"]; if (fvalue.is_number()) m_shadows.w = fvalue.get<imgui_json::number>();}
         }
         if (value.contains("midtones"))
         { 
             auto& val = value["midtones"];
-            if (val.contains("r")) {auto& fvalue = val["r"]; if (fvalue.is_number()) m_midtones[0] = fvalue.get<imgui_json::number>();}
-            if (val.contains("g")) {auto& fvalue = val["g"]; if (fvalue.is_number()) m_midtones[1] = fvalue.get<imgui_json::number>();}
-            if (val.contains("b")) {auto& fvalue = val["b"]; if (fvalue.is_number()) m_midtones[2] = fvalue.get<imgui_json::number>();}
-            if (val.contains("a")) {auto& fvalue = val["a"]; if (fvalue.is_number()) m_midtones[3] = fvalue.get<imgui_json::number>();}
+            if (val.contains("r")) {auto& fvalue = val["r"]; if (fvalue.is_number()) m_midtones.x = fvalue.get<imgui_json::number>();}
+            if (val.contains("g")) {auto& fvalue = val["g"]; if (fvalue.is_number()) m_midtones.y = fvalue.get<imgui_json::number>();}
+            if (val.contains("b")) {auto& fvalue = val["b"]; if (fvalue.is_number()) m_midtones.z = fvalue.get<imgui_json::number>();}
+            if (val.contains("a")) {auto& fvalue = val["a"]; if (fvalue.is_number()) m_midtones.w = fvalue.get<imgui_json::number>();}
         }
         if (value.contains("highlights"))
         { 
             auto& val = value["highlights"];
-            if (val.contains("r")) {auto& fvalue = val["r"]; if (fvalue.is_number()) m_highlights[0] = fvalue.get<imgui_json::number>();}
-            if (val.contains("g")) {auto& fvalue = val["g"]; if (fvalue.is_number()) m_highlights[1] = fvalue.get<imgui_json::number>();}
-            if (val.contains("b")) {auto& fvalue = val["b"]; if (fvalue.is_number()) m_highlights[2] = fvalue.get<imgui_json::number>();}
-            if (val.contains("a")) {auto& fvalue = val["a"]; if (fvalue.is_number()) m_highlights[3] = fvalue.get<imgui_json::number>();}
+            if (val.contains("r")) {auto& fvalue = val["r"]; if (fvalue.is_number()) m_highlights.x = fvalue.get<imgui_json::number>();}
+            if (val.contains("g")) {auto& fvalue = val["g"]; if (fvalue.is_number()) m_highlights.y = fvalue.get<imgui_json::number>();}
+            if (val.contains("b")) {auto& fvalue = val["b"]; if (fvalue.is_number()) m_highlights.z = fvalue.get<imgui_json::number>();}
+            if (val.contains("a")) {auto& fvalue = val["a"]; if (fvalue.is_number()) m_highlights.w = fvalue.get<imgui_json::number>();}
         }
         if (value.contains("preserve_lightness"))
         { 
@@ -172,26 +165,26 @@ struct ColorBalanceNode final : Node
         value["enabled"] = imgui_json::boolean(m_bEnabled);
         {
             imgui_json::value shadows;
-            shadows["r"] = imgui_json::number(m_shadows[0]);
-            shadows["g"] = imgui_json::number(m_shadows[1]);
-            shadows["b"] = imgui_json::number(m_shadows[2]);
-            shadows["a"] = imgui_json::number(m_shadows[3]);
+            shadows["r"] = imgui_json::number(m_shadows.x);
+            shadows["g"] = imgui_json::number(m_shadows.y);
+            shadows["b"] = imgui_json::number(m_shadows.z);
+            shadows["a"] = imgui_json::number(m_shadows.w);
             value["shadows"] = shadows;
         }
         {
             imgui_json::value midtones;
-            midtones["r"] = imgui_json::number(m_midtones[0]);
-            midtones["g"] = imgui_json::number(m_midtones[1]);
-            midtones["b"] = imgui_json::number(m_midtones[2]);
-            midtones["a"] = imgui_json::number(m_midtones[3]);
+            midtones["r"] = imgui_json::number(m_midtones.x);
+            midtones["g"] = imgui_json::number(m_midtones.y);
+            midtones["b"] = imgui_json::number(m_midtones.z);
+            midtones["a"] = imgui_json::number(m_midtones.w);
             value["midtones"] = midtones;
         }
         {
             imgui_json::value highlights;
-            highlights["r"] = imgui_json::number(m_highlights[0]);
-            highlights["g"] = imgui_json::number(m_highlights[1]);
-            highlights["b"] = imgui_json::number(m_highlights[2]);
-            highlights["a"] = imgui_json::number(m_highlights[3]);
+            highlights["r"] = imgui_json::number(m_highlights.x);
+            highlights["g"] = imgui_json::number(m_highlights.y);
+            highlights["b"] = imgui_json::number(m_highlights.z);
+            highlights["a"] = imgui_json::number(m_highlights.w);
             value["highlights"] = highlights;
         }
         value["preserve_lightness"] = imgui_json::boolean(m_preserve_lightness);
@@ -217,9 +210,9 @@ private:
     int m_device                {-1};
     bool m_bEnabled             {true};
     ImGui::ColorBalance_vulkan * m_filter   {nullptr};
-    std::vector<float> m_shadows     {0, 0, 0, 0};
-    std::vector<float> m_midtones    {0, 0, 0, 0};
-    std::vector<float> m_highlights  {0, 0, 0, 0};
+    ImVec4 m_shadows            {0, 0, 0, 0};
+    ImVec4 m_midtones           {0, 0, 0, 0};
+    ImVec4 m_highlights         {0, 0, 0, 0};
     bool m_preserve_lightness {false};
 };
 } // namespace BluePrint
