@@ -83,17 +83,16 @@ struct ExposureNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         bool check = m_bEnabled;
-        float val = m_exposure;
+        float val = m_exposure / 2;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::PushItemWidth(300);
         ImGui::TextUnformatted("Enable"); ImGui::SameLine();
         if (ImGui::ToggleButton("##enable_filter_Exposure",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slider_exposure##Exposure", &val, -2.0f, 2.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::LumianceSelector("##slider_exposure##Exposure", ImVec2(300, 20), &val, 0.0f, zoom);
         ImGui::PopItemWidth();
-        if (val != m_exposure) { m_exposure = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_exposure")) { m_exposure = 0.0; changed = true; }
+        if (val != m_exposure / 2) { m_exposure = val * 2; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }

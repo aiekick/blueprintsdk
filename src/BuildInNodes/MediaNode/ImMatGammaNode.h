@@ -85,15 +85,16 @@ struct GammaNode final : Node
         bool check = m_bEnabled;
         float val = m_gamma;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::PushItemWidth(300);
         ImGui::TextUnformatted("Enable"); ImGui::SameLine();
         if (ImGui::ToggleButton("##enable_filter_Gamma",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slider_gamma##Gamma", &val, 0.0f, 4.f, "%.2f", flags); ImGui::SameLine();
+        //ImGui::SliderFloat("##slider_gamma##Gamma", &val, 0.0f, 4.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::GammaSelector("##slider_gamma##Gamma", ImVec2(300, 20), &val, 1.0f, 0.f, 4.f, zoom);
         ImGui::PopItemWidth();
         if (val != m_gamma) { m_gamma = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_gamma")) { m_gamma = 1.0; changed = true; }
+        //if (ImGui::Button(ICON_RESET "##reset_gamma")) { m_gamma = 1.0; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }
