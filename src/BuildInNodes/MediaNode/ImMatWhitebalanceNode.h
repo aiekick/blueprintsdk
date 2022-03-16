@@ -83,17 +83,16 @@ struct WhiteBalanceNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         bool check = m_bEnabled;
-        int val = m_temperature;
+        float val = m_temperature;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::PushItemWidth(300);
         ImGui::TextUnformatted("Enable"); ImGui::SameLine();
         if (ImGui::ToggleButton("##enable_filter_WhiteBalance",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderInt("##slider_temperature##WhiteBalance", &val, 3000, 8000, "%d", flags); ImGui::SameLine();
+        ImGui::TemperatureSelector("##slider_temperature##Temperature", ImVec2(300, 20), &val, 5000.0f, 2000.f, 8000.f, zoom);
         ImGui::PopItemWidth();
         if (val != m_temperature) { m_temperature = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_temperature")) { m_temperature = 5000; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }
