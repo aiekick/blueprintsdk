@@ -3568,6 +3568,12 @@ void BluePrintUI::ShowToolbar(bool* show)
         ImGui::SameLine();
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
         ImGui::SameLine();
+        string info_button_title = string(ICON_MD_INFO_OUTLINE) + "##info_tooltips";
+        ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips);
+        ImGui::ShowTooltipOnHover("Show Info in tooltips");
+        ImGui::SameLine();
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+        ImGui::SameLine();
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
         ImGui::SameLine();
         ImGui::Text("%d(%s)", m_Document->m_Blueprint.StepCount(), StepResultToString(m_Document->m_Blueprint.LastStepResult()));
