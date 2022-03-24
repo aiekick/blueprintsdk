@@ -1,6 +1,7 @@
 #include <Utils.h>
 #include <Document.h>
 #include <imgui_helper.h>
+#include <imgui_extra_widget.h>
 #include <inttypes.h>
 #include <UI.h>
 #include <Debug.h>

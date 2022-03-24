@@ -1,5 +1,6 @@
 #pragma once
 #include <imgui.h>
+#include <imgui_extra_widget.h>
 namespace BluePrint
 {
 struct ConstValueNode final : Node
