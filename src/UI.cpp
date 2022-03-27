@@ -2136,6 +2136,10 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
                     else
                         array.push_back(nodetype);
                 }
+                else if (nodetype->m_Style == NodeStyle::Comment || nodetype->m_Style == NodeStyle::Group)
+                {
+                    array.push_back(nodetype);
+                }
             }
         }
         string low_case_filter_str = filter_string.size() > 0 ? to_lower(filter_string) : "";
@@ -2317,7 +2321,16 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
         ImGui::ImTree * start = &node_tree;
         for (int i = 0; i < start_level - 1; i++)
         {
-            start = start->childrens.size() > 0 ? &start->childrens[0] : start;
+            for (int j = 0; j < start->childrens.size(); j++)
+            {
+                if (start->childrens[j].data)
+                    continue;
+                else
+                {
+                    start = &start->childrens[j];
+                    break;
+                }
+            }
         }
 
         for (auto sub : start->childrens)
@@ -2362,6 +2375,15 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
                     }
                 }
                 ImGui::EndMenu();
+            }
+        }
+
+        // draw utils node
+        for (auto sub : node_tree.childrens)
+        {
+            if (sub.data)
+            {
+                AddNodeMenu(sub.data);
             }
         }
     }
