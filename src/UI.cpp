@@ -2863,7 +2863,6 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name, std::
             CreateNewFilterDocument();
             m_Document->OnMakeCurrent();
             bp = m_Document->Serialize();
-            View_ZoomToContent();
         }
         else
         {
@@ -2875,7 +2874,6 @@ bool BluePrintUI::File_New_Filter(imgui_json::value& bp, std::string name, std::
         CreateNewFilterDocument();
         m_Document->OnMakeCurrent();
         bp = m_Document->Serialize();
-        View_ZoomToContent();
     }
     if (name.empty())
         m_Document->m_Name = "FilterBluePrint";
@@ -2903,7 +2901,6 @@ bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, std::string name, std::
             // TODO::Dicky if node load failed, may not CreateNewDocument
             CreateNewFusionDocument();
             m_Document->OnMakeCurrent();
-            View_ZoomToContent();
             bp = m_Document->Serialize();
         }
         else
@@ -2915,7 +2912,6 @@ bool BluePrintUI::File_New_Fusion(imgui_json::value& bp, std::string name, std::
     {
         CreateNewFusionDocument();
         m_Document->OnMakeCurrent();
-        View_ZoomToContent();
         bp = m_Document->Serialize();
     }
     if (name.empty())
