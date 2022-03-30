@@ -16,11 +16,6 @@ ImFont* HeaderFont()
     return font;
 }
 
-ImGui::MostRecentlyUsedList GetMostRecentlyOpenFileList()
-{
-    return ImGui::MostRecentlyUsedList("MostRecentlyOpenList");
-}
-
 const char* StepResultToString(StepResult stepResult)
 {
     switch (stepResult)

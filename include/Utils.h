@@ -30,7 +30,6 @@ void DrawPinValueWithEditor(Pin& pin); // Draw pin value or editor if value is c
 const vector<Node*> GetSelectedNodes(BP& blueprint); // Returns selected nodes as a vector.
 const vector<Node*> GetGroupedNodes(Node& node); // Returns grouped nodes as a vector.
 const vector<Pin*> GetSelectedLinks(BP& blueprint); // Returns selected links as a vector.
-ImGui::MostRecentlyUsedList GetMostRecentlyOpenFileList();
 const char * StepResultToString(StepResult stepResult);
 std::string IDToHexString(const ID_TYPE i);
 ID_TYPE GetIDFromMap(ID_TYPE ID, std::map<ID_TYPE, ID_TYPE> MapID);

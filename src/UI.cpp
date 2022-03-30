@@ -74,28 +74,31 @@ void ContextMenu::Show(BluePrintUI& UI)
     if (ImGui::BeginPopup("##context-menu"))
     {
         auto popupPosition = ImGui::GetMousePosOnOpeningCurrentPopup();
-        auto mostRecentlyOpenFiles = GetMostRecentlyOpenFileList();
         UI.m_PopupMousePos = popupPosition;
         menuAction(UI.m_File_Open);
         ImGui::Separator();
         menuAction(UI.m_File_Import);
         ImGui::Separator();
-        if (ImGui::BeginMenu(ICON_NODE_OPEN " Open Recent...", !mostRecentlyOpenFiles.GetList().empty()))
+        if (!UI.m_isChildWindow)
         {
-            for (auto& entry : mostRecentlyOpenFiles.GetList())
+            auto mostRecentlyOpenFiles = ImGui::MostRecentlyUsedList("BluePrintOpenList");
+            if (ImGui::BeginMenu(ICON_NODE_OPEN " Open Recent...", !mostRecentlyOpenFiles.GetList().empty()))
             {
-                string title = string(ICON_NODE_FILE) + " " + entry;
-                if (ImGui::MenuItem(title.c_str()))
+                for (auto& entry : mostRecentlyOpenFiles.GetList())
                 {
-                    UI.File_Open(entry.c_str());
+                    string title = string(ICON_NODE_FILE) + " " + entry;
+                    if (ImGui::MenuItem(title.c_str()))
+                    {
+                        UI.File_Open(entry.c_str());
+                    }
                 }
+                ImGui::Separator();
+                if (ImGui::MenuItem(ICON_NODE_CLEAR " Clear Recently Opened"))
+                    mostRecentlyOpenFiles.Clear();
+                ImGui::EndMenu();
             }
             ImGui::Separator();
-            if (ImGui::MenuItem(ICON_NODE_CLEAR " Clear Recently Opened"))
-                mostRecentlyOpenFiles.Clear();
-            ImGui::EndMenu();
         }
-        ImGui::Separator();
         if (ImGui::BeginMenu(ICON_BLUEPRINT_STYLE " Set Style"))
         {
             ImGui::Bullet();
@@ -509,7 +512,7 @@ BluePrintUI::BluePrintUI()
 }
 
 void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
-{
+{    
     ImGui::MostRecentlyUsedList::Install(ImGui::GetCurrentContext());
 
 #if !defined(__EMSCRIPTEN__)
@@ -2033,8 +2036,11 @@ void BluePrintUI::FileDialogs()
             else
             {
                 m_Document->SetPath(filePathName);
-                auto mostRecentlyOpenFiles = GetMostRecentlyOpenFileList();
-                mostRecentlyOpenFiles.Add(filePathName);
+                if (!m_isChildWindow)
+                {
+                    auto mostRecentlyOpenFiles = ImGui::MostRecentlyUsedList("BluePrintOpenList");
+                    mostRecentlyOpenFiles.Add(filePathName);
+                }
             }
         }
         m_FileDialog.Close();
@@ -2790,8 +2796,11 @@ bool BluePrintUI::File_Open(std::string path, string* error)
     }
 
     LOGI("[File] Open \"%" PRI_sv "\"", FMT_sv(path));
-    auto mostRecentlyOpenFiles = GetMostRecentlyOpenFileList();
-    mostRecentlyOpenFiles.Add(path);
+    if (!m_isChildWindow)
+    {
+        auto mostRecentlyOpenFiles = ImGui::MostRecentlyUsedList("BluePrintOpenList");
+        mostRecentlyOpenFiles.Add(path);
+    }
     //m_Document->SetPath(path);
     m_Document->OnMakeCurrent();
     if (m_DebugOverlay) m_DebugOverlay->Init(&m_Document->m_Blueprint);
@@ -3284,7 +3293,7 @@ bool BluePrintUI::File_Export(Node * group_node)
 
 void BluePrintUI::UpdateActions()
 {
-    auto mostRecentlyOpenFiles = GetMostRecentlyOpenFileList();
+    //auto mostRecentlyOpenFiles = ImGui::MostRecentlyUsedList("BluePrintOpenList");
     auto hasDocument = File_IsOpen();
     auto hasUndo     = hasDocument && !m_Document->m_Undo.empty();
     auto hasRedo     = hasDocument && !m_Document->m_Redo.empty();
