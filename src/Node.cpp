@@ -124,6 +124,7 @@ NodeRegistry::NodeRegistry()
         FlipFlopNode::GetStaticTypeInfo(),
         PrintNode::GetStaticTypeInfo(),
 #if IMGUI_VULKAN_SHADER
+        // video filter nodes
         AlmNode::GetStaticTypeInfo(),
         BilateralNode::GetStaticTypeInfo(),
         BrightnessNode::GetStaticTypeInfo(),
@@ -149,7 +150,10 @@ NodeRegistry::NodeRegistry()
         USMNode::GetStaticTypeInfo(),
         WhiteBalanceNode::GetStaticTypeInfo(),
         VibranceNode::GetStaticTypeInfo(),
+        // audio filter nodes
         AudioGainNode::GetStaticTypeInfo(),
+        // fusion nodes
+        AlphaFusionNode::GetStaticTypeInfo(),
 #endif
     })
 {

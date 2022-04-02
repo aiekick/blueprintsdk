@@ -2385,11 +2385,14 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
         }
 
         // draw utils node
-        for (auto sub : node_tree.childrens)
+        if (&node_tree != start)
         {
-            if (sub.data)
+            for (auto sub : node_tree.childrens)
             {
-                AddNodeMenu(sub.data);
+                if (sub.data)
+                {
+                    AddNodeMenu(sub.data);
+                }
             }
         }
     }
