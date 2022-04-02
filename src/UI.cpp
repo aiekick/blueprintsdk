@@ -3222,6 +3222,36 @@ bool BluePrintUI::Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output)
     return true;
 }
 
+bool BluePrintUI::Blueprint_RunFusion(ImGui::ImMat& input_first, ImGui::ImMat& input_second, ImGui::ImMat& output, int64_t current, int64_t duration)
+{
+    if (!Blueprint_IsValid())
+        return false;
+    auto entry_node = FindEntryPointNode();
+    auto exit_node = FindExitPointNode();
+    if (!entry_node || !exit_node)
+        return false;
+    
+    FusionEntryPointNode * entryNode = (FusionEntryPointNode *)entry_node;
+    MatExitPointNode * exitNode = (MatExitPointNode *)exit_node;
+    entryNode->m_MatOutFirst.SetValue(input_first);
+    entryNode->m_MatOutSecond.SetValue(input_second);
+    entryNode->m_FusionDuration.SetValue(duration);
+    entryNode->m_FusionTimeStamp.SetValue(current);
+    auto result = m_Document->m_Blueprint.Run(*entryNode);
+    if (result == StepResult::Error)
+    {
+        LOGI("Execution: Failed at step %" PRIu32, m_Document->m_Blueprint.StepCount());
+        return false;
+    }
+    else if (result == StepResult::Done)
+    {
+        LOGI("Execution: Running");
+    }
+    auto output_val = exitNode->m_MatIn.GetValue();
+    output = output_val.As<ImGui::ImMat>();
+    return true;
+}
+
 bool BluePrintUI::Blueprint_Pause()
 {
     if (!m_Document)
