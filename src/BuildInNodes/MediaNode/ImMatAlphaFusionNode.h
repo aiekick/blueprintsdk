@@ -6,8 +6,6 @@
 #include <ImVulkanShader.h>
 #include <AlphaBlending_vulkan.h>
 
-#define ICON_RESET     "\uf0e2"
-
 namespace BluePrint
 {
 struct AlphaFusionNode final : Node

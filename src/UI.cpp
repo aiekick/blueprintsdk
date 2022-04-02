@@ -2183,15 +2183,10 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
     }
     else
     {
-        for (size_t i = 0; i < registryCatalog.size(); i++)
+        for (auto nodetype : registryNode)
         {
-            auto catalog = registryCatalog[i];
-            for (auto nodetype : registryNode)
-            {
-                auto catalogs = GetCatalogInfo(nodetype->m_Catalog);
-                if (catalogs.size() > 0 && catalogs[0].compare("Dummy") != 0 && catalogs[0].compare(catalog) == 0)
-                    nodes.push_back(nodetype);
-            }
+            if (nodetype->m_Catalog.compare("Dummy") != 0)
+                nodes.push_back(nodetype);
         }
     }
     std::sort(nodes.begin(), nodes.end(), [](const NodeTypeInfo * a, const NodeTypeInfo * b) {
