@@ -878,9 +878,12 @@ void BluePrintUI::CreateNewFusionDocument()
         view_size = ed::GetViewSize();
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ImVec2(200, 400);
+
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
+
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
+    exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOutFirst);
     CommitLinksToEditor();
     blueprint->SetOpen(true);
 }

@@ -15,7 +15,7 @@ struct FusionEntryPointNode final : Node
 
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     Pin* GetAutoLinkOutputFlowPin() override { return &m_Exit; }
-    vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOutFirst, &m_MatOutSecond}; }
+    vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOutFirst, &m_MatOutSecond, &m_FusionDuration, &m_FusionTimeStamp}; }
     FlowPin* GetOutputFlowPin() override { return &m_Exit; }
 
     FlowPin m_Exit = { this, "Start" };
