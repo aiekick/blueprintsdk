@@ -42,20 +42,19 @@ struct DoorFusionNode final : Node
         percentage = ImClamp(percentage, 0.0f, 1.0f);
         if (!mat_first.empty() && !mat_second.empty())
         {
+            int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
             if (!m_bEnabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
             }
-            if (!m_crop)
+            if (!m_crop || m_device != gpu)
             {
-                int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
                 if (m_crop) { delete m_crop; m_crop = nullptr; }
                 m_crop = new ImGui::Crop_vulkan(gpu);
             }
-            if (!m_copy)
+            if (!m_copy || m_device != gpu)
             {
-                int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
                 if (m_copy) { delete m_copy; m_copy = nullptr; }
                 m_copy = new ImGui::CopyTo_vulkan(gpu);
             }
@@ -63,6 +62,7 @@ struct DoorFusionNode final : Node
             {
                 return {};
             }
+            m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
             ImGui::VkMat first_half; first_half.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
             ImGui::VkMat second_half; second_half.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;

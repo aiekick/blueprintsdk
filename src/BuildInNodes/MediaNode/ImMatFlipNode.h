@@ -43,11 +43,12 @@ struct FlipNode final : Node
             }
             if (!m_filter || gpu != m_device)
             {
+                if (m_filter) { delete m_filter; m_filter = nullptr; }
                 m_filter = new ImGui::Flip_vulkan(gpu);
-                if (!m_filter)
-                {
-                    return {};
-                }
+            }
+            if (!m_filter)
+            {
+                return {};
             }
             if (!m_bx && !m_by)
             {

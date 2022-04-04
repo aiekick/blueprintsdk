@@ -15,7 +15,7 @@ struct AlphaFusionNode final : Node
 
     ~AlphaFusionNode()
     {
-        if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
+        if (m_alpha) { delete m_alpha; m_alpha = nullptr; }
     }
 
     void Reset(Context& context) override
@@ -39,23 +39,24 @@ struct AlphaFusionNode final : Node
         float alpha = 1.0f - (float)current / (float)total;
         if (!mat_first.empty() && !mat_second.empty())
         {
+            int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
             if (!m_bEnabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
             }
-            if (!m_fusion)
+            if (!m_alpha || m_device != gpu)
             {
-                int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
-                if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
-                m_fusion = new ImGui::AlphaBlending_vulkan(gpu);
+                if (m_alpha) { delete m_alpha; m_alpha = nullptr; }
+                m_alpha = new ImGui::AlphaBlending_vulkan(gpu);
             }
-            if (!m_fusion)
+            if (!m_alpha)
             {
                 return {};
             }
+            m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_fusion->blend(mat_first, mat_second, im_RGB, alpha);
+            m_alpha->blend(mat_first, mat_second, im_RGB, alpha);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -145,6 +146,6 @@ private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
     bool m_bEnabled      {true};
-    ImGui::AlphaBlending_vulkan * m_fusion   {nullptr};
+    ImGui::AlphaBlending_vulkan * m_alpha   {nullptr};
 };
 } // namespace BluePrint

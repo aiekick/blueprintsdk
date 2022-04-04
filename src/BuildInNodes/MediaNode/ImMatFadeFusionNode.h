@@ -15,7 +15,7 @@ struct FadeFusionNode final : Node
 
     ~FadeFusionNode()
     {
-        if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
+        if (m_light) { delete m_light; m_light = nullptr; }
     }
 
     void Reset(Context& context) override
@@ -40,31 +40,32 @@ struct FadeFusionNode final : Node
         percentage = ImClamp(percentage, 0.0f, 1.0f);
         if (!mat_first.empty() && !mat_second.empty())
         {
+            int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
             if (!m_bEnabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
             }
-            if (!m_fusion)
+            if (!m_light || m_device != gpu)
             {
-                int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
-                if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
-                m_fusion = new ImGui::Brightness_vulkan(gpu);
+                if (m_light) { delete m_light; m_light = nullptr; }
+                m_light = new ImGui::Brightness_vulkan(gpu);
             }
-            if (!m_fusion)
+            if (!m_light)
             {
                 return {};
             }
+            m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
             if (percentage <= 0.5)
             {
-                float alpha = m_bBlack ? - percentage * 2 : percentage * 2;
-                m_fusion->filter(mat_first, im_RGB, alpha);
+                float light = m_bBlack ? - percentage * 2 : percentage * 2;
+                m_light->filter(mat_first, im_RGB, light);
             }
             else
             {
-                float alpha = m_bBlack ? (percentage - 1.0) * 2 : (1.0 - percentage) * 2;
-                m_fusion->filter(mat_second, im_RGB, alpha);
+                float light = m_bBlack ? (percentage - 1.0) * 2 : (1.0 - percentage) * 2;
+                m_light->filter(mat_second, im_RGB, light);
             }
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
@@ -167,6 +168,6 @@ private:
     int m_device        {-1};
     bool m_bEnabled     {true};
     bool m_bBlack       {true};
-    ImGui::Brightness_vulkan * m_fusion   {nullptr};
+    ImGui::Brightness_vulkan * m_light   {nullptr};
 };
 } // namespace BluePrint

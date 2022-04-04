@@ -4,26 +4,21 @@
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
-#include <CopyTo_vulkan.h>
-
-typedef enum Move_Type : int32_t
-{
-    MOVE_RIGHT = 0,
-    MOVE_LEFT,
-    MOVE_BOTTOM,
-    MOVE_TOP,
-} Move_Type;
+#include <Box.h>
+#include <AlphaBlending_vulkan.h>
+#include <Brightness_vulkan.h>
 
 namespace BluePrint
 {
-struct MoveFusionNode final : Node
+struct BlurFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(MoveFusionNode, "Move Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
-    MoveFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Move Transform"; }
+    BP_NODE_WITH_NAME(BlurFusionNode, "Blur Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BlurFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Blur Transform"; }
 
-    ~MoveFusionNode()
+    ~BlurFusionNode()
     {
-        if (m_copy) { delete m_copy; m_copy = nullptr; }
+        if (m_blur) { delete m_blur; m_blur = nullptr; }
+        if (m_alpha) { delete m_alpha; m_alpha = nullptr; }
     }
 
     void Reset(Context& context) override
@@ -40,55 +35,50 @@ struct MoveFusionNode final : Node
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
-        int x1 = 0, y1 = 0;
-        int x2 = 0, y2 = 0;
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
         auto current = context.GetPinValue<int64_t>(m_FusionTimeStamp);
         auto total = context.GetPinValue<int64_t>(m_FusionDuration);
         auto percentage = (float)current / (float)(total - 40);
         percentage = ImClamp(percentage, 0.0f, 1.0f);
+        float alpha = 1.0f - percentage;
         if (!mat_first.empty() && !mat_second.empty())
         {
             int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
-            switch (m_move_type)
-            {
-                case MOVE_RIGHT :
-                    x1 = - percentage * mat_first.w;
-                    x2 = (1.0 - percentage) * mat_first.w;
-                break;
-                case MOVE_LEFT:
-                    x1 = percentage * mat_first.w;
-                    x2 = - (1.0 - percentage) * mat_first.w;
-                break;
-                case MOVE_BOTTOM:
-                    y1 = - percentage * mat_first.h;
-                    y2 = (1.0 - percentage) * mat_first.h;
-                break;
-                case MOVE_TOP:
-                    y1 = percentage * mat_first.h;
-                    y2 = - (1.0 - percentage) * mat_first.h;
-                break;
-                default: break;
-            }
             if (!m_bEnabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
             }
-            if (!m_copy || m_device != gpu)
+            if (!m_blur || m_device != gpu)
             {
-                if (m_copy) { delete m_copy; m_copy = nullptr; }
-                m_copy = new ImGui::CopyTo_vulkan(gpu);
+                if (m_blur) { delete m_blur; m_blur = nullptr; }
+                m_blur = new ImGui::BoxBlur_vulkan(gpu);
             }
-            if (!m_copy)
+            if (!m_alpha || m_device != gpu)
+            {
+                if (m_alpha) { delete m_alpha; m_alpha = nullptr; }
+                m_alpha = new ImGui::AlphaBlending_vulkan(gpu);
+            }
+            if (!m_blur || !m_alpha)
             {
                 return {};
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_copy->copyTo(mat_first, im_RGB, x1, y1);
-            m_copy->copyTo(mat_second, im_RGB, x2, y2);
+            ImGui::VkMat im_First_Blur; im_First_Blur.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
+            ImGui::VkMat im_Second_Blur; im_Second_Blur.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_second.type : m_mat_data_type;
+
+            int size_first = percentage * 50 + 1;
+            int size_second = (1.0 - percentage) * 50 + 1;
+            
+            m_blur->SetParam(size_first, size_first);
+            m_blur->filter(mat_first, im_First_Blur);
+            m_blur->SetParam(size_second, size_second);
+            m_blur->filter(mat_second, im_Second_Blur);
+
+            m_alpha->blend(im_First_Blur, im_Second_Blur, im_RGB, alpha);
+            
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -117,18 +107,13 @@ struct MoveFusionNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         bool check = m_bEnabled;
-        int type = m_move_type;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(100, 8));
         ImGui::PushItemWidth(100);
         ImGui::TextUnformatted("Enable"); ImGui::SameLine();
         if (ImGui::ToggleButton("##enable_filter_Brightness",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::RadioButton("Right In", &type, MOVE_RIGHT);
-        ImGui::RadioButton("Left In", &type, MOVE_LEFT);
-        ImGui::RadioButton("Bottom In", &type, MOVE_BOTTOM);
-        ImGui::RadioButton("Top In", &type,MOVE_TOP);
-        if (type != m_move_type) { m_move_type = type; changed = true; }
+
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         return changed;
@@ -152,12 +137,6 @@ struct MoveFusionNode final : Node
             if (val.is_boolean())
                 m_bEnabled = val.get<imgui_json::boolean>();
         }
-        if (value.contains("move_type"))
-        { 
-            auto& val = value["move_type"];
-            if (val.is_number())
-                m_move_type = (Move_Type)val.get<imgui_json::number>();
-        }
         return ret;
     }
 
@@ -166,7 +145,6 @@ struct MoveFusionNode final : Node
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
         value["enabled"] = imgui_json::boolean(m_bEnabled);
-        value["move_type"] = imgui_json::number(m_move_type);
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
@@ -191,7 +169,7 @@ private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
     bool m_bEnabled     {true};
-    int m_move_type   {MOVE_RIGHT};
-    ImGui::CopyTo_vulkan * m_copy   {nullptr};
+    ImGui::BoxBlur_vulkan * m_blur   {nullptr};
+    ImGui::AlphaBlending_vulkan * m_alpha   {nullptr};
 };
 } // namespace BluePrint

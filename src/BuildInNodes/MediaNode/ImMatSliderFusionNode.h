@@ -27,7 +27,7 @@ struct SliderFusionNode final : Node
 
     ~SliderFusionNode()
     {
-        if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
+        if (m_copy) { delete m_copy; m_copy = nullptr; }
     }
 
     void Reset(Context& context) override
@@ -53,6 +53,7 @@ struct SliderFusionNode final : Node
         percentage = ImClamp(percentage, 0.0f, 1.0f);
         if (!mat_first.empty() && !mat_second.empty())
         {
+            int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
             switch (m_slider_type)
             {
                 case SLIDER_RIGHT :
@@ -90,19 +91,19 @@ struct SliderFusionNode final : Node
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
             }
-            if (!m_fusion)
+            if (!m_copy || m_device != gpu)
             {
-                int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
-                if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
-                m_fusion = new ImGui::CopyTo_vulkan(gpu);
+                if (m_copy) { delete m_copy; m_copy = nullptr; }
+                m_copy = new ImGui::CopyTo_vulkan(gpu);
             }
-            if (!m_fusion)
+            if (!m_copy)
             {
                 return {};
             }
+            m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_fusion->copyTo(mat_first, im_RGB, 0, 0);
-            m_fusion->copyTo(mat_second, im_RGB, x, y);
+            m_copy->copyTo(mat_first, im_RGB, 0, 0);
+            m_copy->copyTo(mat_second, im_RGB, x, y);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -211,6 +212,6 @@ private:
     int m_device        {-1};
     bool m_bEnabled     {true};
     int m_slider_type   {SLIDER_RIGHT};
-    ImGui::CopyTo_vulkan * m_fusion   {nullptr};
+    ImGui::CopyTo_vulkan * m_copy   {nullptr};
 };
 } // namespace BluePrint
