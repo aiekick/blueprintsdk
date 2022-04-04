@@ -4,16 +4,16 @@
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
-#include <AlphaBlending_vulkan.h>
+#include <Brightness_vulkan.h>
 
 namespace BluePrint
 {
-struct AlphaFusionNode final : Node
+struct FadeFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(AlphaFusionNode, "Alpha Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
-    AlphaFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Alpha Transform"; }
+    BP_NODE_WITH_NAME(FadeFusionNode, "Fade Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    FadeFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Fade Transform"; }
 
-    ~AlphaFusionNode()
+    ~FadeFusionNode()
     {
         if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
     }
@@ -36,7 +36,8 @@ struct AlphaFusionNode final : Node
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
         auto current = context.GetPinValue<int64_t>(m_FusionTimeStamp);
         auto total = context.GetPinValue<int64_t>(m_FusionDuration);
-        float alpha = 1.0f - (float)current / (float)total;
+        auto percentage = (float)current / (float)(total - 40);
+        percentage = ImClamp(percentage, 0.0f, 1.0f);
         if (!mat_first.empty() && !mat_second.empty())
         {
             if (!m_bEnabled)
@@ -48,14 +49,21 @@ struct AlphaFusionNode final : Node
             {
                 int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
                 if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
-                m_fusion = new ImGui::AlphaBlending_vulkan(gpu);
+                m_fusion = new ImGui::Brightness_vulkan(gpu);
             }
             if (!m_fusion)
             {
                 return {};
             }
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_fusion->blend(mat_first, mat_second, im_RGB, alpha);
+            if (percentage <= 0.5)
+            {
+                m_fusion->filter(mat_first, im_RGB, - percentage * 2);
+            }
+            else
+            {
+                m_fusion->filter(mat_second, im_RGB, (percentage - 1.0) * 2);
+            }
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -144,7 +152,7 @@ struct AlphaFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled      {true};
-    ImGui::AlphaBlending_vulkan * m_fusion   {nullptr};
+    bool m_bEnabled     {true};
+    ImGui::Brightness_vulkan * m_fusion   {nullptr};
 };
 } // namespace BluePrint
