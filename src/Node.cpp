@@ -154,6 +154,7 @@ NodeRegistry::NodeRegistry()
         AudioGainNode::GetStaticTypeInfo(),
         // fusion nodes
         AlphaFusionNode::GetStaticTypeInfo(),
+        DoorFusionNode::GetStaticTypeInfo(),
         FadeFusionNode::GetStaticTypeInfo(),
         MoveFusionNode::GetStaticTypeInfo(),
         SliderFusionNode::GetStaticTypeInfo(),
