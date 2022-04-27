@@ -3,7 +3,6 @@
 #include <Pin.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
-#include <ImVulkanShader.h>
 
 #define ICON_RESET     "\uf0e2"
 
@@ -16,7 +15,6 @@ struct AudioGainNode final : Node
 
     ~AudioGainNode()
     {
-        if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
 
     void Reset(Context& context) override
@@ -42,17 +40,11 @@ struct AudioGainNode final : Node
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
             }
-            if (!m_filter || gpu != m_device)
-            {
-                if (m_filter) { delete m_filter; m_filter = nullptr; }
-                //m_filter = new filter;
-            }
-            if (!m_filter)
-            {
-                return {};
-            }
             m_device = gpu;
-            //m_MatOut.SetValue(im_mat);
+            ImGui::ImMat im_mat;
+            im_mat = mat_in * m_gain;
+            im_mat.clip(-1.f, 1.f);
+            m_MatOut.SetValue(im_mat);
         }
         return m_Exit;
     }
@@ -84,7 +76,7 @@ struct AudioGainNode final : Node
         ImGui::TextUnformatted("Enable"); ImGui::SameLine();
         if (ImGui::ToggleButton("##enable_filter_Audio_Gain",&check)) { m_bEnabled = check; changed = true; }
         if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        ImGui::SliderFloat("##slider_gain##Gain", &val, -1.0, 1.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::SliderFloat("##slider_gain##Gain", &val, 0.0, 2.f, "%.2f", flags); ImGui::SameLine();
         if (val != m_gain) { m_gain = val; changed = true; }
         if (ImGui::Button(ICON_RESET "##reset_gain##Gain")) { m_gain = 1.0; changed = true; }
         ImGui::EndDisabled();
@@ -146,7 +138,6 @@ private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
     bool m_bEnabled     {true};
-    char * m_filter     {nullptr}; // TODO::Dicky
     float m_gain        {1.0f};
 };
 } // namespace BluePrint

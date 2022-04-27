@@ -150,8 +150,6 @@ NodeRegistry::NodeRegistry()
         USMNode::GetStaticTypeInfo(),
         WhiteBalanceNode::GetStaticTypeInfo(),
         VibranceNode::GetStaticTypeInfo(),
-        // audio filter nodes
-        AudioGainNode::GetStaticTypeInfo(),
         // fusion nodes
         AlphaFusionNode::GetStaticTypeInfo(),
         BlurFusionNode::GetStaticTypeInfo(),
@@ -160,6 +158,8 @@ NodeRegistry::NodeRegistry()
         MoveFusionNode::GetStaticTypeInfo(),
         SliderFusionNode::GetStaticTypeInfo(),
 #endif
+        // audio filter nodes
+        AudioGainNode::GetStaticTypeInfo(),
     })
 {
     RebuildTypes();
