@@ -326,11 +326,11 @@ public:
     Action m_View_NavigateBackward  = { "Navigate Backward", ICON_MD_ARROW_BACK,         [this] { View_NavigateBackward();   } };
     Action m_View_NavigateForward   = { "Navigate Forward",  ICON_MD_ARROW_FORWARD,      [this] { View_NavigateForward();    } };
 
-    Action m_Blueprint_Run          = { "Run",          ICON_FA5_PLAY,          [this] { Blueprint_Run();           } };
-    Action m_Blueprint_Stop         = { "Stop",         ICON_FA5_STOP,          [this] { Blueprint_Stop();          } };
-    Action m_Blueprint_Pause        = { "Pause",        ICON_FA5_PAUSE,         [this] { Blueprint_Pause();         } };
+    Action m_Blueprint_Run          = { "Run",          ICON_FA_PLAY,           [this] { Blueprint_Run();           } };
+    Action m_Blueprint_Stop         = { "Stop",         ICON_FA_STOP,           [this] { Blueprint_Stop();          } };
+    Action m_Blueprint_Pause        = { "Pause",        ICON_FA_PAUSE,          [this] { Blueprint_Pause();         } };
     Action m_Blueprint_Next         = { "Next",         ICON_STEP_NEXT,         [this] { Blueprint_Next();          } };
-    Action m_Blueprint_Current      = { "Restep",       ICON_FA5_SYNC_ALT,      [this] { Blueprint_Current();       } };
+    Action m_Blueprint_Current      = { "Restep",       ICON_MD_SYNC,           [this] { Blueprint_Current();       } };
     Action m_Blueprint_BreakPoint   = { "BreakPoint",   ICON_BREAKPOINT,        [this] { Blueprint_BreakPoint();    } };
 
 private:
