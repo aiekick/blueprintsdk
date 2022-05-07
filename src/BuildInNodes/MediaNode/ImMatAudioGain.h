@@ -34,13 +34,11 @@ struct AudioGainNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (!mat_in.empty())
         {
-            int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
             if (!m_bEnabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
             }
-            m_device = gpu;
             ImGui::ImMat im_mat;
             im_mat = mat_in * m_gain;
             im_mat.clip(-1.f, 1.f);
