@@ -14,7 +14,7 @@ struct FileSelectNode final : Node
         FILESELECT_PATH      =      0,
         FILESELECT_FOLDER    = 1 << 0,
         FILESELECT_NAME      = 1 << 1,
-        FILESELECT_SURFIX    = 1 << 2,
+        FILESELECT_SUFFIX    = 1 << 2,
     };
     BP_NODE(FileSelectNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "System")
     FileSelectNode(BP& blueprint): Node(blueprint) { m_Name = "FileSelect"; }
@@ -65,14 +65,14 @@ struct FileSelectNode final : Node
         ImGui::Separator();
         bool flag_folder        = m_out_flags & FILESELECT_FOLDER;
         bool flag_name          = m_out_flags & FILESELECT_NAME;
-        bool flag_surfix        = m_out_flags & FILESELECT_SURFIX;
+        bool flag_suffix        = m_out_flags & FILESELECT_SUFFIX;
         ImGui::TextUnformatted("  Folder Name"); ImGui::SameLine(0.f, 100.f); ImGui::ToggleButton("##toggle_path", &flag_folder);
         ImGui::TextUnformatted("    File Name"); ImGui::SameLine(0.f, 100.f); ImGui::ToggleButton("##toggle_name", &flag_name);
-        ImGui::TextUnformatted("  File Surfix"); ImGui::SameLine(0.f, 100.f); ImGui::ToggleButton("##toggle_surfix", &flag_surfix);
+        ImGui::TextUnformatted("  File Suffix"); ImGui::SameLine(0.f, 100.f); ImGui::ToggleButton("##toggle_suffix", &flag_suffix);
         m_out_flags = 0;
         if (flag_folder)    m_out_flags |= FILESELECT_FOLDER;
         if (flag_name)      m_out_flags |= FILESELECT_NAME;
-        if (flag_surfix)    m_out_flags |= FILESELECT_SURFIX;
+        if (flag_suffix)    m_out_flags |= FILESELECT_SUFFIX;
         BuildOutputPin();
 
         ImGui::Separator();
@@ -105,10 +105,10 @@ struct FileSelectNode final : Node
                 m_file_name = ImGuiFileDialog::Instance()->GetCurrentFileName();
                 auto found = m_file_name.find_last_of(".");
                 if (found != std::string::npos)
-                    m_file_surfix = m_file_name.substr(found + 1);
+                    m_file_suffix = m_file_name.substr(found + 1);
                 else
-                    m_file_surfix = "";
-                m_FileSurfix.SetValue(m_file_surfix);
+                    m_file_suffix = "";
+                m_FileSuffix.SetValue(m_file_suffix);
                 m_FileName.SetValue(m_file_name);
                 m_FilePath.SetValue(m_file_path);
                 m_FullPath.SetValue(m_file_path_name);
@@ -176,13 +176,13 @@ struct FileSelectNode final : Node
                 m_FileName.SetValue(m_file_name);
             }
         }
-        if (value.contains("file_surfix"))
+        if (value.contains("file_suffix"))
         {
-            auto& val = value["file_surfix"];
+            auto& val = value["file_suffix"];
             if (val.is_string())
             {
-                m_file_surfix = val.get<imgui_json::string>();
-                m_FileSurfix.SetValue(m_file_surfix);
+                m_file_suffix = val.get<imgui_json::string>();
+                m_FileSuffix.SetValue(m_file_suffix);
             }
         }
         if (value.contains("filter"))
@@ -221,7 +221,7 @@ struct FileSelectNode final : Node
         value["file_path_name"] = m_file_path_name;
         value["file_path"] = m_file_path;
         value["file_name"] = m_file_name;
-        value["file_surfix"] = m_file_surfix;
+        value["file_suffix"] = m_file_suffix;
         value["show_bookmark"] = m_isShowBookmark;
         value["show_hidden"] = m_isShowHiddenFiles;
         value["filter"] = m_filters;
@@ -237,7 +237,7 @@ struct FileSelectNode final : Node
         m_OutputPins.push_back(&m_FullPath);
         if (m_out_flags & FILESELECT_FOLDER)    { m_OutputPins.push_back(&m_FilePath); }
         if (m_out_flags & FILESELECT_NAME)      { m_OutputPins.push_back(&m_FileName); }
-        if (m_out_flags & FILESELECT_SURFIX)    { m_OutputPins.push_back(&m_FileSurfix); }
+        if (m_out_flags & FILESELECT_SUFFIX)    { m_OutputPins.push_back(&m_FileSuffix); }
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
@@ -254,13 +254,13 @@ struct FileSelectNode final : Node
     StringPin m_FullPath    = { this, "PathName", "" };
     StringPin m_FilePath    = { this, "Path", "" };
     StringPin m_FileName    = { this, "Name", "" };
-    StringPin m_FileSurfix  = { this, "Surfix", "" };
+    StringPin m_FileSuffix  = { this, "Suffix", "" };
     Pin* m_InputPins[1] = { &m_Enter };
     string m_filters {".*"};
     string m_file_path_name;
     string m_file_path;
     string m_file_name;
-    string m_file_surfix;
+    string m_file_suffix;
     string m_bookmark {""};
     bool m_isShowBookmark {false};
     bool m_isShowHiddenFiles {false};

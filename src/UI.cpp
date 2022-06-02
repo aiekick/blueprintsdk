@@ -527,7 +527,9 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
     auto nodeRegistry = m_Document->m_Blueprint.GetNodeRegistry();
     std::string plugin_real_path = plugin_path ? std::string(plugin_path) : "";
     std::vector<std::string> plugins, plugin_names;
-    if (DIR_Iterate(plugin_real_path, plugins, plugin_names, false, ".node") == 0)
+    std::vector<std::string> node_filter = {"node"};
+    std::vector<std::string> pin_filter = {"pin"};
+    if (DIR_Iterate(plugin_real_path, plugins, plugin_names, node_filter, false) == 0)
     {
         LOGI("Load Extra Node %s", plugin_real_path.c_str());
         for (auto node_path : plugins)
@@ -555,7 +557,7 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
     // load dynamic pin
     auto pinexRegistry = m_Document->m_Blueprint.GetPinExRegistry();
     plugins.clear(); plugin_names.clear();
-    if (DIR_Iterate(plugin_real_path, plugins, plugin_names, false, ".pin") == 0)
+    if (DIR_Iterate(plugin_real_path, plugins, plugin_names, pin_filter, false) == 0)
     {
         LOGI("Load Extra PinEx %s", plugin_real_path.c_str());
         for (auto pinex_path : plugins)
