@@ -108,10 +108,10 @@ struct Lut3DNode final : Node
         // open from file
         if (m_lut_mode == NO_DEFAULT) ImGui::BeginDisabled(false);  else ImGui::BeginDisabled(true);
         static string filters = ".cube";
-        ImGuiFileDialogFlags vflags = ImGuiFileDialogFlags_ShowBookmark | ImGuiFileDialogFlags_CaseInsensitiveExtention;
+        ImGuiFileDialogFlags vflags = ImGuiFileDialogFlags_ShowBookmark | ImGuiFileDialogFlags_CaseInsensitiveExtention | ImGuiFileDialogFlags_Modal;
         vflags |= ImGuiFileDialogFlags_DontShowHiddenFiles;
         if (ImGui::Button(ICON_IGFD_FOLDER_OPEN " Choose File ## "))
-            ImGuiFileDialog::Instance()->OpenModal("##NodeChooseLutFileDlgKey", "Choose File", 
+            ImGuiFileDialog::Instance()->OpenDialog("##NodeChooseLutFileDlgKey", "Choose File", 
                                                     filters.c_str(), 
                                                     m_path.empty() ? "." : m_path,
                                                     1, this, vflags);

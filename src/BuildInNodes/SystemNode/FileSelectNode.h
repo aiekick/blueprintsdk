@@ -82,7 +82,7 @@ struct FileSelectNode final : Node
         auto& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
             io.ConfigViewportsNoDecoration = true;
-        ImGuiFileDialogFlags vflags = ImGuiFileDialogFlags_CaseInsensitiveExtention;
+        ImGuiFileDialogFlags vflags = ImGuiFileDialogFlags_CaseInsensitiveExtention | ImGuiFileDialogFlags_Modal;
         if (m_isShowBookmark)       vflags |= ImGuiFileDialogFlags_ShowBookmark;
         if (!m_isShowHiddenFiles)   vflags |= ImGuiFileDialogFlags_DontShowHiddenFiles;
         if (!m_bookmark.empty())    ImGuiFileDialog::Instance()->DeserializeBookmarks(m_bookmark);
@@ -91,7 +91,7 @@ struct FileSelectNode final : Node
         else
             ImGuiFileDialog::Instance()->SetDarkStyle();
         if (ImGui::Button(ICON_IGFD_FOLDER_OPEN " Choose File"))
-            ImGuiFileDialog::Instance()->OpenModal("##NodeChooseFileDlgKey", "Choose File", 
+            ImGuiFileDialog::Instance()->OpenDialog("##NodeChooseFileDlgKey", "Choose File", 
                                                     m_filters.c_str(), 
                                                     m_file_path.empty() ? "." : m_file_path,
                                                     1, this, vflags);
