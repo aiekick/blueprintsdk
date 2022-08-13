@@ -149,12 +149,14 @@ enum BluePrintFlag : int32_t
     BluePrintFlag_Filter = 1,
     BluePrintFlag_Fusion = 1 << 1,
     BluePrintFlag_System = 1 << 2,
+    // layout
+    BluePrintFlag_Vertical = 1 << 8,
     BluePrintFlag_All = 1 << 31,
 };
 
 struct NodeCreateDialog
 {
-    void Open(Pin* fromPin = nullptr, BluePrintFlag flag = BluePrintFlag::BluePrintFlag_All);
+    void Open(Pin* fromPin = nullptr, uint32_t flag = BluePrintFlag::BluePrintFlag_All);
     void Show(BluePrintUI& UI);
 
           Node* GetCreatedNode()       { return m_CreatedNode; }
@@ -216,7 +218,7 @@ struct BluePrintUI
     BluePrintUI();
     void Initialize(const char * bp_file = nullptr, const char * plugin_path = nullptr);
     void Finalize();
-    bool Frame(bool child_window = false, bool show_node = true, bool bp_enabled = true, BluePrintFlag flag = BluePrintFlag::BluePrintFlag_All);
+    bool Frame(bool child_window = false, bool show_node = true, bool bp_enabled = true, uint32_t flag = BluePrintFlag::BluePrintFlag_All);
     void SetStyle(enum BluePrintStyle style = BluePrintStyle::BP_Style_BluePrint);
     void SetCallbacks(BluePrintCallbackFunctions callbacks, void * handle);
     
@@ -252,7 +254,7 @@ public:
     Node*   ShowNewNodeMenu(ImVec2 popupPosition = {}, std::string catalog_filter = "");
     void    ShowStyleEditor(bool* show = nullptr);
     void    ShowToolbar(bool* show = nullptr);
-    void    ShowShortToolbar(bool* show = nullptr);
+    void    ShowShortToolbar(bool vertical = true, bool* show = nullptr);
     void    Thumbnails(bool* show = nullptr);
     bool    Blueprint_IsValid();
 
@@ -341,9 +343,9 @@ private:
     void                DrawInfoTooltip();
     void                ShowDialogs();
     void                FileDialogs();
-    void                HandleCreateAction(BluePrintFlag flag = BluePrintFlag::BluePrintFlag_All);
+    void                HandleCreateAction(uint32_t flag = BluePrintFlag::BluePrintFlag_All);
     void                HandleDestroyAction();
-    void                HandleContextMenuAction(BluePrintFlag flag = BluePrintFlag::BluePrintFlag_All);
+    void                HandleContextMenuAction(uint32_t flag = BluePrintFlag::BluePrintFlag_All);
 
     Node*               FindEntryPointNode();
     Node*               FindExitPointNode();

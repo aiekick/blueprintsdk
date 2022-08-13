@@ -353,7 +353,7 @@ void NodeDeleteDialog::Show(BluePrintUI& UI)
     }
 }
 
-void NodeCreateDialog::Open(Pin* fromPin, BluePrintFlag flag)
+void NodeCreateDialog::Open(Pin* fromPin, uint32_t flag)
 {
     ImGui::GetStateStorage()->SetVoidPtr(ImGui::GetID("##create_node_pin"), fromPin);
     if ((flag & BluePrintFlag::BluePrintFlag_Filter) != 0)
@@ -744,7 +744,7 @@ void BluePrintUI::SetCallbacks(BluePrintCallbackFunctions callbacks, void * hand
     m_UserHandle = handle;
 }
 
-bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, BluePrintFlag flag)
+bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, uint32_t flag)
 {
     bool done = false;
     if (!m_Editor || !m_Document || ReadyToQuit)
@@ -816,7 +816,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, Blue
         if (m_DebugOverlay) m_DebugOverlay->Enable(false);
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
-        ShowShortToolbar();
+        ShowShortToolbar(flag & BluePrintFlag_Vertical);
         ed::Begin("###main_editor");
         if (bp_enabled)
         {
@@ -2399,7 +2399,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
     return node;
 }
 
-void BluePrintUI::HandleCreateAction(BluePrintFlag flag)
+void BluePrintUI::HandleCreateAction(uint32_t flag)
 {
     if (!m_Document)
         return;
@@ -2612,7 +2612,7 @@ void BluePrintUI::HandleDestroyAction()
     }
 }
 
-void BluePrintUI::HandleContextMenuAction(BluePrintFlag flag)
+void BluePrintUI::HandleContextMenuAction(uint32_t flag)
 {
     if (!m_Document)
         return;
@@ -3463,7 +3463,7 @@ void BluePrintUI::ShowStyleEditor(bool* show)
     ImGui::End();
 }
 
-void BluePrintUI::ShowShortToolbar(bool* show)
+void BluePrintUI::ShowShortToolbar(bool vertical, bool* show)
 {
     auto& io = ImGui::GetIO();
     ImVec2 window_pos = ImGui::GetWindowPos();
@@ -3482,7 +3482,7 @@ void BluePrintUI::ShowShortToolbar(bool* show)
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, m_StyleColors[BluePrintStyleColor_ToolButtonActive]);
     ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(1.0, 1.0, 1.0, 0.8));
     ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
-    ImGui::SetNextWindowPos(window_pos + ImVec2(window_size.x - 48, 8));
+    ImGui::SetNextWindowPos(window_pos + ImVec2(vertical ? window_size.x - 48 : 8, 8));
     if (ImGui::Begin("##embedded_toolbar", show, window_flags))
     {
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -3504,21 +3504,31 @@ void BluePrintUI::ShowShortToolbar(bool* show)
             }
         };
         toolbarAction(m_View_ShowFlow); ImGui::ShowTooltipOnHover("%s", m_View_ShowFlow.GetName().c_str());
+        if (!vertical) ImGui::SameLine();
         toolbarAction(m_View_ZoomToContent); ImGui::ShowTooltipOnHover("%s", m_View_ZoomToContent.GetName().c_str());
+        if (!vertical) ImGui::SameLine();
         toolbarAction(m_View_ZoomToSelection); ImGui::ShowTooltipOnHover("%s", m_View_ZoomToSelection.GetName().c_str());
-        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+        if (!vertical) { ImGui::SameLine(); ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); ImGui::SameLine(); }
+        else ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
         toolbarAction(m_Edit_Copy); ImGui::ShowTooltipOnHover("%s", m_Edit_Copy.GetName().c_str());
+        if (!vertical) ImGui::SameLine();
         toolbarAction(m_Edit_Paste); ImGui::ShowTooltipOnHover("%s", m_Edit_Paste.GetName().c_str());
+        if (!vertical) ImGui::SameLine();
         toolbarAction(m_Edit_Cut); ImGui::ShowTooltipOnHover("%s", m_Edit_Cut.GetName().c_str());
+        if (!vertical) ImGui::SameLine();
         toolbarAction(m_Edit_Duplicate); ImGui::ShowTooltipOnHover("%s", m_Edit_Duplicate.GetName().c_str());
+        if (!vertical) ImGui::SameLine();
         toolbarAction(m_Edit_Delete); ImGui::ShowTooltipOnHover("%s", m_Edit_Delete.GetName().c_str());
+        if (!vertical) ImGui::SameLine();
         toolbarAction(m_Edit_Unlink); ImGui::ShowTooltipOnHover("%s", m_Edit_Unlink.GetName().c_str());
-        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+        if (!vertical) { ImGui::SameLine(); ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); ImGui::SameLine(); }
+        else ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
         toolbarAction(m_Edit_Undo); ImGui::ShowTooltipOnHover("%s", m_Edit_Undo.GetName().c_str());
+        if (!vertical) ImGui::SameLine();
         toolbarAction(m_Edit_Redo); ImGui::ShowTooltipOnHover("%s", m_Edit_Redo.GetName().c_str());
-        
         // Show Info tooltip
-        ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+        if (!vertical) { ImGui::SameLine(); ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); ImGui::SameLine(); }
+        else ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
         string info_button_title = string(ICON_MD_INFO_OUTLINE) + "##info_tooltips";
         ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips);
         ImGui::ShowTooltipOnHover("Show Info in tooltips");
