@@ -841,10 +841,10 @@ void BluePrintUI::CreateNewDocument()
 {
     auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::SystemEntryPointNode>();
-                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
+                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(32, 32));
 
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
-                            ed::SetNodePosition(exitPointNode->m_ID, ed::GetViewSize() - ImVec2(100, 100));
+                            ed::SetNodePosition(exitPointNode->m_ID, ed::GetViewSize() - ImVec2(32 + 64, 32));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     CommitLinksToEditor();
     blueprint->SetOpen(true);
@@ -854,15 +854,15 @@ void BluePrintUI::CreateNewFilterDocument()
 {
     auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::FilterEntryPointNode>();
-                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
+                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(32, 32));
 
     auto view_size = m_ViewSize;
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ed::GetViewSize();
     if (view_size.x == 0 || view_size.y == 0)
-        view_size = ImVec2(200, 400);
+        view_size = ImVec2(400, 200);
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
-                            ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
+                            ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(32 + 64, 32));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOut);
     CommitLinksToEditor();
@@ -873,16 +873,16 @@ void BluePrintUI::CreateNewFusionDocument()
 {
     auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::FusionEntryPointNode>();
-                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(10, 10));
+                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(32, 32));
 
     auto view_size = m_ViewSize;
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ed::GetViewSize();
     if (view_size.x == 0 || view_size.y == 0)
-        view_size = ImVec2(200, 400);
+        view_size = ImVec2(400, 200);
 
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
-                            ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(100, 100));
+                            ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(32 + 64, 32));
 
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     exitPointNode->m_MatIn.LinkTo(entryPointNode->m_MatOutFirst);
