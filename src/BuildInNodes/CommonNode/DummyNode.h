@@ -29,14 +29,14 @@ struct DummyNode final : Node
     bool InsertInputPins(const imgui_json::value& value)
     {
         const imgui_json::array* inputPinsArray = nullptr;
-        if (GetPtrTo(value, "input_pins", inputPinsArray))
+        if (imgui_json::GetPtrTo(value, "input_pins", inputPinsArray))
         {
             for (auto& pinValue : *inputPinsArray)
             {
                 string pinType;
-                GetTo<imgui_json::string>(pinValue, "type", pinType);
+                imgui_json::GetTo<imgui_json::string>(pinValue, "type", pinType);
                 string pinName;
-                GetTo<imgui_json::string>(pinValue, "name", pinName);
+                imgui_json::GetTo<imgui_json::string>(pinValue, "name", pinName);
                 PinType type;
                 PinTypeFromString(pinType, type);
                 auto pin = InsertInputPin(type, pinName);
@@ -49,14 +49,14 @@ struct DummyNode final : Node
     bool InsertOutputPins(const imgui_json::value& value)
     {
         const imgui_json::array* outputPinsArray = nullptr;
-        if (GetPtrTo(value, "output_pins", outputPinsArray))
+        if (imgui_json::GetPtrTo(value, "output_pins", outputPinsArray))
         {
             for (auto& pinValue : *outputPinsArray)
             {
                 string pinType;
-                GetTo<imgui_json::string>(pinValue, "type", pinType);
+                imgui_json::GetTo<imgui_json::string>(pinValue, "type", pinType);
                 string pinName;
-                GetTo<imgui_json::string>(pinValue, "name", pinName);
+                imgui_json::GetTo<imgui_json::string>(pinValue, "name", pinName);
                 PinType type;
                 PinTypeFromString(pinType, type);
                 auto pin = InsertOutputPin(type, pinName);

@@ -479,15 +479,15 @@ uint32_t BP::StepCount() const
 Node * BP::CreateDummyNode(const imgui_json::value& value, BP& blueprint)
 {
     DummyNode * dummy = (BluePrint::DummyNode *)m_NodeRegistry->Create("DummyNode", blueprint);
-    GetTo<imgui_json::number>(value, "id", dummy->m_ID);
-    GetTo<imgui_json::string>(value, "name", dummy->m_name);
-    GetTo<imgui_json::string>(value, "type_name", dummy->m_type_name);
+    imgui_json::GetTo<imgui_json::number>(value, "id", dummy->m_ID);
+    imgui_json::GetTo<imgui_json::string>(value, "name", dummy->m_name);
+    imgui_json::GetTo<imgui_json::string>(value, "type_name", dummy->m_type_name);
     string v;
-    GetTo<imgui_json::string>(value, "type", v);
+    imgui_json::GetTo<imgui_json::string>(value, "type", v);
     NodeTypeFromString(v, dummy->m_type);
-    GetTo<imgui_json::string>(value, "style", v);
+    imgui_json::GetTo<imgui_json::string>(value, "style", v);
     NodeStyleFromString(v, dummy->m_style);
-    GetTo<imgui_json::string>(value, "catalog", dummy->m_catalog);
+    imgui_json::GetTo<imgui_json::string>(value, "catalog", dummy->m_catalog);
     // Create Dummy pins
     dummy->InsertInputPins(value);
     dummy->InsertOutputPins(value);
@@ -502,7 +502,7 @@ int BP::Load(const imgui_json::value& value)
     Clear();
 
     const imgui_json::array* nodeArray = nullptr;
-    if (!GetPtrTo(value, "nodes", nodeArray)) // required
+    if (!imgui_json::GetPtrTo(value, "nodes", nodeArray)) // required
         return BP_ERR_NODE_LOAD;
 
     //IDGenerator generator;
@@ -510,7 +510,7 @@ int BP::Load(const imgui_json::value& value)
     {
         int ret = 0;
         ID_TYPE typeId;
-        if (!GetTo<imgui_json::number>(nodeValue, "type_id", typeId)) // required
+        if (!imgui_json::GetTo<imgui_json::number>(nodeValue, "type_id", typeId)) // required
             return BP_ERR_NODE_LOAD;
 
         auto node = m_NodeRegistry->Create(typeId, *this);
@@ -531,11 +531,11 @@ int BP::Load(const imgui_json::value& value)
     }
 
     const imgui_json::object* stateObject = nullptr;
-    if (!GetPtrTo(value, "state", stateObject)) // required
+    if (!imgui_json::GetPtrTo(value, "state", stateObject)) // required
         return BP_ERR_NODE_LOAD;
 
     uint32_t generatorState = 0;
-    if (!GetTo<imgui_json::number>(*stateObject, "generator_state", generatorState)) // required
+    if (!imgui_json::GetTo<imgui_json::number>(*stateObject, "generator_state", generatorState)) // required
         return BP_ERR_NODE_LOAD;
 
     m_Generator.SetState(generatorState);
@@ -553,7 +553,7 @@ int BP::Import(const imgui_json::value& value, ImVec2 pos)
 
     ID_TYPE typeId;
     auto& groupValue = value["group"];
-    if (!GetTo<imgui_json::number>(groupValue, "type_id", typeId)) // required
+    if (!imgui_json::GetTo<imgui_json::number>(groupValue, "type_id", typeId)) // required
         return BP_ERR_GROUP_LOAD;
 
     GroupNode *group_node = (GroupNode *)m_NodeRegistry->Create(typeId, *this);

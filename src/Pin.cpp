@@ -257,33 +257,33 @@ bool Pin::IsLinkedExportedPin() const
 bool Pin::Load(const imgui_json::value& value)
 {
     string pinType;
-    if (!GetTo<imgui_json::string>(value, "type", pinType)) // required
+    if (!imgui_json::GetTo<imgui_json::string>(value, "type", pinType)) // required
         return false;
     PinTypeFromString(pinType, m_Type);
 
-    if (!GetTo<imgui_json::number>(value, "id", m_ID)) // required
+    if (!imgui_json::GetTo<imgui_json::number>(value, "id", m_ID)) // required
         return false;
 
     if (value.contains("link"))
-        GetTo<imgui_json::number>(value, "link", m_Link); // optional
+        imgui_json::GetTo<imgui_json::number>(value, "link", m_Link); // optional
 
     if (value.contains("map"))
-        GetTo<imgui_json::number>(value, "map", m_MappedPin); // optional
+        imgui_json::GetTo<imgui_json::number>(value, "map", m_MappedPin); // optional
     
     if (value.contains("flags"))
-        GetTo<imgui_json::number>(value, "flags", m_Flags); // optional
+        imgui_json::GetTo<imgui_json::number>(value, "flags", m_Flags); // optional
 
     if (value.contains("name"))
-        GetTo<imgui_json::string>(value, "name", m_Name);
+        imgui_json::GetTo<imgui_json::string>(value, "name", m_Name);
 
     const imgui_json::array* LinkFromPinsArray = nullptr;
-    if (GetPtrTo(value, "link_from", LinkFromPinsArray)) // optional
+    if (imgui_json::GetPtrTo(value, "link_from", LinkFromPinsArray)) // optional
     {
         m_LinkFrom.clear();
         for (auto& pinValue : *LinkFromPinsArray)
         {
             ID_TYPE id;
-            if (GetTo<imgui_json::number>(pinValue, "link_id", id))
+            if (imgui_json::GetTo<imgui_json::number>(pinValue, "link_id", id))
                 m_LinkFrom.push_back(id);
         }
     }
@@ -380,7 +380,7 @@ bool AnyPin::Load(const imgui_json::value& value)
 
     PinType type = PinType::Any;
     string typeName;
-    if (!GetTo<imgui_json::string>(value, "vtype", typeName)) // required
+    if (!imgui_json::GetTo<imgui_json::string>(value, "vtype", typeName)) // required
         return false;
     PinTypeFromString(typeName, type);
     if (type != PinType::Any)
@@ -408,7 +408,7 @@ bool BoolPin::Load(const imgui_json::value& value)
 {
     if (!Pin::Load(value))
         return false;
-    if (!GetTo<bool>(value, "value", m_Value)) // required
+    if (!imgui_json::GetTo<bool>(value, "value", m_Value)) // required
         return false;
     return true;
 }
@@ -424,7 +424,7 @@ bool Int32Pin::Load(const imgui_json::value& value)
 {
     if (!Pin::Load(value))
         return false;
-    if (!GetTo<imgui_json::number>(value, "value", m_Value)) // required
+    if (!imgui_json::GetTo<imgui_json::number>(value, "value", m_Value)) // required
         return false;
     return true;
 }
@@ -440,7 +440,7 @@ bool Int64Pin::Load(const imgui_json::value& value)
 {
     if (!Pin::Load(value))
         return false;
-    if (!GetTo<imgui_json::number>(value, "value", m_Value)) // required
+    if (!imgui_json::GetTo<imgui_json::number>(value, "value", m_Value)) // required
         return false;
     return true;
 }
@@ -462,7 +462,7 @@ bool FloatPin::Load(const imgui_json::value& value)
     {
         m_Value = NAN;
     }
-    if (!GetTo<imgui_json::number>(value, "value", m_Value)) // required
+    if (!imgui_json::GetTo<imgui_json::number>(value, "value", m_Value)) // required
         return false;
     return true;
 }
@@ -487,7 +487,7 @@ bool DoublePin::Load(const imgui_json::value& value)
     {
         m_Value = NAN;
     }
-    else if (!GetTo<imgui_json::number>(value, "value", m_Value)) // required
+    else if (!imgui_json::GetTo<imgui_json::number>(value, "value", m_Value)) // required
         return false;
     return true;
 }
@@ -506,7 +506,7 @@ bool StringPin::Load(const imgui_json::value& value)
 {
     if (!Pin::Load(value))
         return false;
-    if (!GetTo<imgui_json::string>(value, "value", m_Value)) // required
+    if (!imgui_json::GetTo<imgui_json::string>(value, "value", m_Value)) // required
         return false;
     return true;
 }
@@ -523,7 +523,7 @@ bool PointPin::Load(const imgui_json::value& value)
     if (!Pin::Load(value))
         return false;
     // do we need load/save point value into json?
-    //if (!GetTo<imgui_json::point>(value, "value", m_Value)) // required
+    //if (!imgui_json::GetTo<imgui_json::point>(value, "value", m_Value)) // required
     //    return false;
     // do we need save point type ?
     return true;
@@ -559,9 +559,9 @@ bool Vec2Pin::Load(const imgui_json::value& value)
 {
     if (!Pin::Load(value))
         return false;
-    if (!GetTo<imgui_json::number>(value["vec"], "x", m_Value.x))
+    if (!imgui_json::GetTo<imgui_json::number>(value["vec"], "x", m_Value.x))
         return false;
-    if (!GetTo<imgui_json::number>(value["vec"], "y", m_Value.y))
+    if (!imgui_json::GetTo<imgui_json::number>(value["vec"], "y", m_Value.y))
         return false;
     return true;
 }
@@ -577,13 +577,13 @@ bool Vec4Pin::Load(const imgui_json::value& value)
 {
     if (!Pin::Load(value))
         return false;
-    if (!GetTo<imgui_json::number>(value["vec"], "x", m_Value.x))
+    if (!imgui_json::GetTo<imgui_json::number>(value["vec"], "x", m_Value.x))
         return false;
-    if (!GetTo<imgui_json::number>(value["vec"], "y", m_Value.y))
+    if (!imgui_json::GetTo<imgui_json::number>(value["vec"], "y", m_Value.y))
         return false;
-    if (!GetTo<imgui_json::number>(value["vec"], "z", m_Value.z))
+    if (!imgui_json::GetTo<imgui_json::number>(value["vec"], "z", m_Value.z))
         return false;
-    if (!GetTo<imgui_json::number>(value["vec"], "w", m_Value.w))
+    if (!imgui_json::GetTo<imgui_json::number>(value["vec"], "w", m_Value.w))
         return false;
     return true;
 }
@@ -644,7 +644,7 @@ bool CustomPin::Load(const imgui_json::value& value)
 {
     if (!Pin::Load(value))
         return false;
-    if (!GetTo<imgui_json::string>(value, "extype_name", m_ExTypeName))
+    if (!imgui_json::GetTo<imgui_json::string>(value, "extype_name", m_ExTypeName))
         return false;
 
     InitPinEx();

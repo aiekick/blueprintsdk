@@ -492,47 +492,47 @@ int Node::Load(const imgui_json::value& value)
     if (!value.is_object())
         return BP_ERR_NODE_LOAD;
 
-    if (!GetTo<imgui_json::number>(value, "id", m_ID)) // required
+    if (!imgui_json::GetTo<imgui_json::number>(value, "id", m_ID)) // required
         return BP_ERR_NODE_LOAD;
 
-    if (!GetTo<imgui_json::string>(value, "name", m_Name)) // required
+    if (!imgui_json::GetTo<imgui_json::string>(value, "name", m_Name)) // required
         return BP_ERR_NODE_LOAD;
 
-    if (GetTo<imgui_json::boolean>(value, "break_point", m_BreakPoint)) // optional
+    if (imgui_json::GetTo<imgui_json::boolean>(value, "break_point", m_BreakPoint)) // optional
     {
     }
 
     string nodeVersion;
-    if (GetTo<imgui_json::string>(value, "version", nodeVersion)) // optional
+    if (imgui_json::GetTo<imgui_json::string>(value, "version", nodeVersion)) // optional
     {
         //TODO::Dicky need check?
     }
 
     string nodeType;
-    if (GetTo<imgui_json::string>(value, "type", nodeType)) // optional
+    if (imgui_json::GetTo<imgui_json::string>(value, "type", nodeType)) // optional
     {
         //TODO::Dicky need check?
     }
     
     string nodeStyle;
-    if (GetTo<imgui_json::string>(value, "style", nodeStyle)) // optional
+    if (imgui_json::GetTo<imgui_json::string>(value, "style", nodeStyle)) // optional
     {
         //TODO::Dicky need check?
     }
 
     string nodeCatalog;
-    if (GetTo<imgui_json::string>(value, "catalog", nodeCatalog)) // optional
+    if (imgui_json::GetTo<imgui_json::string>(value, "catalog", nodeCatalog)) // optional
     {
         //TODO::Dicky need check?
     }
 
-    if (!GetTo<imgui_json::number>(value, "group_id", m_GroupID)) // optional
+    if (!imgui_json::GetTo<imgui_json::number>(value, "group_id", m_GroupID)) // optional
     {
         //TODO::Dicky need check?
     }
 
     const imgui_json::array* inputPinsArray = nullptr;
-    if (GetPtrTo(value, "input_pins", inputPinsArray)) // optional
+    if (imgui_json::GetPtrTo(value, "input_pins", inputPinsArray)) // optional
     {
         auto pins = GetInputPins();
 
@@ -551,7 +551,7 @@ int Node::Load(const imgui_json::value& value)
     }
 
     const imgui_json::array* outputPinsArray = nullptr;
-    if (GetPtrTo(value, "output_pins", outputPinsArray)) // optional
+    if (imgui_json::GetPtrTo(value, "output_pins", outputPinsArray)) // optional
     {
         auto pins = GetOutputPins();
 

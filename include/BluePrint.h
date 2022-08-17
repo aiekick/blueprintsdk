@@ -82,29 +82,6 @@ inline uint32_t fnv1a_hash_32(string str)
 }
 # pragma endregion
 
-template <typename T>
-inline bool GetPtrTo(const imgui_json::value& value, std::string key, const T*& result)
-{
-    if (!value.contains(key))
-        return false;
-    auto& valueObject = value[key];
-    auto valuePtr = valueObject.get_ptr<T>();
-    if (valuePtr == nullptr)
-        return false;
-    result = valuePtr;
-    return true;
-};
-
-template <typename T, typename V>
-inline bool GetTo(const imgui_json::value& value, std::string key, V& result)
-{
-    const T* valuePtr = nullptr;
-    if (!GetPtrTo(value, key, valuePtr))
-        return false;
-    result = static_cast<V>(*valuePtr);
-    return true;
-};
-
 struct NodeRegistry;
 struct Node;
 struct Context;

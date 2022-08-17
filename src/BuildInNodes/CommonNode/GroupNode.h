@@ -1109,7 +1109,7 @@ struct GroupNode final : Node
         {
             string pinType;
             PinType type = PinType::Any;
-            if (!GetTo<imgui_json::string>(pinValue, "type", pinType)) // check pin type
+            if (!imgui_json::GetTo<imgui_json::string>(pinValue, "type", pinType)) // check pin type
                 continue;
             PinTypeFromString(pinType, type);
 
@@ -1154,39 +1154,39 @@ struct GroupNode final : Node
         if (!value.is_object())
             return BP_ERR_NODE_LOAD;
 
-        if (!GetTo<imgui_json::number>(value, "id", m_ID)) // required
+        if (!imgui_json::GetTo<imgui_json::number>(value, "id", m_ID)) // required
             return BP_ERR_NODE_LOAD;
 
-        if (!GetTo<imgui_json::string>(value, "name", m_Name)) // required
+        if (!imgui_json::GetTo<imgui_json::string>(value, "name", m_Name)) // required
             return BP_ERR_NODE_LOAD;
 
-        GetTo<imgui_json::boolean>(value, "break_point", m_BreakPoint); // optional
+        imgui_json::GetTo<imgui_json::boolean>(value, "break_point", m_BreakPoint); // optional
 
-        GetTo<imgui_json::number>(value, "group_id", m_GroupID); // optional
+        imgui_json::GetTo<imgui_json::number>(value, "group_id", m_GroupID); // optional
 
         const imgui_json::array* inputPinsArray = nullptr;
-        if (GetPtrTo(value, "input_pins", inputPinsArray)) // optional
+        if (imgui_json::GetPtrTo(value, "input_pins", inputPinsArray)) // optional
         {
             if (LoadPins(inputPinsArray, m_InputBridgePins) != BP_ERR_NONE)
                 return BP_ERR_INPIN_LOAD;
         }
 
         const imgui_json::array* inputShadowPinsArray = nullptr;
-        if (GetPtrTo(value, "input_shadow_pins", inputShadowPinsArray)) // optional
+        if (imgui_json::GetPtrTo(value, "input_shadow_pins", inputShadowPinsArray)) // optional
         {
             if (LoadPins(inputShadowPinsArray, m_InputShadowPins) != BP_ERR_NONE)
                 return BP_ERR_INPIN_LOAD;
         }
 
         const imgui_json::array* outputPinsArray = nullptr;
-        if (GetPtrTo(value, "output_pins", outputPinsArray)) // optional
+        if (imgui_json::GetPtrTo(value, "output_pins", outputPinsArray)) // optional
         {
             if (LoadPins(outputPinsArray, m_OutputBridgePins) != BP_ERR_NONE)
                 return BP_ERR_INPIN_LOAD;
         }
 
         const imgui_json::array* outputShadowPinsArray = nullptr;
-        if (GetPtrTo(value, "output_shadow_pins", outputShadowPinsArray)) // optional
+        if (imgui_json::GetPtrTo(value, "output_shadow_pins", outputShadowPinsArray)) // optional
         {
             if (LoadPins(outputShadowPinsArray, m_OutputShadowPins) != BP_ERR_NONE)
                 return BP_ERR_INPIN_LOAD;
@@ -1316,12 +1316,12 @@ struct GroupNode final : Node
     inline void GetPinIDMap(const imgui_json::value& pinValue, std::map<ID_TYPE, ID_TYPE>& IDMaps)
     {
         ID_TYPE object_id;
-        GetTo<imgui_json::number>(pinValue, "id", object_id);
+        imgui_json::GetTo<imgui_json::number>(pinValue, "id", object_id);
         IDMaps[object_id] = m_Blueprint->MakePinID(nullptr);
         if (pinValue.contains("inner"))
         {
             auto innerValue = pinValue["inner"];
-            GetTo<imgui_json::number>(innerValue, "id", object_id);
+            imgui_json::GetTo<imgui_json::number>(innerValue, "id", object_id);
             IDMaps[object_id] = m_Blueprint->MakePinID(nullptr);
         }
     }
@@ -1352,10 +1352,10 @@ struct GroupNode final : Node
         auto& groupValue = value["group"];
         auto& statusValue = value["status"];
         ID_TYPE object_id;
-        GetTo<imgui_json::number>(groupValue, "id", object_id);
+        imgui_json::GetTo<imgui_json::number>(groupValue, "id", object_id);
         IDMaps[object_id] = m_ID;
         const imgui_json::array* inputPinsArray = nullptr;
-        if (GetPtrTo(groupValue, "input_pins", inputPinsArray))
+        if (imgui_json::GetPtrTo(groupValue, "input_pins", inputPinsArray))
         {
             for (auto& pinValue : *inputPinsArray)
             {
@@ -1363,7 +1363,7 @@ struct GroupNode final : Node
             }
         }
         const imgui_json::array* outputPinsArray = nullptr;
-        if (GetPtrTo(groupValue, "output_pins", outputPinsArray))
+        if (imgui_json::GetPtrTo(groupValue, "output_pins", outputPinsArray))
         {
             for (auto& pinValue : *outputPinsArray)
             {
@@ -1371,7 +1371,7 @@ struct GroupNode final : Node
             }
         }
         const imgui_json::array* inputShadowPinsArray = nullptr;
-        if (GetPtrTo(groupValue, "input_shadow_pins", inputShadowPinsArray)) // optional
+        if (imgui_json::GetPtrTo(groupValue, "input_shadow_pins", inputShadowPinsArray)) // optional
         {
             for (auto& pinValue : *inputShadowPinsArray)
             {
@@ -1379,7 +1379,7 @@ struct GroupNode final : Node
             }
         }
         const imgui_json::array* outputShadowPinsArray = nullptr;
-        if (GetPtrTo(groupValue, "output_shadow_pins", outputShadowPinsArray)) // optional
+        if (imgui_json::GetPtrTo(groupValue, "output_shadow_pins", outputShadowPinsArray)) // optional
         {
             for (auto& pinValue : *outputShadowPinsArray)
             {
@@ -1388,14 +1388,14 @@ struct GroupNode final : Node
         }
 
         const imgui_json::array* nodeArray = nullptr;
-        if (GetPtrTo(value, "nodes", nodeArray))
+        if (imgui_json::GetPtrTo(value, "nodes", nodeArray))
         {
             for (auto& nodeValue : *nodeArray)
             {
-                GetTo<imgui_json::number>(nodeValue, "id", object_id);
+                imgui_json::GetTo<imgui_json::number>(nodeValue, "id", object_id);
                 IDMaps[object_id] = m_Blueprint->MakeNodeID(nullptr);
                 const imgui_json::array* nodeInputPinsArray = nullptr;
-                if (GetPtrTo(nodeValue, "input_pins", nodeInputPinsArray))
+                if (imgui_json::GetPtrTo(nodeValue, "input_pins", nodeInputPinsArray))
                 {
                     for (auto& pinValue : *nodeInputPinsArray)
                     {
@@ -1403,7 +1403,7 @@ struct GroupNode final : Node
                     }
                 }
                 const imgui_json::array* nodeOutputPinsArray = nullptr;
-                if (GetPtrTo(nodeValue, "output_pins", nodeOutputPinsArray))
+                if (imgui_json::GetPtrTo(nodeValue, "output_pins", nodeOutputPinsArray))
                 {
                     for (auto& pinValue : *nodeOutputPinsArray)
                     {
@@ -1436,22 +1436,22 @@ struct GroupNode final : Node
         auto base_pos = ed::ScreenToCanvas(pos);
         ed::SetNodePosition(m_ID, base_pos);
         ImVec2 group_node_size;
-        GetTo<imgui_json::number>(GroupStatus["size"], "x", group_node_size.x);
-        GetTo<imgui_json::number>(GroupStatus["size"], "y", group_node_size.y);
+        imgui_json::GetTo<imgui_json::number>(GroupStatus["size"], "x", group_node_size.x);
+        imgui_json::GetTo<imgui_json::number>(GroupStatus["size"], "y", group_node_size.y);
         ed::SetNodeSize(m_ID, group_node_size);
         ImVec2 group_size;
-        GetTo<imgui_json::number>(GroupStatus["group_size"], "x", group_size.x);
-        GetTo<imgui_json::number>(GroupStatus["group_size"], "y", group_size.y);
+        imgui_json::GetTo<imgui_json::number>(GroupStatus["group_size"], "x", group_size.x);
+        imgui_json::GetTo<imgui_json::number>(GroupStatus["group_size"], "y", group_size.y);
         ed::SetGroupSize(m_ID, group_size);
 
         // Create Group In-Nodes
         const imgui_json::array* groupNodeArray = nullptr;
-        if (GetPtrTo(value, "nodes", groupNodeArray))
+        if (imgui_json::GetPtrTo(value, "nodes", groupNodeArray))
         {
             for (auto& nodeValue : *groupNodeArray)
             {
                 ID_TYPE typeId;
-                if (!GetTo<imgui_json::number>(nodeValue, "type_id", typeId))
+                if (!imgui_json::GetTo<imgui_json::number>(nodeValue, "type_id", typeId))
                     continue;
                 auto node = m_Blueprint->CreateNode(typeId);
                 if (!node)
@@ -1470,13 +1470,13 @@ struct GroupNode final : Node
                     AdjestPinID(pin, IDMaps);
                 }
                 ImVec2 node_location;
-                GetTo<imgui_json::number>(nodeStatus["location"], "x", node_location.x);
-                GetTo<imgui_json::number>(nodeStatus["location"], "y", node_location.y);
+                imgui_json::GetTo<imgui_json::number>(nodeStatus["location"], "x", node_location.x);
+                imgui_json::GetTo<imgui_json::number>(nodeStatus["location"], "y", node_location.y);
                 node_location += base_pos;
                 ed::SetNodePosition(node->m_ID, node_location);
                 ImVec2 node_size;
-                GetTo<imgui_json::number>(nodeStatus["size"], "x", node_size.x);
-                GetTo<imgui_json::number>(nodeStatus["size"], "y", node_size.y);
+                imgui_json::GetTo<imgui_json::number>(nodeStatus["size"], "x", node_size.x);
+                imgui_json::GetTo<imgui_json::number>(nodeStatus["size"], "y", node_size.y);
                 ed::SetNodeSize(node->m_ID, node_size);
                 m_GroupNodes.push_back(node);
             }

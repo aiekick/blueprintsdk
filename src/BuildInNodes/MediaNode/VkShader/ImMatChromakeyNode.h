@@ -168,10 +168,10 @@ struct ChromaKeyNode final : Node
         }
         if (value.contains("chroma_color"))
         {
-            GetTo<imgui_json::number>(value["chroma_color"], "x", m_chromaColor[0]);
-            GetTo<imgui_json::number>(value["chroma_color"], "y", m_chromaColor[1]);
-            GetTo<imgui_json::number>(value["chroma_color"], "z", m_chromaColor[2]);
-            GetTo<imgui_json::number>(value["chroma_color"], "w", m_chromaColor[3]);
+            imgui_json::GetTo<imgui_json::number>(value["chroma_color"], "x", m_chromaColor[0]);
+            imgui_json::GetTo<imgui_json::number>(value["chroma_color"], "y", m_chromaColor[1]);
+            imgui_json::GetTo<imgui_json::number>(value["chroma_color"], "z", m_chromaColor[2]);
+            imgui_json::GetTo<imgui_json::number>(value["chroma_color"], "w", m_chromaColor[3]);
         }
         return ret;
     }
