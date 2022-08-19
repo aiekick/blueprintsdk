@@ -1555,7 +1555,7 @@ void BluePrintUI::DrawNodes()
                 PinTypeToColor(this, pin->GetValueType()));
 
             // [2] - Show pin name if it has one. Custom layout hidden name?
-            if (!pin->m_Name.empty() && !CheckNodeStyle(node, NodeStyle::Simple) && !node->CustomLayout())
+            if (!pin->m_Name.empty() && (!CheckNodeStyle(node, NodeStyle::Simple) || pin->m_Flags & PIN_FLAG_FORCESHOW) && !node->CustomLayout()) 
             {
                 ImGui::SameLine();
                 ImGui::TextUnformatted(pin->m_Name.data(), pin->m_Name.data() + pin->m_Name.size());
@@ -1623,7 +1623,7 @@ void BluePrintUI::DrawNodes()
             //       does not look good for blueprint nodes.
             ed::PinPivotAlignment(ImVec2(1.0f, 0.5f));
             // [1] - Show pin name if it has one. Custom layout hidden name?
-            if (!pin->m_Name.empty() && !CheckNodeStyle(node, NodeStyle::Simple) && !node->CustomLayout())
+            if (!pin->m_Name.empty() && (!CheckNodeStyle(node, NodeStyle::Simple) || pin->m_Flags & PIN_FLAG_FORCESHOW) && !node->CustomLayout())
             {
                 ImGui::TextUnformatted(pin->m_Name.data(), pin->m_Name.data() + pin->m_Name.size());
                 ImGui::SameLine();
@@ -3199,6 +3199,22 @@ bool BluePrintUI::Blueprint_Run()
         LOGI("Execution: Running");
     }
     return true;
+}
+
+bool BluePrintUI::Blueprint_SetFilter(const std::string name, const PinValue& value)
+{
+    if (!Blueprint_IsValid())
+        return false;
+    auto entry_node = FindEntryPointNode();
+    if (!entry_node)
+        return false;
+    FilterEntryPointNode * entryNode = (FilterEntryPointNode *)entry_node;
+    FloatPin * pin = (FloatPin * )entryNode->FindPin(name);
+    if (pin)
+    {
+        return pin->SetValue(value);
+    }
+    return false;
 }
 
 bool BluePrintUI::Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output)

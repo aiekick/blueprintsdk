@@ -322,6 +322,38 @@ PinType Pin::GetValueType() const
 
 PinValue Pin::GetValue() const
 {
+    switch (m_Type)
+    {
+        case PinType::Any:
+            return ((AnyPin*)this)->GetValue();
+        case PinType::Flow:
+            return ((FlowPin*)this)->GetValue();
+        case PinType::Bool:
+            return ((BoolPin*)this)->GetValue();
+        case PinType::Int32:
+            return ((Int32Pin*)this)->GetValue();
+        case PinType::Int64:
+            return ((Int64Pin*)this)->GetValue();
+        case PinType::Float: 
+            return ((FloatPin*)this)->GetValue();
+        case PinType::Double:
+            return ((DoublePin*)this)->GetValue();
+        case PinType::String:
+            return ((StringPin*)this)->GetValue();
+        case PinType::Point:
+            return ((PointPin*)this)->GetValue();
+        case PinType::Vec2:
+            return ((Vec2Pin*)this)->GetValue();
+        case PinType::Vec4:
+            return ((Vec4Pin*)this)->GetValue();
+        case PinType::Mat:
+            return ((MatPin*)this)->GetValue();
+        case PinType::Array:
+            return ((ArrayPin*)this)->GetValue();
+        case PinType::Custom:
+            return ((CustomPin*)this)->GetValue();
+        default: break;
+    }
     return PinValue{};
 }
 

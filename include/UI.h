@@ -303,6 +303,7 @@ public:
     Node* FindEntryPointNode();
     Node* FindExitPointNode();
 
+    bool Blueprint_SetFilter(const std::string name, const PinValue& value);
     bool Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output);
     bool Blueprint_RunFusion(ImGui::ImMat& input_first, ImGui::ImMat& input_second, ImGui::ImMat& output, int64_t current, int64_t duration);
 

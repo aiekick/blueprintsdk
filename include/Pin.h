@@ -11,6 +11,7 @@
 #define PIN_FLAG_LINKED     (1<<4)
 #define PIN_FLAG_EXPORTED   (1<<5)
 #define PIN_FLAG_PUBLICIZED (1<<6)
+#define PIN_FLAG_FORCESHOW  (1<<7)
 
 struct PinExModuleInfo;
 

@@ -20,6 +20,7 @@ struct FilterEntryPointNode final : Node
     Pin* InsertOutputPin(PinType type, const std::string name) override
     {
         Pin* pin = new Pin(this, type, name);
+        pin->m_Flags |= PIN_FLAG_FORCESHOW;
         m_OutputPins.push_back(pin);
         return pin;
     }
