@@ -3482,7 +3482,7 @@ void BluePrintUI::ShowShortToolbar(bool vertical, bool* show)
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, m_StyleColors[BluePrintStyleColor_ToolButtonActive]);
     ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(1.0, 1.0, 1.0, 0.8));
     ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
-    ImGui::SetNextWindowPos(window_pos + ImVec2(vertical ? window_size.x - 48 : 8, 8));
+    ImGui::SetNextWindowPos(window_pos + ImVec2(vertical ? window_size.x - 48 : window_size.x - 432, 8));
     if (ImGui::Begin("##embedded_toolbar", show, window_flags))
     {
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

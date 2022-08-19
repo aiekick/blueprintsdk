@@ -24,8 +24,8 @@
 #define ICON_NEW_NODE           "\ue9fe"
 #define ICON_UNLINK             "\ue646"
 #define ICON_SHOW_FLOW          "\uf3b2"
-#define ICON_BP_ZOOM_IN         "\uf0b2"
-#define ICON_BP_ZOOM_OUT        "\uf78c"
+#define ICON_BP_ZOOM_IN         "\uf1b2"
+#define ICON_BP_ZOOM_OUT        "\uf1b3"
 #define ICON_NODE_SETTING       "\ue8b8"
 #define ICON_NODE_DEBUG         "\uf67b"
 #define ICON_NODE_DLL           "\uf0c1"
@@ -300,6 +300,9 @@ public:
     bool Blueprint_Current();
     bool Blueprint_BreakPoint();
 
+    Node* FindEntryPointNode();
+    Node* FindExitPointNode();
+
     bool Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output);
     bool Blueprint_RunFusion(ImGui::ImMat& input_first, ImGui::ImMat& input_second, ImGui::ImMat& output, int64_t current, int64_t duration);
 
@@ -346,9 +349,6 @@ private:
     void                HandleCreateAction(uint32_t flag = BluePrintFlag::BluePrintFlag_All);
     void                HandleDestroyAction();
     void                HandleContextMenuAction(uint32_t flag = BluePrintFlag::BluePrintFlag_All);
-
-    Node*               FindEntryPointNode();
-    Node*               FindExitPointNode();
     void                InitFileDialog(const char * bookmark_path = nullptr);
 
 private:

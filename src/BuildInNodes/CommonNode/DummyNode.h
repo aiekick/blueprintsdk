@@ -12,14 +12,14 @@ struct DummyNode final : Node
         for (auto pin : m_OutputPins) { delete pin; }
     }
 
-    Pin* InsertInputPin(PinType type, const std::string name)
+    Pin* InsertInputPin(PinType type, const std::string name) override
     {
         Pin* pin = new Pin(this, type, name);
         m_InputPins.push_back(pin);
         return pin;
     }
 
-    Pin* InsertOutputPin(PinType type, const std::string name)
+    Pin* InsertOutputPin(PinType type, const std::string name) override
     {
         Pin* pin = new Pin(this, type, name);
         m_OutputPins.push_back(pin);

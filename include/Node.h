@@ -117,6 +117,19 @@ struct IMGUI_API Node
     virtual void OnSelect(const Context& context) {}
     virtual void OnDeselect(const Context& context) {}
 
+    virtual Pin* InsertInputPin(PinType type, const std::string name)
+    {
+        return nullptr;
+    }
+
+    virtual Pin* InsertOutputPin(PinType type, const std::string name)
+    {
+        return nullptr;
+    }
+
+    virtual void DeleteOutputPin(const std::string name)
+    {
+    }
 
     virtual FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) // Executes node logic from specified entry point. Returns exit point (flow pin on output side) or nothing.
     {

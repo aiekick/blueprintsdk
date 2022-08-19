@@ -70,7 +70,7 @@ struct GroupNode final : Node
         return false;
     }
 
-    inline void InsertInputMapPin(Pin * pin)
+    inline void AddInputMapPin(Pin * pin)
     {
         if (std::find(m_InputMapPins.begin(), m_InputMapPins.end(), pin) == m_InputMapPins.end())
         {
@@ -78,7 +78,7 @@ struct GroupNode final : Node
         }
     }
 
-    inline void InsertOutputMapPin(Pin * pin)
+    inline void AddOutputMapPin(Pin * pin)
     {
         if (std::find(m_OutputMapPins.begin(), m_OutputMapPins.end(), pin) == m_OutputMapPins.end())
         {
@@ -86,7 +86,7 @@ struct GroupNode final : Node
         }
     }
 
-    inline bool InsertInputPin(Pin * pin, Pin **bridge_pin, Pin **shadow_pin)
+    inline bool AddInputPin(Pin * pin, Pin **bridge_pin, Pin **shadow_pin)
     {
         bool is_exist = false;
         string pin_name = EXPORT_PIN_NAME(pin->m_Name, pin->m_Node->m_Name, pin->m_Node->GetTypeInfo().m_NodeTypeName);
@@ -226,7 +226,7 @@ struct GroupNode final : Node
         std::sort(m_InputBridgePins.begin(), m_InputBridgePins.end(), [](const Pin * a, const Pin * b) { return a->m_MappedPin < b->m_MappedPin; });
     }
 
-    inline bool InsertOutputPin(Pin * pin, Pin **bridge_pin, Pin **shadow_pin)
+    inline bool AddOutputPin(Pin * pin, Pin **bridge_pin, Pin **shadow_pin)
     {
         bool is_exist = false;
         string pin_name = EXPORT_PIN_NAME(pin->m_Name, pin->m_Node->m_Name, pin->m_Node->GetTypeInfo().m_NodeTypeName);
@@ -439,10 +439,10 @@ struct GroupNode final : Node
                             {
                                 // flow input pin link with other group
                                 export_pin = true;
-                                InsertInputMapPin(pin);
+                                AddInputMapPin(pin);
                                 // 1. create input pin for current group if not exist
                                 Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                                bool already_link = InsertInputPin(pin, &bridge_pin, &shadow_pin);
+                                bool already_link = AddInputPin(pin, &bridge_pin, &shadow_pin);
                                 if (!bridge_pin || !shadow_pin)
                                     continue;
                                 if (link->m_Link != bridge_pin->m_ID)
@@ -479,17 +479,17 @@ struct GroupNode final : Node
                                 {
                                     // 3. if pin is public or bridge has link from, insert input pin
                                     export_pin = true;
-                                    InsertInputMapPin(pin);
+                                    AddInputMapPin(pin);
                                 }
                             }
                             else
                             {
                                 // flow input pin link with outside
                                 export_pin = true;
-                                InsertInputMapPin(pin);
+                                AddInputMapPin(pin);
                                 // 1. create input pin for current group if not exist
                                 Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                                bool already_link = InsertInputPin(pin, &bridge_pin, &shadow_pin);
+                                bool already_link = AddInputPin(pin, &bridge_pin, &shadow_pin);
                                 if (!bridge_pin || !shadow_pin)
                                     continue;
                                 
@@ -515,10 +515,10 @@ struct GroupNode final : Node
                     {
                         // flow input pin is publicized but not link
                         export_pin = true;
-                        InsertInputMapPin(pin);
+                        AddInputMapPin(pin);
                         // 1. create input pin for current group if not exist
                         Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                        bool already_link = InsertInputPin(pin, &bridge_pin, &shadow_pin);
+                        bool already_link = AddInputPin(pin, &bridge_pin, &shadow_pin);
                         if (!bridge_pin || !shadow_pin)
                             continue;
                         if (!already_link)
@@ -585,10 +585,10 @@ struct GroupNode final : Node
                         {
                             // data input pin link with other group
                             pin->m_Flags |= PIN_FLAG_EXPORTED;
-                            InsertInputMapPin(pin);
+                            AddInputMapPin(pin);
                             // 1. create input pin for current group if not exist
                             Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                            bool already_link = InsertInputPin(pin, &bridge_pin, &shadow_pin);
+                            bool already_link = AddInputPin(pin, &bridge_pin, &shadow_pin);
                             if (!bridge_pin || !shadow_pin)
                                 continue;
                             if (bridge_pin->m_Link != link->m_ID)
@@ -625,17 +625,17 @@ struct GroupNode final : Node
                             {
                                 // 3. if pin is public or bridge has link from, insert input pin
                                 pin->m_Flags |= PIN_FLAG_EXPORTED;
-                                InsertInputMapPin(pin);
+                                AddInputMapPin(pin);
                             }
                         }
                         else
                         {
                             // data input pin link with outside
                             pin->m_Flags |= PIN_FLAG_EXPORTED;
-                            InsertInputMapPin(pin);
+                            AddInputMapPin(pin);
                             // 1. create input pin for current group if not exist
                             Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                            bool already_link = InsertInputPin(pin, &bridge_pin, &shadow_pin);
+                            bool already_link = AddInputPin(pin, &bridge_pin, &shadow_pin);
                             if (!bridge_pin || !shadow_pin)
                                 continue;
                             if (pin->m_Link != shadow_pin->m_ID)
@@ -659,10 +659,10 @@ struct GroupNode final : Node
                     {
                         // data input pin is public without link
                         pin->m_Flags |= PIN_FLAG_EXPORTED;
-                        InsertInputMapPin(pin);
+                        AddInputMapPin(pin);
                         // 1. create input pin for current group if not exist
                         Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                        bool already_link = InsertInputPin(pin, &bridge_pin, &shadow_pin);
+                        bool already_link = AddInputPin(pin, &bridge_pin, &shadow_pin);
                         if (!bridge_pin || !shadow_pin)
                             continue;
                         if (!already_link)
@@ -732,12 +732,12 @@ struct GroupNode final : Node
                         {
                             // flow output pin link with other group
                             pin->m_Flags |= PIN_FLAG_EXPORTED;
-                            InsertOutputMapPin(pin);
+                            AddOutputMapPin(pin);
                             // 1. unlink current pin with other group Bridge in pin
                             pin->Unlink();
                             // 2. create current group output pin if not exist
                             Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                            bool already_link = InsertOutputPin(pin, &bridge_pin, &shadow_pin);
+                            bool already_link = AddOutputPin(pin, &bridge_pin, &shadow_pin);
                             if (!bridge_pin || !shadow_pin)
                                 continue;
                             if (pin->m_Link != shadow_pin->m_ID)
@@ -772,17 +772,17 @@ struct GroupNode final : Node
                             {
                                 // 3. if pin is public or bridge has link from, insert input pin
                                 pin->m_Flags |= PIN_FLAG_EXPORTED;
-                                InsertOutputMapPin(pin);
+                                AddOutputMapPin(pin);
                             }
                         }
                         else
                         {
                             // flow output pin link with outside pin
                             pin->m_Flags |= PIN_FLAG_EXPORTED;
-                            InsertOutputMapPin(pin);
+                            AddOutputMapPin(pin);
                             // 1. create current group output pin if not exist
                             Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                            bool already_link = InsertOutputPin(pin, &bridge_pin, &shadow_pin);
+                            bool already_link = AddOutputPin(pin, &bridge_pin, &shadow_pin);
                             if (!bridge_pin || !shadow_pin)
                                 continue;
                             
@@ -807,10 +807,10 @@ struct GroupNode final : Node
                     {
                         // flow pin is public without link
                         pin->m_Flags |= PIN_FLAG_EXPORTED;
-                        InsertOutputMapPin(pin);
+                        AddOutputMapPin(pin);
                         // 1. create current group output pin if not exist
                         Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                        bool already_link = InsertOutputPin(pin, &bridge_pin, &shadow_pin);
+                        bool already_link = AddOutputPin(pin, &bridge_pin, &shadow_pin);
                         if (!bridge_pin || !shadow_pin)
                             continue;
                         if (!already_link)
@@ -878,12 +878,12 @@ struct GroupNode final : Node
                             {
                                 // data output pin link with other group
                                 export_pin = true;
-                                InsertOutputMapPin(pin);
+                                AddOutputMapPin(pin);
                                 // 1. unlink other group bridge in pin with current pin(single link)
                                 link->Unlink();
                                 // 2. create current group out pin if not exist
                                 Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                                bool already_link = InsertOutputPin(pin, &bridge_pin, &shadow_pin);
+                                bool already_link = AddOutputPin(pin, &bridge_pin, &shadow_pin);
                                 if (!bridge_pin || !shadow_pin)
                                     continue;
                                 if (link->m_Link != bridge_pin->m_ID)
@@ -918,17 +918,17 @@ struct GroupNode final : Node
                                 {
                                     // 3. if pin is public or bridge has link from, insert input pin
                                     export_pin = true;
-                                    InsertOutputMapPin(pin);
+                                    AddOutputMapPin(pin);
                                 }
                             }
                             else
                             {
                                 // data output pin link with outside
                                 export_pin = true;
-                                InsertOutputMapPin(pin);
+                                AddOutputMapPin(pin);
                                 // 1. create current group out pin if not exist
                                 Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                                bool already_link = InsertOutputPin(pin, &bridge_pin, &shadow_pin);
+                                bool already_link = AddOutputPin(pin, &bridge_pin, &shadow_pin);
                                 if (!bridge_pin || !shadow_pin)
                                     continue;
                                 if (link->m_Link != bridge_pin->m_ID)
@@ -953,10 +953,10 @@ struct GroupNode final : Node
                     {
                         // data output pin is public without link
                         export_pin = true;
-                        InsertOutputMapPin(pin);
+                        AddOutputMapPin(pin);
                         // 1. create current group out pin if not exist
                         Pin *bridge_pin = nullptr, *shadow_pin = nullptr;
-                        bool already_link = InsertOutputPin(pin, &bridge_pin, &shadow_pin);
+                        bool already_link = AddOutputPin(pin, &bridge_pin, &shadow_pin);
                         if (!bridge_pin || !shadow_pin)
                             continue;
                         if (!already_link)
