@@ -34,9 +34,6 @@ struct AlphaFusionNode final : Node
     {
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
-        //auto current = context.GetPinValue<int64_t>(m_FusionTimeStamp);
-        //auto total = context.GetPinValue<int64_t>(m_FusionDuration);
-        //float alpha = 1.0f - (float)current / (float)total;
         float alpha = 1.0f - context.GetPinValue<float>(m_Alpha);
         if (!mat_first.empty() && !mat_second.empty())
         {

@@ -37,10 +37,12 @@ struct BlurFusionNode final : Node
     {
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
-        auto current = context.GetPinValue<int64_t>(m_FusionTimeStamp);
-        auto total = context.GetPinValue<int64_t>(m_FusionDuration);
-        auto percentage = (float)current / (float)(total - 40);
-        percentage = ImClamp(percentage, 0.0f, 1.0f);
+        //auto current = context.GetPinValue<int64_t>(m_FusionTimeStamp);
+        //auto total = context.GetPinValue<int64_t>(m_FusionDuration);
+        //auto percentage = (float)current / (float)(total - 40);
+        //percentage = ImClamp(percentage, 0.0f, 1.0f);
+        //float alpha = 1.0f - percentage;
+        auto percentage = context.GetPinValue<float>(m_Blur);
         float alpha = 1.0f - percentage;
         if (!mat_first.empty() && !mat_second.empty())
         {
@@ -151,18 +153,17 @@ struct BlurFusionNode final : Node
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     Pin* GetAutoLinkInputFlowPin() override { return &m_Enter; }
     Pin* GetAutoLinkOutputFlowPin() override { return &m_Exit; }
-    vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatInFirst, &m_MatInSecond, &m_FusionDuration, &m_FusionTimeStamp}; }
+    vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatInFirst, &m_MatInSecond}; }
     vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOut}; }
 
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatInFirst   = { this, "In 1" };
     MatPin    m_MatInSecond   = { this, "In 2" };
-    Int64Pin  m_FusionDuration = { this, "Fusion Duration" };
-    Int64Pin  m_FusionTimeStamp = { this, "Time Stamp" };
+    FloatPin  m_Blur = { this, "Blur" };
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[5] = { &m_Enter, &m_MatInFirst, &m_MatInSecond, &m_FusionDuration, &m_FusionTimeStamp };
+    Pin* m_InputPins[4] = { &m_Enter, &m_MatInFirst, &m_MatInSecond, &m_Blur };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:
