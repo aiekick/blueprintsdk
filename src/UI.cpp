@@ -3244,6 +3244,22 @@ bool BluePrintUI::Blueprint_RunFilter(ImGui::ImMat& input, ImGui::ImMat& output)
     return true;
 }
 
+bool BluePrintUI::Blueprint_SetFusion(const std::string name, const PinValue& value)
+{
+    if (!Blueprint_IsValid())
+        return false;
+    auto entry_node = FindEntryPointNode();
+    if (!entry_node)
+        return false;
+    FusionEntryPointNode * entryNode = (FusionEntryPointNode *)entry_node;
+    FloatPin * pin = (FloatPin * )entryNode->FindPin(name);
+    if (pin)
+    {
+        return pin->SetValue(value);
+    }
+    return false;
+}
+
 bool BluePrintUI::Blueprint_RunFusion(ImGui::ImMat& input_first, ImGui::ImMat& input_second, ImGui::ImMat& output, int64_t current, int64_t duration)
 {
     if (!Blueprint_IsValid())
@@ -3257,8 +3273,8 @@ bool BluePrintUI::Blueprint_RunFusion(ImGui::ImMat& input_first, ImGui::ImMat& i
     MatExitPointNode * exitNode = (MatExitPointNode *)exit_node;
     entryNode->m_MatOutFirst.SetValue(input_first);
     entryNode->m_MatOutSecond.SetValue(input_second);
-    entryNode->m_FusionDuration.SetValue(duration);
-    entryNode->m_FusionTimeStamp.SetValue(current);
+    //entryNode->m_FusionDuration.SetValue(duration);
+    //entryNode->m_FusionTimeStamp.SetValue(current);
     auto result = m_Document->m_Blueprint.Run(*entryNode);
     if (result == StepResult::Error)
     {
