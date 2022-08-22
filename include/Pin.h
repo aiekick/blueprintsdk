@@ -325,7 +325,7 @@ struct IMGUI_API AnyPin final : Pin
     bool     SetValueType(PinType type) override;
     PinType  GetValueType() const override { return m_InnerPin ? m_InnerPin->GetValueType() : Pin::GetValueType(); }
     bool     SetValue(const PinValue& value) override;
-    PinValue GetValue() const override { return m_InnerPin ? m_InnerPin->GetValue() : Pin::GetValue(); }
+    PinValue GetValue() const override { return m_InnerPin ? m_InnerPin->GetValue() : PinValue{}; }
 
     bool Load(const imgui_json::value& value) override;
     void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const override;

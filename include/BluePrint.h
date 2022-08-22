@@ -396,8 +396,8 @@ private:
 # define VERSION_PATCH(v)   ((v&0x0000FF00)>>8)
 # define VERSION_BUILT(v)   (v&0x000000FF)
 # define MAJOR  1
-# define MINOR  8
-# define PATCH  1
+# define MINOR  9
+# define PATCH  0
 # define BUILT  0
 
 // Please Set CMakeList.txt IMGUI_BP_SDK_VERSION_STRING also

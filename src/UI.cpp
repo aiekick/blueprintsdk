@@ -1061,8 +1061,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0,0));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0,0));
     ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
-    if (isThreadExecuting)
-        ImGui::BeginDisabled(true);
+    ImGui::BeginDisabled(isThreadExecuting);
     if (ImGui::Button((titlebar_icons[0] + "##" + std::to_string(node->m_ID)).c_str())) 
     {
         *need_clone_node = node;
@@ -1094,6 +1093,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
 
     if (node->Skippable())
     {
+        ImGui::EndDisabled();
         ImGui::SameLine(0);
         if (ImGui::Button((std::string((node->m_Enabled ? ICON_NODE_ENABLE : ICON_NODE_DISABLE)) + "##" + std::to_string(node->m_ID)).c_str())) 
         {
@@ -1107,6 +1107,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
             }
         }
         if (ImGui::IsItemHovered()) node->m_IconHovered = 4;
+        ImGui::BeginDisabled(isThreadExecuting);
     }
 
     if (node->GetStyle() == NodeStyle::Group)
@@ -1121,8 +1122,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
         }
         if (ImGui::IsItemHovered()) node->m_IconHovered = 3;
     }
-    if (isThreadExecuting)
-        ImGui::EndDisabled();
+    ImGui::EndDisabled();
     ImGui::PopStyleVar(3);
     ImGui::PopStyleColor(3);
     return textSizeButton * (icons + 2);
