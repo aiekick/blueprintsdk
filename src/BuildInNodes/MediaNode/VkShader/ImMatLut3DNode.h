@@ -39,7 +39,7 @@ struct Lut3DNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -58,9 +58,9 @@ struct Lut3DNode final : Node
                 return {};
             }
             m_device = gpu;
-            bool is_hdr_pq = m_bEnabled && ((m_lut_mode == SDR709_HDRPQ) || (m_lut_mode == HDRHLG_HDRPQ));
-            bool is_hdr_hlg = m_bEnabled && ((m_lut_mode == SDR709_HDRHLG) || (m_lut_mode == HDRPQ_HDRHLG));
-            bool is_sdr_709 = m_bEnabled && ((m_lut_mode == HDRHLG_SDR709) || (m_lut_mode == HDRPQ_SDR709));
+            bool is_hdr_pq = (m_lut_mode == SDR709_HDRPQ) || (m_lut_mode == HDRHLG_HDRPQ);
+            bool is_hdr_hlg =(m_lut_mode == SDR709_HDRHLG) || (m_lut_mode == HDRPQ_HDRHLG);
+            bool is_sdr_709 =(m_lut_mode == HDRHLG_SDR709) || (m_lut_mode == HDRPQ_SDR709);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             m_filter->filter(mat_in, im_RGB);
             im_RGB.time_stamp = mat_in.time_stamp;
@@ -138,19 +138,17 @@ struct Lut3DNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         // Draw custom layout
         bool changed = false;
-        bool check = m_bEnabled;
         int lut_mode = m_lut_mode;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Lut3D",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         if (!m_file_name.empty())
             ImGui::Text("Lut from file: %s", m_file_name.c_str());
         else
@@ -192,12 +190,6 @@ struct Lut3DNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("lut_mode"))
         {
             auto& val = value["lut_mode"];
@@ -233,7 +225,6 @@ struct Lut3DNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["lut_mode"] = imgui_json::number(m_lut_mode);
         value["interpolation"] = imgui_json::number(m_interpolation_mode);
         value["lut_file_path"] = m_path;
@@ -258,7 +249,6 @@ struct Lut3DNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device            {-1};
-    bool m_bEnabled         {true};
     int m_lut_mode {SDR709_HDRHLG};
     int m_interpolation_mode {IM_INTERPOLATE_TRILINEAR};
     string  m_path;

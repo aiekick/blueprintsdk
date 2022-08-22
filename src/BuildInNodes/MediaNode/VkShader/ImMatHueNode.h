@@ -38,7 +38,7 @@ struct HueNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -77,12 +77,12 @@ struct HueNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         float val = m_hue / 360.0;;
         static float hue_width = 0.1f;
         static float featherLeft = 0.125f;
@@ -90,9 +90,7 @@ struct HueNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Hue",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::HueSelector("##slideer_hue##Hue", ImVec2(300, 20), &val, &hue_width, &featherLeft, &featherRight, 0.0f, zoom, 32, 1.0f, 0.0f);
         ImGui::PopItemWidth();
         if (val != m_hue / 360.0) { m_hue = val * 360.0; changed = true; }
@@ -112,12 +110,6 @@ struct HueNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("hue"))
         {
             auto& val = value["hue"];
@@ -131,7 +123,6 @@ struct HueNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["hue"] = imgui_json::number(m_hue);
     }
 
@@ -153,7 +144,6 @@ struct HueNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device            {-1};
-    bool m_bEnabled         {true};
     ImGui::Hue_vulkan * m_filter   {nullptr};
     float m_hue             {0.0f};
 };

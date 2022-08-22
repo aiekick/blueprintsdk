@@ -83,7 +83,7 @@ struct SliderFusionNode final : Node
                 break;
                 default: break;
             }
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
@@ -123,19 +123,17 @@ struct SliderFusionNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         int type = m_slider_type;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(100, 8));
         ImGui::PushItemWidth(100);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Brightness",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         //ImGui::Combo("Type:", &type, items, IM_ARRAYSIZE(items));
         ImGui::RadioButton("Right In", &type, SLIDER_RIGHT);
         ImGui::RadioButton("Left In", &type, SLIDER_LEFT);
@@ -163,12 +161,6 @@ struct SliderFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("slider_type"))
         { 
             auto& val = value["slider_type"];
@@ -182,7 +174,6 @@ struct SliderFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["slider_type"] = imgui_json::number(m_slider_type);
     }
 
@@ -206,7 +197,6 @@ struct SliderFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     int m_slider_type   {SLIDER_RIGHT};
     ImGui::CopyTo_vulkan * m_copy   {nullptr};
 };

@@ -42,7 +42,7 @@ struct FadeFusionNode final : Node
         if (!mat_first.empty() && !mat_second.empty())
         {
             int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
@@ -90,19 +90,17 @@ struct FadeFusionNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         int black = m_bBlack ? 0 : 1;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(100, 8));
         ImGui::PushItemWidth(100);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Brightness",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::RadioButton("Black", &black, 0); ImGui::SameLine();
         ImGui::RadioButton("White", &black, 1);
         if ((m_bBlack && black != 0) || (!m_bBlack && black != 1)) { m_bBlack = black == 0; changed = true; };
@@ -123,12 +121,6 @@ struct FadeFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("black"))
         { 
             auto& val = value["black"];
@@ -142,7 +134,6 @@ struct FadeFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["black"] = imgui_json::boolean(m_bBlack);
     }
 
@@ -166,7 +157,6 @@ struct FadeFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     bool m_bBlack       {true};
     ImGui::Brightness_vulkan * m_light   {nullptr};
 };

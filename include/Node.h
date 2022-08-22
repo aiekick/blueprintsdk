@@ -204,6 +204,7 @@ struct IMGUI_API Node
     virtual std::string     GetCatalog() const;
     virtual bool            HasSetting() const;
     virtual bool            CustomLayout() const;
+    virtual bool            Skippable() const;
     virtual std::string     GetName() const;
     virtual void            SetName(std::string name);
     virtual void            SetBreakPoint(bool breaken);
@@ -236,6 +237,8 @@ struct IMGUI_API Node
     bool            m_HasCustomLayout   {false};
     bool            m_BreakPoint        {false};
     bool            m_NoBackGround      {false};
+    bool            m_Skippable         {false};
+    bool            m_Enabled           {true};
     ID_TYPE         m_GroupID           {0};
     std::mutex      m_mutex;
 
@@ -254,6 +257,7 @@ struct ClipNode
         m_Size = ed::GetNodeSize(node->m_ID);
         m_GroupSize = ed::GetGroupSize(node->m_ID);
         m_HasSetting = node->m_HasSetting;
+        m_Skippable = node->m_Skippable;
         m_HasCustomLayout = node->m_HasCustomLayout;
     }
 
@@ -263,6 +267,7 @@ struct ClipNode
     ImVec2          m_GroupSize         {ImVec2{0, 0}};
     string          m_Name              {""};
     bool            m_HasSetting        {false};
+    bool            m_Skippable         {false};
     bool            m_HasCustomLayout   {false};
 };
 

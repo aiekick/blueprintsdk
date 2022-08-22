@@ -38,7 +38,7 @@ struct ColorBalanceNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -77,22 +77,20 @@ struct ColorBalanceNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         bool changed = false;
-        bool check = m_bEnabled;
         ImVec4 _shadows = m_shadows;
         ImVec4 _midtones = m_midtones;
         ImVec4 _highlights = m_highlights;
         bool _preserve_lightness = m_preserve_lightness;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_ColorBalance",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::BalanceSelector("Shadow", ImVec2(100, 100), &_shadows, ImVec4(0, 0, 0, 0), zoom);
         ImGui::SameLine(); ImGui::Spacing(); ImGui::SameLine();
         ImGui::BalanceSelector("Midtones", ImVec2(100, 100), &_midtones, ImVec4(0, 0, 0, 0), zoom);
@@ -118,12 +116,6 @@ struct ColorBalanceNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
-        }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
         }
         if (value.contains("shadows"))
         { 
@@ -162,7 +154,6 @@ struct ColorBalanceNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         {
             imgui_json::value shadows;
             shadows["r"] = imgui_json::number(m_shadows.x);
@@ -208,7 +199,6 @@ struct ColorBalanceNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device                {-1};
-    bool m_bEnabled             {true};
     ImGui::ColorBalance_vulkan * m_filter   {nullptr};
     ImVec4 m_shadows            {0, 0, 0, 0};
     ImVec4 m_midtones           {0, 0, 0, 0};

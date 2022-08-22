@@ -403,6 +403,11 @@ bool Node::HasSetting() const
     return true;
 }
 
+bool Node::Skippable() const
+{
+    return false;
+}
+
 bool Node::CustomLayout() const
 {
     return false;
@@ -502,6 +507,13 @@ int Node::Load(const imgui_json::value& value)
     {
     }
 
+    if (value.contains("enabled"))
+    { 
+        auto& val = value["enabled"];
+        if (val.is_boolean())
+            m_Enabled = val.get<imgui_json::boolean>();
+    }
+
     string nodeVersion;
     if (imgui_json::GetTo<imgui_json::string>(value, "version", nodeVersion)) // optional
     {
@@ -576,6 +588,7 @@ void Node::Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) cons
     bool isRemap = MapID.size() > 0;
     value["id"] = imgui_json::number(GetIDFromMap(m_ID, MapID)); // required
     value["name"] = imgui_json::string(m_Name); // required
+    value["enabled"] = imgui_json::boolean(m_Enabled);
     value["break_point"] = m_BreakPoint;
     value["type"] = NodeTypeToString(GetType());
     value["style"] = NodeStyleToString(GetStyle());

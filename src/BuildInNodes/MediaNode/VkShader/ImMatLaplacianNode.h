@@ -36,7 +36,7 @@ struct LaplacianNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -76,19 +76,17 @@ struct LaplacianNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         int _Strength = m_Strength;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Laplacian",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderInt("Strength##Laplacian", &_Strength, 0, 20, "%d", flags);
         ImGui::PopItemWidth();
         if (_Strength != m_Strength) { m_Strength = _Strength; changed = true; }
@@ -108,12 +106,6 @@ struct LaplacianNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("strength"))
         {
             auto& val = value["strength"];
@@ -127,7 +119,6 @@ struct LaplacianNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["strength"] = imgui_json::number(m_Strength);
     }
 
@@ -149,7 +140,6 @@ struct LaplacianNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     int m_Strength      {2};
     ImGui::Laplacian_vulkan * m_filter   {nullptr};
 };

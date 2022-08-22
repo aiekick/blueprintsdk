@@ -43,7 +43,7 @@ struct BrightnessNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -82,19 +82,17 @@ struct BrightnessNode final : Node
     }
 
     bool CustomLayout() const override { return !m_BrightnessIn.IsLinked(); }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         float val = m_brightness;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Brightness",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::LumianceSelector("##slider_brightness##Brightness", ImVec2(300, 20), &val, 0.0f, zoom);
         if (val != m_brightness) { m_brightness = val; changed = true; }
         ImGui::EndDisabled();
@@ -114,12 +112,6 @@ struct BrightnessNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("brightness"))
         {
             auto& val = value["brightness"];
@@ -133,7 +125,6 @@ struct BrightnessNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["brightness"] = imgui_json::number(m_brightness);
     }
 
@@ -156,7 +147,6 @@ struct BrightnessNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled      {true};
     ImGui::Brightness_vulkan * m_filter   {nullptr};
     float m_brightness      {0.0f};
 };

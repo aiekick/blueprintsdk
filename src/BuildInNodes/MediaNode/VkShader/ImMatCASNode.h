@@ -34,7 +34,7 @@ struct CasNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -78,14 +78,11 @@ struct CasNode final : Node
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         float _strength = m_strength;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_CAS",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderFloat("Strength##CAS", &_strength, 0, 1.f, "%.2f", flags);
         ImGui::PopItemWidth();
         if (_strength != m_strength) { m_strength = _strength; changed = true; }
@@ -105,12 +102,6 @@ struct CasNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("strength"))
         {
             auto& val = value["strength"];
@@ -124,7 +115,6 @@ struct CasNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["strength"] = imgui_json::number(m_strength);
     }
 
@@ -146,7 +136,6 @@ struct CasNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device            {-1};
-    bool m_bEnabled         {true};
     float m_strength        {0};
     ImGui::CAS_vulkan * m_filter {nullptr};
 };

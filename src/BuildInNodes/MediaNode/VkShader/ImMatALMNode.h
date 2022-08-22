@@ -34,7 +34,7 @@ struct AlmNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -74,21 +74,19 @@ struct AlmNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         float _strength = m_strength;
         float _bias = m_bias;
         float _gamma = m_gamma;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_ALM",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderFloat("Strength##ALM", &_strength, 0, 1.f, "%.2f", flags);
         ImGui::SliderFloat("Bias##ALM", &_bias, 0, 1.f, "%.2f", flags);
         ImGui::SliderFloat("Gamma##ALM", &_gamma, 0, 4.f, "%.2f", flags);
@@ -111,12 +109,6 @@ struct AlmNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
-        }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
         }
         if (value.contains("strength"))
         {
@@ -143,7 +135,6 @@ struct AlmNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["strength"] = imgui_json::number(m_strength);
         value["bias"] = imgui_json::number(m_bias);
         value["gamma"] = imgui_json::number(m_gamma);
@@ -167,7 +158,6 @@ struct AlmNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     float m_strength    {0.5};
     float m_bias        {0.7};
     float m_gamma       {2.2};

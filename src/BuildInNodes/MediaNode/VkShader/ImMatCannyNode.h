@@ -34,7 +34,7 @@ struct CannyNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -73,21 +73,19 @@ struct CannyNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         int _blurRadius = m_blurRadius;
         float _minThreshold = m_minThreshold;
         float _maxThreshold = m_maxThreshold;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Canny",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderInt("Blur Radius##Canny", &_blurRadius, 0, 10, "%d", flags);
         ImGui::SliderFloat("Min Threshold##Canny", &_minThreshold, 0, 1.f, "%.2f", flags);
         ImGui::SliderFloat("Max Threshold##Canny", &_maxThreshold, _minThreshold, 1.f, "%.2f", flags);
@@ -110,12 +108,6 @@ struct CannyNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
-        }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
         }
         if (value.contains("Radius"))
         {
@@ -142,7 +134,6 @@ struct CannyNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["Radius"] = imgui_json::number(m_blurRadius);
         value["minThreshold"] = imgui_json::number(m_minThreshold);
         value["maxThreshold"] = imgui_json::number(m_maxThreshold);
@@ -166,7 +157,6 @@ struct CannyNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device            {-1};
-    bool m_bEnabled         {true};
     float m_minThreshold    {0.1};
     float m_maxThreshold    {0.45};
     int m_blurRadius        {3};

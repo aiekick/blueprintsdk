@@ -37,17 +37,12 @@ struct BlurFusionNode final : Node
     {
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
-        //auto current = context.GetPinValue<int64_t>(m_FusionTimeStamp);
-        //auto total = context.GetPinValue<int64_t>(m_FusionDuration);
-        //auto percentage = (float)current / (float)(total - 40);
-        //percentage = ImClamp(percentage, 0.0f, 1.0f);
-        //float alpha = 1.0f - percentage;
         auto percentage = context.GetPinValue<float>(m_Blur);
         float alpha = 1.0f - percentage;
         if (!mat_first.empty() && !mat_second.empty())
         {
             int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
@@ -102,24 +97,8 @@ struct BlurFusionNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return true; }
-
-    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
-    {
-        ImGui::SetCurrentContext(ctx);
-        bool changed = false;
-        bool check = m_bEnabled;
-        static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(100, 8));
-        ImGui::PushItemWidth(100);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Brightness",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-
-        ImGui::EndDisabled();
-        ImGui::PopItemWidth();
-        return changed;
-    }
+    bool CustomLayout() const override { return false; }
+    bool Skippable() const override { return true; }
 
     int Load(const imgui_json::value& value) override
     {
@@ -133,12 +112,6 @@ struct BlurFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         return ret;
     }
 
@@ -146,7 +119,6 @@ struct BlurFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
@@ -169,7 +141,6 @@ struct BlurFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     ImGui::BoxBlur_vulkan * m_blur   {nullptr};
     ImGui::AlphaBlending_vulkan * m_alpha   {nullptr};
 };

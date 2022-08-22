@@ -34,7 +34,7 @@ struct USMNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -73,21 +73,19 @@ struct USMNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         float _sigma = m_sigma;
         float _amount = m_amount;
         float _threshold = m_threshold;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_USM",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderFloat("Sigma##USM", &_sigma, 0, 10.f, "%.1f", flags);
         ImGui::SliderFloat("Amount##USM", &_amount, 0, 3.f, "%.1f", flags);
         ImGui::SliderFloat("Threshold##USM", &_threshold, 0, 1.f, "%.2f", flags);
@@ -110,12 +108,6 @@ struct USMNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
-        }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
         }
         if (value.contains("sigma"))
         {
@@ -142,7 +134,6 @@ struct USMNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["sigma"] = imgui_json::number(m_sigma);
         value["threshold"] = imgui_json::number(m_threshold);
         value["amount"] = imgui_json::number(m_amount);
@@ -166,7 +157,6 @@ struct USMNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     float m_sigma       {3.f};
     float m_threshold   {1.f};
     float m_amount      {2.f};

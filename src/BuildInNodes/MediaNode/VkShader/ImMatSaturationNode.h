@@ -38,7 +38,7 @@ struct SaturationNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -77,19 +77,17 @@ struct SaturationNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         float val = m_saturation - 1.0;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Saturation",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SaturationSelector("##slider_saturation##Saturation", ImVec2(300, 40), &val, 0.0f, zoom, 32, 1.0f, true);
         ImGui::PopItemWidth();
         if (val != m_saturation - 1.0) { m_saturation = val + 1.0; changed = true; }
@@ -109,12 +107,6 @@ struct SaturationNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("saturation"))
         {
             auto& val = value["saturation"];
@@ -128,7 +120,6 @@ struct SaturationNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["saturation"] = imgui_json::number(m_saturation);
     }
 
@@ -150,7 +141,6 @@ struct SaturationNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device            {-1};
-    bool m_bEnabled         {true};
     ImGui::Saturation_vulkan * m_filter   {nullptr};
     float m_saturation      {1.0f};
 };

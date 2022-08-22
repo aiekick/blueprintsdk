@@ -38,7 +38,7 @@ struct ChromaKeyNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -79,12 +79,12 @@ struct ChromaKeyNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         bool _alpha_only = m_alpha_only;
         float _lumaMask = m_lumaMask;
@@ -94,9 +94,7 @@ struct ChromaKeyNode final : Node
         std::vector<float> _chromaColor = m_chromaColor;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_ChromaKey",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::Checkbox("Alpha Output##ChromaKey",&_alpha_only);
         ImGui::SliderFloat("Luma Mask##ChromaKey", &_lumaMask, 0.f, 20.f, "%.1f", flags);
         ImGui::SliderFloat("Alpha Cutoff Min##ChromaKey", &_alphaCutoffMin, 0.f, 1.f, "%.2f", flags);
@@ -129,12 +127,6 @@ struct ChromaKeyNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
-        }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
         }
         if (value.contains("alpha_only"))
         { 
@@ -180,7 +172,6 @@ struct ChromaKeyNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["alpha_only"] = imgui_json::boolean(m_alpha_only);
         value["lumaMask"] = imgui_json::number(m_lumaMask);
         value["alphaCutoffMin"] = imgui_json::number(m_alphaCutoffMin);
@@ -207,7 +198,6 @@ struct ChromaKeyNode final : Node
 private:
     ImDataType m_mat_data_type  {IM_DT_UNDEFINED};
     int m_device            {-1};
-    bool m_bEnabled             {true};
     ImGui::ChromaKey_vulkan * m_filter {nullptr};
     bool  m_alpha_only          {false};
     float m_lumaMask            {1.0f};

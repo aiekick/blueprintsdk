@@ -36,7 +36,7 @@ struct BilateralNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -75,21 +75,19 @@ struct BilateralNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         int _ksize = m_ksize;
         float _sigma_spatial = m_sigma_spatial;
         float _sigma_color = m_sigma_color;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Bilateral",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderInt("Kernel Size##Bilateral", &_ksize, 2, 20, "%d", flags);
         ImGui::SliderFloat("Spatial Sigma##Bilateral", &_sigma_spatial, 0.f, 100.f, "%.2f", flags);
         ImGui::SliderFloat("Color Sigma##Bilateral", &_sigma_color, 0.f, 100.f, "%.2f", flags);
@@ -112,12 +110,6 @@ struct BilateralNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
-        }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
         }
         if (value.contains("ksize"))
         {
@@ -144,7 +136,6 @@ struct BilateralNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["ksize"] = imgui_json::number(m_ksize);
         value["sigma_spatial"] = imgui_json::number(m_sigma_spatial);
         value["sigma_color"] = imgui_json::number(m_sigma_color);
@@ -168,7 +159,6 @@ struct BilateralNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device            {-1};
-    bool m_bEnabled         {true};
     int m_ksize             {5};
     float m_sigma_spatial   {10.f};
     float m_sigma_color     {10.f};

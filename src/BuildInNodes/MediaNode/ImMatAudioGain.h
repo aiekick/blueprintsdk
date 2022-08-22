@@ -34,7 +34,7 @@ struct AudioGainNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (!mat_in.empty())
         {
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -61,19 +61,17 @@ struct AudioGainNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         float val = m_gain;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Audio_Gain",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderFloat("##slider_gain##Gain", &val, 0.0, 2.f, "%.2f", flags); ImGui::SameLine();
         if (val != m_gain) { m_gain = val; changed = true; }
         if (ImGui::Button(ICON_RESET "##reset_gain##Gain")) { m_gain = 1.0; changed = true; }
@@ -94,12 +92,6 @@ struct AudioGainNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("gain"))
         {
             auto& val = value["gain"];
@@ -113,7 +105,6 @@ struct AudioGainNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["gain"] = imgui_json::number(m_gain);
     }
 
@@ -135,7 +126,6 @@ struct AudioGainNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     float m_gain        {1.0f};
 };
 } // namespace BluePrint

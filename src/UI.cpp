@@ -1048,6 +1048,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
     // Draw Title bar icon
     int icons = 2; //node->HasSetting() ? 3 : 2;
     if (node->HasSetting()) icons++;
+    if (node->Skippable()) icons++;
     if (node->GetStyle() == NodeStyle::Group) icons++;
     float textSizeButton = ImGui::CalcTextSize(titlebar_icons[0].c_str()).x;
 #if IMGUI_ENABLE_FREETYPE || !IMGUI_ICONS
@@ -1089,6 +1090,23 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
             ed::Resume();
         }
         if (ImGui::IsItemHovered()) node->m_IconHovered = 2;
+    }
+
+    if (node->Skippable())
+    {
+        ImGui::SameLine(0);
+        if (ImGui::Button((std::string((node->m_Enabled ? ICON_NODE_ENABLE : ICON_NODE_DISABLE)) + "##" + std::to_string(node->m_ID)).c_str())) 
+        {
+            node->m_Enabled = !node->m_Enabled;
+            if (node->m_Enabled) LOGI("[HandleNodeToolBar] Enable for %" PRI_node, FMT_node(node));
+            else                 LOGI("[HandleNodeToolBar] Disable for %" PRI_node, FMT_node(node));
+            ed::SetNodeChanged(node->m_ID);
+            if (m_CallBacks.BluePrintOnChanged)
+            {
+                m_CallBacks.BluePrintOnChanged(BP_CB_PARAM_CHANGED, m_Document->m_Name, m_UserHandle);
+            }
+        }
+        if (ImGui::IsItemHovered()) node->m_IconHovered = 4;
     }
 
     if (node->GetStyle() == NodeStyle::Group)
@@ -1897,6 +1915,7 @@ void BluePrintUI::DrawInfoTooltip()
                 case 1: ImGui::TextUnformatted("Node Delete"); break;
                 case 2: ImGui::TextUnformatted("Node Setting"); break;
                 case 3: ImGui::TextUnformatted("Save Group"); break;
+                case 4: if (hoveredNode->m_Enabled) ImGui::TextUnformatted("Disable"); else ImGui::TextUnformatted("Enable"); break;
                 default: break;
             }
             ImGui::EndTooltip();

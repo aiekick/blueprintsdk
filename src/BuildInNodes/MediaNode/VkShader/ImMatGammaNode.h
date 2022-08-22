@@ -38,7 +38,7 @@ struct GammaNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -77,24 +77,20 @@ struct GammaNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         float val = m_gamma;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Gamma",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
-        //ImGui::SliderFloat("##slider_gamma##Gamma", &val, 0.0f, 4.f, "%.2f", flags); ImGui::SameLine();
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::GammaSelector("##slider_gamma##Gamma", ImVec2(300, 20), &val, 1.0f, 0.f, 4.f, zoom);
         ImGui::PopItemWidth();
         if (val != m_gamma) { m_gamma = val; changed = true; }
-        //if (ImGui::Button(ICON_RESET "##reset_gamma")) { m_gamma = 1.0; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }
@@ -111,12 +107,6 @@ struct GammaNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("gamma"))
         {
             auto& val = value["gamma"];
@@ -130,7 +120,6 @@ struct GammaNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["gamma"] = imgui_json::number(m_gamma);
     }
 
@@ -153,7 +142,6 @@ struct GammaNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device            {-1};
-    bool m_bEnabled         {true};
     ImGui::Gamma_vulkan * m_filter   {nullptr};
     float m_gamma           {1.0f};
 };

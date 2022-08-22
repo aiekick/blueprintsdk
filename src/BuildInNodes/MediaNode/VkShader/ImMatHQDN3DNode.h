@@ -34,7 +34,7 @@ struct HQDN3DNode final : Node
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
@@ -77,12 +77,12 @@ struct HQDN3DNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         float _lum_spac = m_lum_spac;
         float _chrom_spac = m_chrom_spac;
         float _lum_tmp = m_lum_tmp;
@@ -90,9 +90,7 @@ struct HQDN3DNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_HQDN3D",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderFloat("Luma Spatial##HQDN3D", &_lum_spac, 0, 50.f, "%.1f", flags);
         ImGui::SliderFloat("Chroma Spatial##HQDN3D", &_chrom_spac, 0, 50.f, "%.1f", flags);
         ImGui::SliderFloat("Luma Temporal##HQDN3D", &_lum_tmp, 0, 50.f, "%.1f", flags);
@@ -117,12 +115,6 @@ struct HQDN3DNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
-        }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
         }
         if (value.contains("lum_spac"))
         {
@@ -155,7 +147,6 @@ struct HQDN3DNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["lum_spac"] = imgui_json::number(m_lum_spac);
         value["chrom_spac"] = imgui_json::number(m_chrom_spac);
         value["lum_tmp"] = imgui_json::number(m_lum_tmp);
@@ -180,7 +171,6 @@ struct HQDN3DNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     float m_lum_spac    {6.0};
     float m_chrom_spac  {4.0};
     float m_lum_tmp     {4.5};

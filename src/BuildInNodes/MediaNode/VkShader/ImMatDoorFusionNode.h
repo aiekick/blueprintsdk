@@ -36,15 +36,11 @@ struct DoorFusionNode final : Node
     {
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
-        //auto current = context.GetPinValue<int64_t>(m_FusionTimeStamp);
-        //auto total = context.GetPinValue<int64_t>(m_FusionDuration);
-        //auto percentage = (float)current / (float)(total - 40);
-        //percentage = ImClamp(percentage, 0.0f, 1.0f);
         auto percentage = context.GetPinValue<float>(m_Pos);
         if (!mat_first.empty() && !mat_second.empty())
         {
             int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
-            if (!m_bEnabled)
+            if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
@@ -134,20 +130,18 @@ struct DoorFusionNode final : Node
     }
 
     bool CustomLayout() const override { return true; }
+    bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        bool check = m_bEnabled;
         int open = m_bOpen ? 0 : 1;
         int horizon = m_bHorizon ? 0 : 1;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(100, 8));
         ImGui::PushItemWidth(100);
-        ImGui::TextUnformatted("Enable"); ImGui::SameLine();
-        if (ImGui::ToggleButton("##enable_filter_Brightness",&check)) { m_bEnabled = check; changed = true; }
-        if (check) ImGui::BeginDisabled(false); else ImGui::BeginDisabled(true);
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::RadioButton("Open", &open, 0); ImGui::SameLine();
         ImGui::RadioButton("Close", &open, 1);
         if ((m_bOpen && open != 0) || (!m_bOpen && open != 1)) { m_bOpen = open == 0; changed = true; };
@@ -171,12 +165,6 @@ struct DoorFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("enabled"))
-        { 
-            auto& val = value["enabled"];
-            if (val.is_boolean())
-                m_bEnabled = val.get<imgui_json::boolean>();
-        }
         if (value.contains("open"))
         { 
             auto& val = value["open"];
@@ -196,7 +184,6 @@ struct DoorFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["enabled"] = imgui_json::boolean(m_bEnabled);
         value["open"] = imgui_json::boolean(m_bOpen);
         value["horizon"] = imgui_json::boolean(m_bHorizon);
     }
@@ -221,7 +208,6 @@ struct DoorFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    bool m_bEnabled     {true};
     bool m_bOpen        {true};
     bool m_bHorizon     {true};
     ImGui::Crop_vulkan * m_crop   {nullptr};
