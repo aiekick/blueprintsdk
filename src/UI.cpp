@@ -1054,7 +1054,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
     ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
 
     auto node_size = ed::GetNodeSize(node->m_ID);
-    float icon_offset = 16 + 1; // base offset + resize speed
+    float icon_offset = 16 + 2; // base offset + resize speed
     const float icon_gap = 18;
     if (node->Skippable())
     {
@@ -1236,22 +1236,22 @@ void BluePrintUI::DrawNodes()
             ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
             ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphOutlineWidth, 1.0);
             ImGui::PushStyleColor(ImGuiCol_TexGlyphOutline, ImVec4(0.5, 0.5, 1.0, 1.0));
-            ImGui::Dummy(ImVec2(dummyWidth, 10));
+            ImGui::Dummy(ImVec2(dummyWidth, 0));
             ImGui::BeginHorizontal("horizontal");
-            ImGui::Spring(1);
             ImFont* font = HeaderFont();
             if (font) ImGui::PushFont(font);
             ImGui::TextUnformatted(nodeName.data());
             if (font) ImGui::PopFont();
-            ImGui::Spring(1);
             ImGui::EndHorizontal();
-            ImGui::Dummy(ImVec2(dummyWidth, 10));
-            title_height = titleTextHeight + 20;
+            ImGui::Dummy(ImVec2(dummyWidth, 8));
+            title_height = titleTextHeight + 10;
             title_width = dummyWidth;
             ImGui::PopStyleVar(2);
             ImGui::PopStyleColor(1);
         }
         ImGui::EndVertical();
+        auto nodeStart = ed::GetNodePosition(node->m_ID);
+        ImGui::SetCursorScreenPos(nodeStart);
         if (!isDummy) title_width += DrawNodeToolBar(node, &need_clone_node);
         auto inPinPosMin = ed::GetNodePosition(node->m_ID); inPinPosMin.x += 8; inPinPosMin.y += title_height + 16;
         auto groupSize  = ed::GetGroupSize(node->m_ID);
