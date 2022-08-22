@@ -1044,57 +1044,22 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
 {
     if (!m_Document)
         return 0.f;
+    auto current_pos = ImGui::GetCursorScreenPos();
     bool isThreadExecuting = m_Document->m_Blueprint.IsExecuting();
-    // Draw Title bar icon
-    int icons = 2; //node->HasSetting() ? 3 : 2;
-    if (node->HasSetting()) icons++;
-    if (node->Skippable()) icons++;
-    if (node->GetStyle() == NodeStyle::Group) icons++;
-    float textSizeButton = ImGui::CalcTextSize(titlebar_icons[0].c_str()).x;
-#if IMGUI_ENABLE_FREETYPE || !IMGUI_ICONS
-    textSizeButton *= 1.5;
-#endif
-    ImGui::SameLine(ed::GetNodeSize(node->m_ID).x - textSizeButton * (icons + 2) - (icons * 4));
     ImGui::PushStyleColor(ImGuiCol_Button, m_StyleColors[BluePrintStyleColor_ToolButton]);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, m_StyleColors[BluePrintStyleColor_ToolButtonHovered]);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, m_StyleColors[BluePrintStyleColor_ToolButtonActive]);
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0,0));
     ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0,0));
     ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
-    ImGui::BeginDisabled(isThreadExecuting);
-    if (ImGui::Button((titlebar_icons[0] + "##" + std::to_string(node->m_ID)).c_str())) 
-    {
-        *need_clone_node = node;
-    }
-    if (ImGui::IsItemHovered()) node->m_IconHovered = 0;
 
-    ImGui::SameLine(0);
-    if (ImGui::Button((titlebar_icons[1] + "##" + std::to_string(node->m_ID)).c_str())) 
-    {
-        ed::Suspend();
-        LOGI("[HandleNodeToolBar] Open NodeDeleteDialog for %" PRI_node, FMT_node(node));
-        m_NodeDeleteDialog.Open(node);
-        ed::Resume();
-    }
-    if (ImGui::IsItemHovered()) node->m_IconHovered = 1;
-
-    if (node->HasSetting())
-    {
-        ImGui::SameLine(0);
-        if (ImGui::Button((titlebar_icons[2] + "##" + std::to_string(node->m_ID)).c_str())) 
-        {
-            ed::Suspend();
-            LOGI("[HandleNodeToolBar] Open NodeSettingDialog for %" PRI_node, FMT_node(node));
-            m_NodeSettingDialog.Open(node);
-            ed::Resume();
-        }
-        if (ImGui::IsItemHovered()) node->m_IconHovered = 2;
-    }
-
+    auto node_size = ed::GetNodeSize(node->m_ID);
+    float icon_offset = 16 + 1; // base offset + resize speed
+    const float icon_gap = 18;
     if (node->Skippable())
     {
-        ImGui::EndDisabled();
-        ImGui::SameLine(0);
+        icon_offset += icon_gap;
+        ImGui::SetCursorScreenPos(current_pos + ImVec2(node_size.x - icon_offset, 8));
         if (ImGui::Button((std::string((node->m_Enabled ? ICON_NODE_ENABLE : ICON_NODE_DISABLE)) + "##" + std::to_string(node->m_ID)).c_str())) 
         {
             node->m_Enabled = !node->m_Enabled;
@@ -1107,12 +1072,12 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
             }
         }
         if (ImGui::IsItemHovered()) node->m_IconHovered = 4;
-        ImGui::BeginDisabled(isThreadExecuting);
     }
-
+    ImGui::BeginDisabled(isThreadExecuting);
     if (node->GetStyle() == NodeStyle::Group)
     {
-        ImGui::SameLine(0);
+        icon_offset += icon_gap;
+        ImGui::SetCursorScreenPos(current_pos + ImVec2(node_size.x - icon_offset, 8));
         if (ImGui::Button((titlebar_icons[3] + "##" + std::to_string(node->m_ID)).c_str())) 
         {
             ed::Suspend();
@@ -1122,10 +1087,42 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
         }
         if (ImGui::IsItemHovered()) node->m_IconHovered = 3;
     }
+    if (node->HasSetting())
+    {
+        icon_offset += icon_gap;
+        ImGui::SetCursorScreenPos(current_pos + ImVec2(node_size.x - icon_offset, 8));
+        if (ImGui::Button((titlebar_icons[2] + "##" + std::to_string(node->m_ID)).c_str())) 
+        {
+            ed::Suspend();
+            LOGI("[HandleNodeToolBar] Open NodeSettingDialog for %" PRI_node, FMT_node(node));
+            m_NodeSettingDialog.Open(node);
+            ed::Resume();
+        }
+        if (ImGui::IsItemHovered()) node->m_IconHovered = 2;
+    }
+
+    icon_offset += icon_gap;
+    ImGui::SetCursorScreenPos(current_pos + ImVec2(node_size.x - icon_offset, 8));
+    if (ImGui::Button((titlebar_icons[1] + "##" + std::to_string(node->m_ID)).c_str())) 
+    {
+        ed::Suspend();
+        LOGI("[HandleNodeToolBar] Open NodeDeleteDialog for %" PRI_node, FMT_node(node));
+        m_NodeDeleteDialog.Open(node);
+        ed::Resume();
+    }
+
+    icon_offset += icon_gap;
+    ImGui::SetCursorScreenPos(current_pos + ImVec2(node_size.x - icon_offset, 8));
+    if (ImGui::Button((titlebar_icons[0] + "##" + std::to_string(node->m_ID)).c_str())) 
+    {
+        *need_clone_node = node;
+    }
+    if (ImGui::IsItemHovered()) node->m_IconHovered = 0;
+
     ImGui::EndDisabled();
     ImGui::PopStyleVar(3);
     ImGui::PopStyleColor(3);
-    return textSizeButton * (icons + 2);
+    return icon_offset;
 }
 
 bool BluePrintUI::CheckNodeStyle(const Node* node, NodeStyle style)
@@ -1530,8 +1527,7 @@ void BluePrintUI::DrawNodes()
             const float titleTextSize = ImGui::CalcTextSize(nodeName.c_str()).x;
             if (!isDummy)
             {
-                float iconSize = DrawNodeToolBar(node, &need_clone_node);
-                dummy_width = titleTextSize + iconSize;
+                dummy_width = titleTextSize + 18 * 6;
             }
             else
             {
@@ -1542,7 +1538,7 @@ void BluePrintUI::DrawNodes()
         ImGui::Dummy(ImVec2(dummy_width, 0.0f)); // For minimum node width
 
         ImGui::Grid layout;
-        layout.Begin(node->m_ID, CheckNodeStyle(node, NodeStyle::Simple) || node->CustomLayout() ? 3 : 2, dummy_width);
+        layout.Begin(node->m_ID, CheckNodeStyle(node, NodeStyle::Simple) || node->CustomLayout() ? 3 : 2, dummy_width + 36);
         layout.SetColumnAlignment(0.0f);
         // Draw column with input pins.
         for (auto& pin : node->GetInputPins())
@@ -1594,7 +1590,7 @@ void BluePrintUI::DrawNodes()
         {
             auto nodeSize  = ed::GetNodeSize(node->m_ID);
             float font_size = ImGui::GetFontSize();
-            layout.SetColumnAlignment(0.5f);
+            layout.SetColumnAlignment(1.0f);
             layout.NextColumn();
             if (node->GetInputPins().size() > 1 || node->GetOutputPins().size() > 1)
                 ImGui::Dummy(ImVec2(0, (nodeSize.y - font_size * 2) / 4));
@@ -1605,7 +1601,7 @@ void BluePrintUI::DrawNodes()
         }
         else if (node->CustomLayout())
         {
-            layout.SetColumnAlignment(0.5f);
+            layout.SetColumnAlignment(0.0f);
             layout.NextColumn();
             float zoom = ed::GetCurrentZoom();
             ImVec2 origin = ed::GetCurrentOrigin();
@@ -1618,7 +1614,8 @@ void BluePrintUI::DrawNodes()
                 }
             }
         }
-        layout.SetColumnAlignment(1.0f);
+        else
+            layout.SetColumnAlignment(0.0f);
         layout.NextColumn();
         // Draw column with output pins.
         for (auto& pin : node->GetOutputPins())
@@ -1659,6 +1656,12 @@ void BluePrintUI::DrawNodes()
             layout.NextRow();
         }
         layout.End();
+        if (!isDummy && !CheckNodeStyle(node, NodeStyle::Simple))
+        {
+            auto nodeStart = ed::GetNodePosition(node->m_ID);
+            ImGui::SetCursorScreenPos(nodeStart);
+            DrawNodeToolBar(node, &need_clone_node);
+        }
 
 #if DEBUG_NODE_DRAWING
         ImGui::Debug_DrawItemRect();
@@ -2217,13 +2220,19 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
         return a->m_Name < b->m_Name;
     });
 
-    auto AddNodeMenu = [&](void* data, bool tree_view = true)
+    auto AddNodeMenu = [&](void* data, bool tree_view = true, bool is_system_node = false)
     {
         const BluePrint::NodeTypeInfo* nodetype = (const BluePrint::NodeTypeInfo*)data;
         std::string menu_label;
         if (tree_view)
         {
-            ImGui::Bullet();
+            if (is_system_node)
+            {
+                ImGui::TextUnformatted(ICON_BP_ZOOM_IN); 
+                ImGui::SameLine();
+            }
+            else 
+                ImGui::Bullet();
             menu_label = nodetype->m_Name;
         }
         else
@@ -2410,7 +2419,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
             {
                 if (sub.data)
                 {
-                    AddNodeMenu(sub.data);
+                    AddNodeMenu(sub.data, true, true);
                 }
             }
         }
