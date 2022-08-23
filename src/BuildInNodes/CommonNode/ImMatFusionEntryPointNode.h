@@ -36,6 +36,17 @@ struct FusionEntryPointNode final : Node
         if (iter != m_OutputPins.end())
         {
             (*iter)->Unlink();
+            if ((*iter)->m_LinkFrom.size() > 0)
+            {
+                for (auto from_pin : (*iter)->m_LinkFrom)
+                {
+                    auto link = m_Blueprint->GetPinFromID(from_pin);
+                    if (link)
+                    {
+                        link->Unlink();
+                    }
+                }
+            }
             m_OutputPins.erase(iter);
         }
     }
