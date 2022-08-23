@@ -37,8 +37,7 @@ struct SaturationNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (m_SaturationIn.IsLinked())
         {
-            auto value = context.GetPinValue<float>(m_SaturationIn);
-            m_saturation = value * 2.0;
+            m_saturation = context.GetPinValue<float>(m_SaturationIn) + 1.f;
         }
         if (!mat_in.empty())
         {

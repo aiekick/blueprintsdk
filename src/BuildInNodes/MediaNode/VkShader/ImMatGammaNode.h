@@ -37,8 +37,7 @@ struct GammaNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (m_GammaIn.IsLinked())
         {
-            auto value = context.GetPinValue<float>(m_GammaIn);
-            m_gamma = value * 4.0;
+            m_gamma = context.GetPinValue<float>(m_GammaIn);
         }
         if (!mat_in.empty())
         {

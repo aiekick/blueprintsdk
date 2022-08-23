@@ -37,8 +37,7 @@ struct VibranceNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (m_VibranceIn.IsLinked())
         {
-            auto value = context.GetPinValue<float>(m_VibranceIn);
-            m_vibrance = value * 8.0  - 4.0;
+            m_vibrance = context.GetPinValue<float>(m_VibranceIn);
         }
         if (!mat_in.empty())
         {

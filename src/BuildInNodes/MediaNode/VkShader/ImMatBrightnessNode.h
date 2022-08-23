@@ -37,8 +37,7 @@ struct BrightnessNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (m_BrightnessIn.IsLinked())
         {
-            auto value = context.GetPinValue<float>(m_BrightnessIn);
-            m_brightness = value * 2.0  - 1.0;
+            m_brightness = context.GetPinValue<float>(m_BrightnessIn);
         }
         if (!mat_in.empty())
         {

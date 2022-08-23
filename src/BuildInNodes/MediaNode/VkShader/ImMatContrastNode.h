@@ -37,8 +37,7 @@ struct ContrastNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (m_ContrastIn.IsLinked())
         {
-            auto value = context.GetPinValue<float>(m_ContrastIn);
-            m_contrast = value * 4.0f;
+            m_contrast = context.GetPinValue<float>(m_ContrastIn);
         }
         if (!mat_in.empty())
         {

@@ -37,8 +37,7 @@ struct ExposureNode final : Node
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (m_ExposureIn.IsLinked())
         {
-            auto value = context.GetPinValue<float>(m_ExposureIn);
-            m_exposure = value * 4.0  - 2.0;
+            m_exposure = context.GetPinValue<float>(m_ExposureIn);
         }
         if (!mat_in.empty())
         {
