@@ -1615,7 +1615,7 @@ void BluePrintUI::DrawNodes()
             }
         }
         else
-            layout.SetColumnAlignment(0.0f);
+            layout.SetColumnAlignment(1.0f);
         layout.NextColumn();
         // Draw column with output pins.
         for (auto& pin : node->GetOutputPins())
