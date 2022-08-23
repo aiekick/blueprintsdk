@@ -35,6 +35,11 @@ struct ExposureNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_ExposureIn.IsLinked())
+        {
+            auto value = context.GetPinValue<float>(m_ExposureIn);
+            m_exposure = value * 4.0  - 2.0;
+        }
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -63,6 +68,14 @@ struct ExposureNode final : Node
         return m_Exit;
     }
 
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_ExposureIn.m_ID)
+        {
+            m_ExposureIn.SetValue(m_exposure);
+        }
+    }
+
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
         // Draw Setting
@@ -76,21 +89,21 @@ struct ExposureNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return true; }
+    bool CustomLayout() const override { return !m_ExposureIn.IsLinked(); }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        float val = m_exposure / 2;
+        float val = m_exposure;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
         ImGui::BeginDisabled(!m_Enabled);
-        ImGui::LumianceSelector("##slider_exposure##Exposure", ImVec2(300, 20), &val, 0.0f, zoom);
+        ImGui::LumianceSelector("##slider_exposure##Exposure", ImVec2(300, 20), &val, 0.0f, -2.f, 2.f, zoom);
         ImGui::PopItemWidth();
-        if (val != m_exposure / 2) { m_exposure = val * 2; changed = true; }
+        if (val != m_exposure) { m_exposure = val; changed = true; }
         ImGui::EndDisabled();
         return changed;
     }
@@ -133,9 +146,10 @@ struct ExposureNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_ExposureIn = { this, "Exposure"};
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_InputPins[3] = { &m_Enter, &m_MatIn, &m_ExposureIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:

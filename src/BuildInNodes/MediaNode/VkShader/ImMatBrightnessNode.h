@@ -101,7 +101,7 @@ struct BrightnessNode final : Node
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
         ImGui::BeginDisabled(!m_Enabled);
-        ImGui::LumianceSelector("##slider_brightness##Brightness", ImVec2(300, 20), &val, 0.0f, zoom);
+        ImGui::LumianceSelector("##slider_brightness##Brightness", ImVec2(300, 20), &val, 0.0f, -1.f, 1.f, zoom);
         if (val != m_brightness) { m_brightness = val; changed = true; }
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
