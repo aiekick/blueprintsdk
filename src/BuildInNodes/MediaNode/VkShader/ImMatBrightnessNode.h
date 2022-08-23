@@ -68,6 +68,14 @@ struct BrightnessNode final : Node
         return m_Exit;
     }
 
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_BrightnessIn.m_ID)
+        {
+            m_BrightnessIn.SetValue(m_brightness);
+        }
+    }
+
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
         // Draw Setting

@@ -2616,6 +2616,10 @@ void BluePrintUI::HandleDestroyAction()
                 {
                     LOGI("[HandleDestroyAction] %" PRI_pin " unlinked from %" PRI_pin, FMT_pin(startPin), FMT_pin(linkedPin));
                     startPin->Unlink();
+                    if (m_CallBacks.BluePrintOnChanged)
+                    {
+                        auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_Unlink, m_Document->m_Name, m_UserHandle);
+                    }
                     ++brokenLinkCount;
                 }
             }
