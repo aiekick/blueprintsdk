@@ -32,6 +32,10 @@ struct AudioGainNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_GainIn.IsLinked())
+        {
+            m_gain = context.GetPinValue<float>(m_GainIn);
+        }
         if (!mat_in.empty())
         {
             if (!m_Enabled)
@@ -47,6 +51,14 @@ struct AudioGainNode final : Node
         return m_Exit;
     }
 
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_GainIn.m_ID)
+        {
+            m_GainIn.SetValue(m_gain);
+        }
+    }
+
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
         // Draw Setting
@@ -60,7 +72,7 @@ struct AudioGainNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return true; }
+    bool CustomLayout() const override { return !m_GainIn.IsLinked(); }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -118,9 +130,10 @@ struct AudioGainNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_GainIn   = { this, "Gain"};
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_InputPins[3] = { &m_Enter, &m_MatIn, &m_GainIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:
