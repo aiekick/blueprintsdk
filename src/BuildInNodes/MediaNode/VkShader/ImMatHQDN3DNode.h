@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include "HQDN3D_vulkan.h"
@@ -88,12 +86,7 @@ struct HQDN3DNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override {
-        return  !m_LumSpatialIn.IsLinked() &&
-                !m_ChromaSpatialIn.IsLinked() &&
-                !m_LumTemporalIn.IsLinked() &&
-                !m_ChromaTemporalIn.IsLinked();
-    }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -107,18 +100,28 @@ struct HQDN3DNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_LumSpatialIn.IsLinked());
         ImGui::SliderFloat("Luma Spatial##HQDN3D", &_lum_spac, 0, 50.f, "%.1f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_luma_spatial##HQDN3D")) { _lum_spac = 6.f; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_ChromaSpatialIn.IsLinked());
         ImGui::SliderFloat("Chroma Spatial##HQDN3D", &_chrom_spac, 0, 50.f, "%.1f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_chroma_spatial##HQDN3D")) { _chrom_spac = 4.f; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_LumTemporalIn.IsLinked());
         ImGui::SliderFloat("Luma Temporal##HQDN3D", &_lum_tmp, 0, 50.f, "%.1f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_luma_temporal##HQDN3D")) { _lum_tmp = 4.5f; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_ChromaTemporalIn.IsLinked());
         ImGui::SliderFloat("Chroma Temporal##HQDN3D", &_chrom_tmp, 0, 50.f, "%.1f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_chroma_temporal##HQDN3D")) { _chrom_tmp = 3.375f; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (_lum_spac != m_lum_spac) { m_lum_spac = _lum_spac; changed = true; }
         if (_chrom_spac != m_chrom_spac) { m_chrom_spac = _chrom_spac; changed = true; }
         if (_lum_tmp != m_lum_tmp) { m_lum_tmp = _lum_tmp; changed = true; }
         if (_chrom_tmp != m_chrom_tmp) { m_chrom_tmp = _chrom_tmp; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override

@@ -1,12 +1,8 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Gamma_vulkan.h>
-
-#define ICON_RESET     "\uf0e2"
 
 namespace BluePrint
 {
@@ -88,7 +84,7 @@ struct GammaNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return !m_GammaIn.IsLinked(); }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -99,12 +95,13 @@ struct GammaNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_GammaIn.IsLinked());
         ImGui::GammaSelector("##slider_gamma##Gamma", ImVec2(300, 20), &val, 1.0f, 0.f, 4.f, zoom);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_gamma##Gamma")) { val = 1.f; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (val != m_gamma) { m_gamma = val; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override

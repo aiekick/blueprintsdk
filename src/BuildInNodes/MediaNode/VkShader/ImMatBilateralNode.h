@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
@@ -84,11 +82,7 @@ struct BilateralNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override {
-        return  !m_SizeIn.IsLinked() &&
-                !m_SigmaSpatialIn.IsLinked() &&
-                !m_SigmaColorIn.IsLinked();
-    }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -101,16 +95,23 @@ struct BilateralNode final : Node
         float _sigma_color = m_sigma_color;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_SizeIn.IsLinked());
         ImGui::SliderInt("Kernel Size##Bilateral", &_ksize, 2, 20, "%d", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_size##Bilateral")) { _ksize = 5; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_SigmaSpatialIn.IsLinked());
         ImGui::SliderFloat("Spatial Sigma##Bilateral", &_sigma_spatial, 0.f, 100.f, "%.2f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_sigma_spatial##Bilateral")) { _sigma_spatial = 10.f; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_SigmaColorIn.IsLinked());
         ImGui::SliderFloat("Color Sigma##Bilateral", &_sigma_color, 0.f, 100.f, "%.2f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_sigma_color##Bilateral")) { _sigma_color = 10.f; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (_ksize != m_ksize) { m_ksize = _ksize; changed = true; }
         if (_sigma_spatial != m_sigma_spatial) { m_sigma_spatial = _sigma_spatial; changed = true; }
         if (_sigma_color != m_sigma_color) { m_sigma_color = _sigma_color; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override

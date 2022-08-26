@@ -1,12 +1,8 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Contrast_vulkan.h>
-
-#define ICON_RESET     "\uf0e2"
 
 namespace BluePrint
 {
@@ -88,7 +84,7 @@ struct ContrastNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return !m_ContrastIn.IsLinked(); }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -99,12 +95,13 @@ struct ContrastNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_ContrastIn.IsLinked());
         ImGui::ContrastSelector("##slider_contrast##Contrast", ImVec2(300, 20), &val, 1.0, zoom);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_contrast##Contrast")) { val = 1.0; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (val != m_contrast) { m_contrast = val; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override

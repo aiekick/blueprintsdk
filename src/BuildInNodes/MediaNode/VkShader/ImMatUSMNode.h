@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <USM_vulkan.h>
@@ -82,12 +80,7 @@ struct USMNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override 
-    {
-        return  !m_SigmaIn.IsLinked() &&
-                !m_ThresholdIn.IsLinked() &&
-                !m_AmountIn.IsLinked();
-    }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -100,16 +93,23 @@ struct USMNode final : Node
         float _threshold = m_threshold;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_SigmaIn.IsLinked());
         ImGui::SliderFloat("Sigma##USM", &_sigma, 0, 10.f, "%.1f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_sigma##USM")) { _sigma = 3; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_AmountIn.IsLinked());
         ImGui::SliderFloat("Amount##USM", &_amount, 0, 3.f, "%.1f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_amount##USM")) { _amount = 1.5f; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_ThresholdIn.IsLinked());
         ImGui::SliderFloat("Threshold##USM", &_threshold, 0, 1.f, "%.2f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_threshold##USM")) { _threshold = 1.0f; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (m_sigma != _sigma) { m_sigma = _sigma; changed = true; }
         if (m_amount != _amount) { m_amount = _amount; changed = true; }
         if (m_threshold != _threshold) { m_threshold = _threshold; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override
@@ -177,7 +177,7 @@ private:
     int m_device        {-1};
     float m_sigma       {3.f};
     float m_threshold   {1.f};
-    float m_amount      {2.f};
+    float m_amount      {1.5f};
     ImGui::USM_vulkan * m_filter {nullptr};
 };
 } //namespace BluePrint

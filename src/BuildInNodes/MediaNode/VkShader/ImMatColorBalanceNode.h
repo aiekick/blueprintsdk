@@ -1,12 +1,8 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <ColorBalance_vulkan.h>
-
-#define ICON_RESET     "\uf0e2"
 
 namespace BluePrint
 {

@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
@@ -34,7 +32,7 @@ struct AlphaFusionNode final : Node
     {
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
-        float alpha = 1.0f - context.GetPinValue<float>(m_Alpha);
+        float alpha = 1.0f - context.GetPinValue<float>(m_AlphaIn);
         if (!mat_first.empty() && !mat_second.empty())
         {
             int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
@@ -107,14 +105,14 @@ struct AlphaFusionNode final : Node
     vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatInFirst, &m_MatInSecond}; }
     vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOut}; }
 
-    FlowPin   m_Enter   = { this, "Enter" };
-    FlowPin   m_Exit    = { this, "Exit" };
-    MatPin    m_MatInFirst   = { this, "In 1" };
-    MatPin    m_MatInSecond   = { this, "In 2" };
-    FloatPin  m_Alpha = { this, "Alpha" };
-    MatPin    m_MatOut  = { this, "Out" };
+    FlowPin   m_Enter       = { this, "Enter" };
+    FlowPin   m_Exit        = { this, "Exit" };
+    MatPin    m_MatInFirst  = { this, "In 1" };
+    MatPin    m_MatInSecond = { this, "In 2" };
+    FloatPin  m_AlphaIn     = { this, "Alpha" };
+    MatPin    m_MatOut      = { this, "Out" };
 
-    Pin* m_InputPins[4] = { &m_Enter, &m_MatInFirst, &m_MatInSecond, &m_Alpha };
+    Pin* m_InputPins[4] = { &m_Enter, &m_MatInFirst, &m_MatInSecond, &m_AlphaIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:

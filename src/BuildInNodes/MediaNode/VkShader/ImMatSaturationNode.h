@@ -1,12 +1,8 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Saturation_vulkan.h>
-
-#define ICON_RESET     "\uf0e2"
 
 namespace BluePrint
 {
@@ -88,7 +84,7 @@ struct SaturationNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return !m_SaturationIn.IsLinked(); }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -99,12 +95,13 @@ struct SaturationNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_SaturationIn.IsLinked());
         ImGui::SaturationSelector("##slider_saturation##Saturation", ImVec2(300, 40), &val, 0.0f, -1.f, 1.f, zoom, 32, 1.0f, true);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_saturation##Saturation")) { val = 0; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (val != m_saturation - 1.0) { m_saturation = val + 1.0; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override

@@ -43,6 +43,7 @@
 #define ICON_NODE_NEXT          u8"\uf0da"
 #define ICON_NODE_ENABLE        u8"\ue8f4"
 #define ICON_NODE_DISABLE       u8"\ue8f5"
+#define ICON_RESET              u8"\ue042"
 #else
 #define ICON_OPEN_BLUEPRINT     "Open"
 #define ICON_NEW_BLUEPRINT      "New"
@@ -68,6 +69,7 @@
 #define ICON_NODE_CLEAR         "x"
 #define ICON_NODE_SEARCH        "f"
 #define ICON_NODE_NEXT          ">"
+#define ICON_RESET              "R"
 #endif
 
 namespace ed = ax::NodeEditor;

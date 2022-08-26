@@ -1,10 +1,6 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
-
-#define ICON_RESET     "\uf0e2"
 
 namespace BluePrint
 {
@@ -72,7 +68,7 @@ struct AudioGainNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return !m_GainIn.IsLinked(); }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -83,13 +79,13 @@ struct AudioGainNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_GainIn.IsLinked());
         ImGui::SliderFloat("##slider_gain##Gain", &val, 0.0, 2.f, "%.2f", flags); ImGui::SameLine();
         if (val != m_gain) { m_gain = val; changed = true; }
-        if (ImGui::Button(ICON_RESET "##reset_gain##Gain")) { m_gain = 1.0; changed = true; }
+        if (ImGui::Button(ICON_RESET "##reset_gain##Gain")) { val = 1.0; }
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override

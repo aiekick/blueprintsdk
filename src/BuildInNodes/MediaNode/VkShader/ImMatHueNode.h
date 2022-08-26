@@ -1,12 +1,8 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Hue_vulkan.h>
-
-#define ICON_RESET     "\uf0e2"
 
 namespace BluePrint
 {
@@ -35,6 +31,7 @@ struct HueNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_HueIn.IsLinked()) m_hue = context.GetPinValue<float>(m_HueIn);
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -61,6 +58,14 @@ struct HueNode final : Node
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;
+    }
+
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_HueIn.m_ID)
+        {
+            m_HueIn.SetValue(m_hue);
+        }
     }
 
     void DrawSettingLayout(ImGuiContext * ctx) override
@@ -90,8 +95,10 @@ struct HueNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_HueIn.IsLinked());
         ImGui::HueSelector("##slideer_hue##Hue", ImVec2(300, 20), &val, &hue_width, &featherLeft, &featherRight, 0.0f, zoom, 32, 1.0f, 0.0f);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_huex##Hue")) { val = 0.f; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (val != m_hue / 360.0) { m_hue = val * 360.0; changed = true; }
         ImGui::EndDisabled();
@@ -136,9 +143,10 @@ struct HueNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_HueIn   = { this, "Hue" };
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_InputPins[3] = { &m_Enter, &m_MatIn, &m_HueIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:

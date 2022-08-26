@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
@@ -83,10 +81,7 @@ struct GaussianBlurNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override {
-        return  !m_RadiusIn.IsLinked() &&
-                !m_SigmaIn.IsLinked();
-    }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -98,14 +93,18 @@ struct GaussianBlurNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_RadiusIn.IsLinked());
         ImGui::SliderFloat("Sigma##GaussianBlur", &_sigma, 0.0, 10.f, "%.1f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_sigma##GaussianBlur")) { _sigma = 0; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_SigmaIn.IsLinked());
         ImGui::SliderInt("Radius##GaussianBlur", &_blurRadius, 0, 20, "%d", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_radius##GaussianBlur")) { _blurRadius = 3; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (_sigma != m_sigma) { m_sigma = _sigma; changed = true; }
         if (_blurRadius != m_blurRadius) { m_blurRadius = _blurRadius; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override

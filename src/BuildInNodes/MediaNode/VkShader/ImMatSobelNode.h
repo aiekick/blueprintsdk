@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
@@ -33,6 +31,7 @@ struct SobelNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_StrengthIn.IsLinked()) m_strength = context.GetPinValue<float>(m_StrengthIn);
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -61,6 +60,14 @@ struct SobelNode final : Node
         return m_Exit;
     }
 
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_StrengthIn.m_ID)
+        {
+            m_StrengthIn.SetValue(m_strength);
+        }
+    }
+
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
         // Draw Setting
@@ -85,12 +92,13 @@ struct SobelNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_StrengthIn.IsLinked());
         ImGui::SliderFloat("Strength##Sobel", &_strength, 0.1, 8.f, "%.2f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_stength##Sobel")) { _strength = 1; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (_strength != m_strength) { m_strength = _strength; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override
@@ -131,9 +139,10 @@ struct SobelNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_StrengthIn = { this, "Strength" };
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_InputPins[3] = { &m_Enter, &m_MatIn, &m_StrengthIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:

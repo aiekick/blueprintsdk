@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
@@ -34,10 +32,6 @@ struct FadeFusionNode final : Node
     {
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
-        //auto current = context.GetPinValue<int64_t>(m_FusionTimeStamp);
-        //auto total = context.GetPinValue<int64_t>(m_FusionDuration);
-        //auto percentage = (float)current / (float)(total - 40);
-        //percentage = ImClamp(percentage, 0.0f, 1.0f);
         auto percentage = context.GetPinValue<float>(m_Fade);
         if (!mat_first.empty() && !mat_second.empty())
         {

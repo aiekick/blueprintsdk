@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Canny_vulkan.h>
@@ -31,6 +29,9 @@ struct CannyNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_RadiusIn.IsLinked()) m_blurRadius = context.GetPinValue<float>(m_RadiusIn);
+        if (m_MinIn.IsLinked()) m_minThreshold = context.GetPinValue<float>(m_MinIn);
+        if (m_MaxIn.IsLinked()) m_maxThreshold = context.GetPinValue<float>(m_MaxIn);
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -59,6 +60,13 @@ struct CannyNode final : Node
         return m_Exit;
     }
 
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_RadiusIn.m_ID) m_RadiusIn.SetValue(m_blurRadius);
+        if (receiver.m_ID == m_MinIn.m_ID) m_MinIn.SetValue(m_minThreshold);
+        if (receiver.m_ID == m_MinIn.m_ID) m_MaxIn.SetValue(m_maxThreshold);
+    }
+
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
         // Draw Setting
@@ -85,16 +93,23 @@ struct CannyNode final : Node
         float _maxThreshold = m_maxThreshold;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_RadiusIn.IsLinked());
         ImGui::SliderInt("Blur Radius##Canny", &_blurRadius, 0, 10, "%d", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_radius##Canny")) { _blurRadius = 3; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_MinIn.IsLinked());
         ImGui::SliderFloat("Min Threshold##Canny", &_minThreshold, 0, 1.f, "%.2f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_min##Canny")) { _minThreshold = 0.1; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_MaxIn.IsLinked());
         ImGui::SliderFloat("Max Threshold##Canny", &_maxThreshold, _minThreshold, 1.f, "%.2f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_max##Canny")) { _maxThreshold = 0.45; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (m_blurRadius != _blurRadius) { m_blurRadius = _blurRadius; changed = true; }
         if (m_minThreshold != _minThreshold) { m_minThreshold = _minThreshold; changed = true; }
         if (m_maxThreshold != _maxThreshold) { m_maxThreshold = _maxThreshold; changed= true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override
@@ -149,9 +164,12 @@ struct CannyNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_RadiusIn = { this, "Radius" };
+    FloatPin  m_MinIn = { this, "Min Threshold" };
+    FloatPin  m_MaxIn = { this, "Max Threshold" };
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_InputPins[5] = { &m_Enter, &m_MatIn, &m_RadiusIn, &m_MinIn, &m_MaxIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:

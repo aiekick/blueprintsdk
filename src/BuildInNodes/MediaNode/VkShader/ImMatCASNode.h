@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <CAS_vulkan.h>
@@ -84,7 +82,7 @@ struct CasNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return !m_StrengthIn.IsLinked(); }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -95,12 +93,13 @@ struct CasNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_StrengthIn.IsLinked());
         ImGui::SliderFloat("Strength##CAS", &_strength, 0, 1.f, "%.2f", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_strength##CAS")) { _strength = 0.f; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (_strength != m_strength) { m_strength = _strength; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override

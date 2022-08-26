@@ -1,6 +1,4 @@
-#include <BluePrint.h>
-#include <Node.h>
-#include <Pin.h>
+#include <UI.h>
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
@@ -34,7 +32,7 @@ struct BoxBlurNode final : Node
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
         if (m_SizeIn.IsLinked()) m_Size = context.GetPinValue<float>(m_SizeIn);
-        if (m_IerationIn.IsLinked()) m_iteration = context.GetPinValue<float>(m_IerationIn);
+        if (m_IterationIn.IsLinked()) m_iteration = context.GetPinValue<float>(m_IterationIn);
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -71,7 +69,7 @@ struct BoxBlurNode final : Node
     void WasUnlinked(const Pin& receiver, const Pin& provider) override
     {
         if (receiver.m_ID == m_SizeIn.m_ID) m_SizeIn.SetValue(m_Size);
-        if (receiver.m_ID == m_IerationIn.m_ID) m_IerationIn.SetValue(m_iteration);
+        if (receiver.m_ID == m_IterationIn.m_ID) m_IterationIn.SetValue(m_iteration);
     }
 
     void DrawSettingLayout(ImGuiContext * ctx) override
@@ -87,10 +85,7 @@ struct BoxBlurNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override {
-        return  !m_SizeIn.IsLinked() &&
-                !m_IerationIn.IsLinked();
-    }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -102,14 +97,18 @@ struct BoxBlurNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_SizeIn.IsLinked());
         ImGui::SliderInt("Size##Box", &_Size, 1, 20, "%d", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_size##Box")) { _Size = 3; }
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_IterationIn.IsLinked());
         ImGui::SliderInt("Iteration##Box", &_iteration, 1, 20, "%d", flags);
+        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_iteration##Box")) { _iteration = 1; }
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (_Size != m_Size) { m_Size = _Size; changed = true; }
         if (_iteration != m_iteration) { m_iteration = _iteration; changed = true; }
-        ImGui::EndDisabled();
-        return changed;
+        return m_Enabled ? changed : false;
     }
 
     int Load(const imgui_json::value& value) override
@@ -159,10 +158,10 @@ struct BoxBlurNode final : Node
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
     FloatPin  m_SizeIn  = { this, "Size"};
-    FloatPin  m_IerationIn = { this, "Iteration"};
+    FloatPin  m_IterationIn = { this, "Iteration"};
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[4] = { &m_Enter,&m_MatIn, &m_SizeIn, &m_IerationIn };
+    Pin* m_InputPins[4] = { &m_Enter,&m_MatIn, &m_SizeIn, &m_IterationIn };
     Pin* m_OutputPins[2] = { &m_Exit,&m_MatOut };
 
 private:
