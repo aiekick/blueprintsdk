@@ -31,6 +31,10 @@ struct CasNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_StrengthIn.IsLinked())
+        {
+            m_strength = context.GetPinValue<float>(m_StrengthIn);
+        }
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -59,6 +63,14 @@ struct CasNode final : Node
         return m_Exit;
     }
 
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_StrengthIn.m_ID)
+        {
+            m_StrengthIn.SetValue(m_strength);
+        }
+    }
+
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
         // Draw Setting
@@ -72,7 +84,7 @@ struct CasNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return true; }
+    bool CustomLayout() const override { return !m_StrengthIn.IsLinked(); }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -129,9 +141,10 @@ struct CasNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_StrengthIn = { this, "Strength"};
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_InputPins[3] = { &m_Enter, &m_MatIn, &m_StrengthIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:
