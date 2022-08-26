@@ -33,6 +33,9 @@ struct BilateralNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_SizeIn.IsLinked()) m_ksize = context.GetPinValue<float>(m_SizeIn);
+        if (m_SigmaSpatialIn.IsLinked()) m_sigma_spatial = context.GetPinValue<float>(m_SigmaSpatialIn);
+        if (m_SigmaColorIn.IsLinked()) m_sigma_color = context.GetPinValue<float>(m_SigmaColorIn);
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -61,6 +64,13 @@ struct BilateralNode final : Node
         return m_Exit;
     }
 
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_SizeIn.m_ID) m_SizeIn.SetValue(m_ksize);
+        if (receiver.m_ID == m_SigmaSpatialIn.m_ID) m_SigmaSpatialIn.SetValue(m_sigma_spatial);
+        if (receiver.m_ID == m_SigmaColorIn.m_ID) m_SigmaColorIn.SetValue(m_sigma_color);
+    }
+
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
         // Draw Setting
@@ -74,7 +84,11 @@ struct BilateralNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return true; }
+    bool CustomLayout() const override {
+        return  !m_SizeIn.IsLinked() &&
+                !m_SigmaSpatialIn.IsLinked() &&
+                !m_SigmaColorIn.IsLinked();
+    }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -151,9 +165,12 @@ struct BilateralNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_SizeIn = { this, "Size"};
+    FloatPin  m_SigmaSpatialIn = { this, "Sigma Spatial"};
+    FloatPin  m_SigmaColorIn = { this, "Sigma Color"};
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter,&m_MatIn };
+    Pin* m_InputPins[5] = { &m_Enter, &m_MatIn, &m_SizeIn, &m_SigmaSpatialIn, &m_SigmaColorIn };
     Pin* m_OutputPins[2] = { &m_Exit,&m_MatOut };
 
 private:

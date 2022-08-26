@@ -31,6 +31,10 @@ struct HQDN3DNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_LumSpatialIn.IsLinked()) m_lum_spac = context.GetPinValue<float>(m_LumSpatialIn);
+        if (m_ChromaSpatialIn.IsLinked()) m_chrom_spac = context.GetPinValue<float>(m_ChromaSpatialIn);
+        if (m_LumTemporalIn.IsLinked()) m_lum_tmp = context.GetPinValue<float>(m_LumTemporalIn);
+        if (m_ChromaTemporalIn.IsLinked()) m_chrom_tmp = context.GetPinValue<float>(m_ChromaTemporalIn);
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -63,6 +67,14 @@ struct HQDN3DNode final : Node
         return m_Exit;
     }
 
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_LumSpatialIn.m_ID) m_LumSpatialIn.SetValue(m_lum_spac);
+        if (receiver.m_ID == m_ChromaSpatialIn.m_ID) m_ChromaSpatialIn.SetValue(m_chrom_spac);
+        if (receiver.m_ID == m_LumTemporalIn.m_ID) m_LumTemporalIn.SetValue(m_lum_tmp);
+        if (receiver.m_ID == m_ChromaTemporalIn.m_ID) m_ChromaTemporalIn.SetValue(m_chrom_tmp);
+    }
+    
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
         // Draw Setting
@@ -76,7 +88,12 @@ struct HQDN3DNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return true; }
+    bool CustomLayout() const override {
+        return  !m_LumSpatialIn.IsLinked() &&
+                !m_ChromaSpatialIn.IsLinked() &&
+                !m_LumTemporalIn.IsLinked() &&
+                !m_ChromaTemporalIn.IsLinked();
+    }
     bool Skippable() const override { return true; }
 
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
@@ -163,9 +180,13 @@ struct HQDN3DNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_LumSpatialIn = { this, "Lum spatial"};
+    FloatPin  m_ChromaSpatialIn = { this, "Chroma spatial"};
+    FloatPin  m_LumTemporalIn = { this, "Lum temporal"};
+    FloatPin  m_ChromaTemporalIn = { this, "Chroma temporal"};
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_InputPins[6] = { &m_Enter, &m_MatIn, &m_LumSpatialIn, &m_ChromaSpatialIn, &m_LumTemporalIn, &m_ChromaTemporalIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:
