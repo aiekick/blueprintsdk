@@ -1647,7 +1647,7 @@ void BluePrintUI::DrawNodes()
             //       does not look good for blueprint nodes.
             ed::PinPivotAlignment(ImVec2(1.0f, 0.5f));
             // [1] - Show pin name if it has one. Custom layout hidden name?
-            if (!pin->m_Name.empty() && (!CheckNodeStyle(node, NodeStyle::Simple) || pin->m_Flags & PIN_FLAG_FORCESHOW) && !(node->CustomLayout() || m_isChildWindow))
+            if (!pin->m_Name.empty() && (!CheckNodeStyle(node, NodeStyle::Simple) || pin->m_Flags & PIN_FLAG_FORCESHOW) && (!node->CustomLayout() || m_isChildWindow))
             {
                 ImGui::TextUnformatted(pin->m_Name.data(), pin->m_Name.data() + pin->m_Name.size());
                 ImGui::SameLine();
