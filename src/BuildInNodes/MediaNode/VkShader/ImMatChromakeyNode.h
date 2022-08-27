@@ -198,10 +198,10 @@ private:
     int m_device            {-1};
     ImGui::ChromaKey_vulkan * m_filter {nullptr};
     bool  m_alpha_only          {false};
-    float m_lumaMask            {1.0f};
+    float m_lumaMask            {10.0f};
     std::vector<float> m_chromaColor        {0.0f, 1.0f, 0.0f, 1.0f};
-    float m_alphaCutoffMin      {0.2f};
-    float m_alphaScale          {10.f};
-    float m_alphaExponent       {0.1f};
+    float m_alphaCutoffMin      {0.05f};
+    float m_alphaScale          {40.f};
+    float m_alphaExponent       {1.0f};
 };
 } //namespace BluePrint
