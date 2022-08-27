@@ -343,7 +343,6 @@ void NodeDeleteDialog::Show(BluePrintUI& UI)
         {
             ed::DeleteNode(node->m_ID);
             UI.m_Document->m_IsModified = true;
-            // ed::SetNodeChanged(node->m_ID); // Dont do that because save deleted node will cause crush
             ImGui::CloseCurrentPopup();
         }
         ImGui::SetItemDefaultFocus();
@@ -1209,6 +1208,11 @@ void BluePrintUI::DrawNodes()
             ed::PushStyleColor(ed::StyleColor_NodeBorder, m_StyleColors[BluePrintStyleColor_Border]);
         }
         ed::BeginNode(node->m_ID);
+        if (node->m_NeedUpdate)
+        {
+            ed::SetNodeChanged(node->m_ID);
+            node->m_NeedUpdate = false;
+        }
         // Comment/Group node layout:
         //
         // [ Comment ]                         |     [ Group ]                              |
@@ -1473,6 +1477,11 @@ void BluePrintUI::DrawNodes()
         if (node->m_NoBackGround)
             ed::PushStyleColor(ed::StyleColor_NodeBg, ImVec4(0.f, 0.f, 0.f, 0.f));
         ed::BeginNode(node->m_ID);
+        if (node->m_NeedUpdate)
+        {
+            ed::SetNodeChanged(node->m_ID);
+            node->m_NeedUpdate = false;
+        }
         // Default node layout:                         Simple node layout:
         //
         // +-----------------------------------+         +-----------------------------------+
