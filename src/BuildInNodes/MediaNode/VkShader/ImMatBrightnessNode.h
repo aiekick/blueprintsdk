@@ -87,17 +87,28 @@ struct BrightnessNode final : Node
     bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
-    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
+    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key) override
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         float val = m_brightness;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(300, 8));
-        ImGui::PushItemWidth(300);
+        ImGui::Dummy(ImVec2(240, 8));
+        ImGui::PushItemWidth(240);
         ImGui::BeginDisabled(!m_Enabled || m_BrightnessIn.IsLinked());
-        ImGui::LumianceSelector("##slider_brightness##Brightness", ImVec2(300, 20), &val, 0.0f, -1.f, 1.f, zoom);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_brightness##Brightness")) { val = 0.f; }
+        ImGui::LumianceSelector("##slider_brightness##Brightness", ImVec2(240, 20), &val, 0.0f, -1.f, 1.f, zoom);
+        ImGui::SameLine(); if (ImGui::Button(ICON_RESET "##reset_brightness##Brightness")) { val = 0.f; }
+        if (key)
+        {
+            ImGui::SameLine(); 
+            if (ImGui::DiamondButton("##add_curve_brightness##Brightness", false)) 
+            {
+                key->name = "brightness##Brightness";
+                key->m_min = -1.f;
+                key->m_max = 1.f;
+                key->m_default = 0.f;
+            }
+        }
         if (val != m_brightness) { m_brightness = val; changed = true; }
         ImGui::EndDisabled();
         ImGui::PopItemWidth();

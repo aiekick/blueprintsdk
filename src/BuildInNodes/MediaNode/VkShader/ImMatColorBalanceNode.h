@@ -75,7 +75,7 @@ struct ColorBalanceNode final : Node
     bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
 
-    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin) override
+    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key) override
     {
         ImGui::SetCurrentContext(ctx);
         ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;

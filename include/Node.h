@@ -3,6 +3,7 @@
 #include <Pin.h>
 #include <Debug.h>
 #include <imgui_node_editor.h>
+#include <imgui_extra_widget.h>
 #include <inttypes.h>
 #include <DynObjectLoader.h>
 
@@ -227,7 +228,7 @@ struct IMGUI_API Node
 
     virtual void DrawSettingLayout(ImGuiContext * ctx);
     virtual void DrawMenuLayout(ImGuiContext * ctx);
-    virtual bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin);
+    virtual bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key = nullptr);
 
     ID_TYPE         m_ID                {0};
     string          m_Name              {""};

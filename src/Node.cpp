@@ -451,7 +451,7 @@ void Node::DrawMenuLayout(ImGuiContext * ctx)
 {
 }
 
-bool Node::DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin)
+bool Node::DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key)
 {
     return false;
 }

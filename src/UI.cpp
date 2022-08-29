@@ -1186,6 +1186,17 @@ void BluePrintUI::DrawNodes()
     const auto iconSize = ImVec2(ImGui::GetTextLineHeight(), ImGui::GetTextLineHeight());
     if (m_DebugOverlay) m_DebugOverlay->Begin();
     Node* need_clone_node = nullptr;
+    auto show_pin_name = [](std::string name)
+    {
+        auto pos = name.find_first_of("##");
+        if (pos == std::string::npos)
+            ImGui::TextUnformatted(name.data(), name.data() + name.size());
+        else
+        {
+            auto sub_label = name.substr(0, pos);
+            ImGui::TextUnformatted(sub_label.data(), sub_label.data() + sub_label.size());
+        }
+    };
     // Commit all nodes to editor
     // Handling Comment/Group Node
     for (auto& node : m_Document->m_Blueprint.GetNodes())
@@ -1581,7 +1592,7 @@ void BluePrintUI::DrawNodes()
             if (!pin->m_Name.empty() && (!CheckNodeStyle(node, NodeStyle::Simple) || pin->m_Flags & PIN_FLAG_FORCESHOW) && (!node->CustomLayout() || m_isChildWindow)) 
             {
                 ImGui::SameLine();
-                ImGui::TextUnformatted(pin->m_Name.data(), pin->m_Name.data() + pin->m_Name.size());
+                show_pin_name(pin->m_Name);
             }
             // [3] - Show value/editor when pin is not linked to anything
             if (!m_Document->m_Blueprint.HasPinAnyLink(*pin) && !CheckNodeStyle(node, NodeStyle::Simple) && !(node->CustomLayout() || m_isChildWindow))
@@ -1649,7 +1660,7 @@ void BluePrintUI::DrawNodes()
             // [1] - Show pin name if it has one. Custom layout hidden name?
             if (!pin->m_Name.empty() && (!CheckNodeStyle(node, NodeStyle::Simple) || pin->m_Flags & PIN_FLAG_FORCESHOW) && (!node->CustomLayout() || m_isChildWindow))
             {
-                ImGui::TextUnformatted(pin->m_Name.data(), pin->m_Name.data() + pin->m_Name.size());
+                show_pin_name(pin->m_Name);
                 ImGui::SameLine();
             }
             // [2] - Show icon
