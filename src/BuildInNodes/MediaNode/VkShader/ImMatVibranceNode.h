@@ -97,7 +97,7 @@ struct VibranceNode final : Node
         ImGui::PushItemWidth(300);
         ImGui::BeginDisabled(!m_Enabled || m_VibranceIn.IsLinked());
         ImGui::SaturationSelector("##slider_vibrance##Vibrance", ImVec2(300, 40), &val, 0.0f, -4.f, 4.f, zoom, 32, 1.0f, true);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_vibrance##Vibrance")) { val = 0; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_vibrance##Vibrance", key, "vibrance##Vibrance", -4.f, 4.f, 0.f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (val != m_vibrance) { m_vibrance = val; changed = true; }

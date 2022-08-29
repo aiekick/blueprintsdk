@@ -97,7 +97,7 @@ struct GammaNode final : Node
         ImGui::PushItemWidth(300);
         ImGui::BeginDisabled(!m_Enabled || m_GammaIn.IsLinked());
         ImGui::GammaSelector("##slider_gamma##Gamma", ImVec2(300, 20), &val, 1.0f, 0.f, 4.f, zoom);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_gamma##Gamma")) { val = 1.f; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_gamma##Gamma", key, "gamma##Gamma", 0.f, 4.f, 1.f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (val != m_gamma) { m_gamma = val; changed = true; }

@@ -95,7 +95,8 @@ struct LaplacianNode final : Node
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled || m_StrengthIn.IsLinked());
         ImGui::SliderInt("Strength##Laplacian", &_Strength, 0, 20, "%d", flags);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_stength##Laplacian")) { _Strength = 2; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_stength##Laplacian")) { _Strength = 5; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_strength##Laplacian", key, "strength##Laplacian", 0.f, 20.f, 5.f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (_Strength != m_Strength) { m_Strength = _Strength; changed = true; }
@@ -149,7 +150,7 @@ struct LaplacianNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    int m_Strength      {2};
+    int m_Strength      {5};
     ImGui::Laplacian_vulkan * m_filter   {nullptr};
 };
 } // namespace BluePrint

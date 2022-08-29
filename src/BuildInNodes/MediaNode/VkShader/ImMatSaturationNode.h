@@ -97,7 +97,7 @@ struct SaturationNode final : Node
         ImGui::PushItemWidth(300);
         ImGui::BeginDisabled(!m_Enabled || m_SaturationIn.IsLinked());
         ImGui::SaturationSelector("##slider_saturation##Saturation", ImVec2(300, 40), &val, 0.0f, -1.f, 1.f, zoom, 32, 1.0f, true);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_saturation##Saturation")) { val = 0; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_saturation##Saturation", key, "saturation##Saturation", -1.f, 1.f, 0.f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (val != m_saturation - 1.0) { m_saturation = val + 1.0; changed = true; }

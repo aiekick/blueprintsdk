@@ -91,19 +91,22 @@ struct CannyNode final : Node
         int _blurRadius = m_blurRadius;
         float _minThreshold = m_minThreshold;
         float _maxThreshold = m_maxThreshold;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::PushItemWidth(200);
+        ImGui::Dummy(ImVec2(160, 8));
+        ImGui::PushItemWidth(160);
         ImGui::BeginDisabled(!m_Enabled || m_RadiusIn.IsLinked());
         ImGui::SliderInt("Blur Radius##Canny", &_blurRadius, 0, 10, "%d", flags);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_radius##Canny")) { _blurRadius = 3; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_radius##Canny")) { _blurRadius = 3; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_radius##Canny", key, "radius##Canny", 0.f, 10.f, 3.f);
         ImGui::EndDisabled();
         ImGui::BeginDisabled(!m_Enabled || m_MinIn.IsLinked());
         ImGui::SliderFloat("Min Threshold##Canny", &_minThreshold, 0, 1.f, "%.2f", flags);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_min##Canny")) { _minThreshold = 0.1; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_min##Canny")) { _minThreshold = 0.1; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_min##Canny", key, "min##Canny", 0.f, 1.f, 0.1f);
         ImGui::EndDisabled();
         ImGui::BeginDisabled(!m_Enabled || m_MaxIn.IsLinked());
         ImGui::SliderFloat("Max Threshold##Canny", &_maxThreshold, _minThreshold, 1.f, "%.2f", flags);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_max##Canny")) { _maxThreshold = 0.45; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_max##Canny")) { _maxThreshold = 0.45; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_max##Canny", key, "max##Canny", 0.f, 1.f, 0.45f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (m_blurRadius != _blurRadius) { m_blurRadius = _blurRadius; changed = true; }

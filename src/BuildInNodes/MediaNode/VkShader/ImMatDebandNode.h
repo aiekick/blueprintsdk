@@ -29,6 +29,9 @@ struct DeBandNode final : Node
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         auto mat_in = context.GetPinValue<ImGui::ImMat>(m_MatIn);
+        if (m_ThresholdIn.IsLinked()) m_threshold = context.GetPinValue<float>(m_ThresholdIn);
+        if (m_RangeIn.IsLinked()) m_range = context.GetPinValue<float>(m_RangeIn);
+        if (m_DirectionIn.IsLinked()) m_direction = context.GetPinValue<float>(m_DirectionIn);
         if (!mat_in.empty())
         {
             int gpu = mat_in.device == IM_DD_VULKAN ? mat_in.device_number : ImGui::get_default_gpu_index();
@@ -50,7 +53,7 @@ struct DeBandNode final : Node
                 return {};
             }
             m_device = gpu;
-            m_filter->SetParam(m_range, m_direction);
+            m_filter->SetParam(m_range, m_direction * M_PI);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             m_filter->filter(mat_in, im_RGB, m_threshold, m_blur);
             im_RGB.time_stamp = mat_in.time_stamp;
@@ -59,6 +62,13 @@ struct DeBandNode final : Node
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;
+    }
+
+    void WasUnlinked(const Pin& receiver, const Pin& provider) override
+    {
+        if (receiver.m_ID == m_ThresholdIn.m_ID) m_ThresholdIn.SetValue(m_threshold);
+        if (receiver.m_ID == m_RangeIn.m_ID) m_RangeIn.SetValue(m_range);
+        if (receiver.m_ID == m_DirectionIn.m_ID) m_DirectionIn.SetValue(m_direction);
     }
 
     void DrawSettingLayout(ImGuiContext * ctx) override
@@ -88,18 +98,30 @@ struct DeBandNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::BeginDisabled(!m_Enabled);
+        ImGui::BeginDisabled(!m_Enabled || m_ThresholdIn.IsLinked());
         ImGui::SliderFloat("Threshold##DeBand", &_threshold, 0, 0.05f, "%.3f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_threshold##DeBand")) { _threshold = 0.05f; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_threshold##DeBand", key, "threshold##DeBand", 0.f, 0.05f, 0.01f);
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_RangeIn.IsLinked());
         ImGui::SliderInt("Range##DeBand", &_range, 0, 64, "%.d", flags);
-        ImGui::SliderFloat("Direction##DeBand", &_direction, 0, 4*M_PI, "%.2f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_range##DeBand")) { _range = 16.f; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_range##DeBand", key, "range##DeBand", 0.f, 64.f, 16.f);
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled || m_DirectionIn.IsLinked());
+        ImGui::SliderFloat("Direction##DeBand", &_direction, 0.f, 4.f, "%.2f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_direction##DeBand")) { _direction = 2.f; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_direction##DeBand", key, "direction##DeBand", 0.f, 4.f, 2.f);
+        ImGui::EndDisabled();
+        ImGui::BeginDisabled(!m_Enabled);
         ImGui::TextUnformatted("Blur:");ImGui::SameLine();
         ImGui::ToggleButton("##Blur##DeBand",&_blur);
+        ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (_threshold != m_threshold) { m_threshold = _threshold; changed = true; }
         if (_range != m_range) { m_range = _range; changed = true; }
         if (_direction != m_direction) { m_direction = _direction; changed = true; }
         if (_blur != m_blur) { m_blur = _blur; changed = true; }
-        ImGui::EndDisabled();
         return changed;
     }
 
@@ -162,9 +184,12 @@ struct DeBandNode final : Node
     FlowPin   m_Enter   = { this, "Enter" };
     FlowPin   m_Exit    = { this, "Exit" };
     MatPin    m_MatIn   = { this, "In" };
+    FloatPin  m_ThresholdIn = { this, "Threshold"};
+    FloatPin  m_RangeIn = { this, "Range"};
+    FloatPin  m_DirectionIn = { this, "Direction"};
     MatPin    m_MatOut  = { this, "Out" };
 
-    Pin* m_InputPins[2] = { &m_Enter, &m_MatIn };
+    Pin* m_InputPins[5] = { &m_Enter, &m_MatIn, &m_ThresholdIn, &m_RangeIn, &m_DirectionIn };
     Pin* m_OutputPins[2] = { &m_Exit, &m_MatOut };
 
 private:
@@ -172,7 +197,7 @@ private:
     int m_device            {-1};
     float m_threshold       {0.01};
     int m_range             {16};
-    float m_direction       {2*M_PI};
+    float m_direction       {2};
     bool m_blur             {false};
     ImGui::DeBand_vulkan *  m_filter {nullptr};
 };

@@ -98,9 +98,9 @@ struct BrightnessNode final : Node
         ImGui::BeginDisabled(!m_Enabled || m_BrightnessIn.IsLinked());
         ImGui::LumianceSelector("##slider_brightness##Brightness", ImVec2(300, 20), &val, 0.0f, -1.f, 1.f, zoom);
         if (key) ImGui::ImCurveEditKey("##add_curve_brightness##Brightness", key, "brightness##Brightness", -1.f, 1.f, 0.f);
-        if (val != m_brightness) { m_brightness = val; changed = true; }
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
+        if (val != m_brightness) { m_brightness = val; changed = true; }
         return m_Enabled ? changed : false;
     }
 
