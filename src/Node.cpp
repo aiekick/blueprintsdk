@@ -420,13 +420,13 @@ void Node::DrawSettingLayout(ImGuiContext * ctx)
     
     ImGui::TextUnformatted("Node Name:"); ImGui::SameLine(0.f, 50.f);
     string value = m_Name;
-    if (ImGui::InputText("##node_name_string_value", (char*)value.data(), value.size() + 1, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data) -> int
+    if (ImGui::InputText("##node_name_string_value", (char*)value.data(), value.size() + 1, ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data) -> int
     {
         if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
         {
             auto& stringValue = *static_cast<string*>(data->UserData);
             ImVector<char>* my_str = (ImVector<char>*)data->UserData;
-            IM_ASSERT(stringValue.data() == data->Buf);
+            //IM_ASSERT(stringValue.data() == data->Buf);
             stringValue.resize(data->BufSize);
             data->Buf = (char*)stringValue.data();
         }

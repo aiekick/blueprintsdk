@@ -1748,24 +1748,24 @@ void BluePrintUI::DrawInfoTooltip()
     {
         auto isDummy = pin.m_Node->GetStyle() == NodeStyle::Dummy;
         ImGui::Text("%s %s", label, !pin.m_Name.empty() ? pin.m_Name.c_str() : "");
-        ImGui::Bullet(); ImGui::Text("        ID: 0x%08" PRIX32, pin.m_ID);
+        ImGui::Bullet(); ImGui::Text("         ID: %u", pin.m_ID);
         if (pin.m_Link)
         {
             if (pin.m_Type == PinType::Flow)
-                ImGui::Text("          ->: 0x%08" PRIX32, pin.m_Link);
+                ImGui::Text("          ->: %u", pin.m_Link);
             else
-                ImGui::Text("          <-: 0x%08" PRIX32, pin.m_Link);
+                ImGui::Text("          <-: %u", pin.m_Link);
         }
         for (auto link_from : pin.m_LinkFrom)
         {
             if (pin.m_Type == PinType::Flow)
-                ImGui::Text("          <-: 0x%08" PRIX32, link_from);
+                ImGui::Text("          <-: %u", link_from);
             else
-                ImGui::Text("          ->: 0x%08" PRIX32, link_from);
+                ImGui::Text("          ->: %u", link_from);
         }
         if (pin.m_MappedPin)
         {
-            ImGui::Text("      Mapped: 0x%08" PRIX32, pin.m_MappedPin);
+            ImGui::Text("      Mapped: %u", pin.m_MappedPin);
         }
 
         if (showNode && pin.m_Node)
@@ -1969,7 +1969,7 @@ void BluePrintUI::DrawInfoTooltip()
                 ImGui::Separator();
             }
             ImGui::Text("Node: %" PRI_sv, FMT_sv(nodeName));
-            ImGui::Bullet(); ImGui::Text(" Node ID: 0x%08" PRIX32, hoveredNode->m_ID);
+            ImGui::Bullet(); ImGui::Text(" Node ID: %u", hoveredNode->m_ID);
             ImGui::Bullet(); ImGui::Text(" Type ID: 0x%08" PRIX32, nodeTypeInfo.m_ID);
             ImGui::Bullet(); ImGui::Text("TypeName: %" PRI_sv, FMT_sv(nodeTypeName));
             ImGui::Bullet(); ImGui::Text(" Version: %" PRI_sv, FMT_sv(NodeVersionToString(nodeVersion)));

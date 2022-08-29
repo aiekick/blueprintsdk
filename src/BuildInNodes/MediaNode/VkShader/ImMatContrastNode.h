@@ -97,7 +97,7 @@ struct ContrastNode final : Node
         ImGui::PushItemWidth(300);
         ImGui::BeginDisabled(!m_Enabled || m_ContrastIn.IsLinked());
         ImGui::ContrastSelector("##slider_contrast##Contrast", ImVec2(300, 20), &val, 1.0, zoom);
-        ImGui::SameLine();  if (ImGui::Button(ICON_RESET "##reset_contrast##Contrast")) { val = 1.0; }
+        if (key) ImGui::ImCurveEditKey("##add_curve_contrast##Contrast", key, "contrast##Contrast", 0.f, 4.f, 1.f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         if (val != m_contrast) { m_contrast = val; changed = true; }
