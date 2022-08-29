@@ -84,16 +84,28 @@ struct ColorBalanceNode final : Node
         ImVec4 _midtones = m_midtones;
         ImVec4 _highlights = m_highlights;
         bool _preserve_lightness = m_preserve_lightness;
+        bool _ganged = m_ganged;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled);
-        ImGui::BalanceSelector("Shadow", ImVec2(100, 100), &_shadows, ImVec4(0, 0, 0, 0), zoom);
+        static ImVec2 offset = ImVec2(0, 0);
+        if (ImGui::BalanceSelector("Shadow", ImVec2(100, 100), &_shadows, ImVec4(0, 0, 0, 0), m_ganged ? &offset : nullptr, zoom, 0.5))
+        {
+            if (m_ganged) _midtones = _highlights = ImVec4(0, 0, 0, 0);
+        }
         ImGui::SameLine(); ImGui::Spacing(); ImGui::SameLine();
-        ImGui::BalanceSelector("Midtones", ImVec2(100, 100), &_midtones, ImVec4(0, 0, 0, 0), zoom);
+        if (ImGui::BalanceSelector("Midtones", ImVec2(100, 100), &_midtones, ImVec4(0, 0, 0, 0), m_ganged ? &offset : nullptr, zoom, 0.5))
+        {
+            if (m_ganged) _shadows = _highlights = ImVec4(0, 0, 0, 0);
+        }
         ImGui::SameLine(); ImGui::Spacing(); ImGui::SameLine();
-        ImGui::BalanceSelector("Highlights", ImVec2(100, 100), &_highlights, ImVec4(0, 0, 0, 0), zoom);
+        if (ImGui::BalanceSelector("Highlights", ImVec2(100, 100), &_highlights, ImVec4(0, 0, 0, 0), m_ganged ? &offset : nullptr, zoom, 0.5))
+        {
+            if (m_ganged) _shadows = _midtones = ImVec4(0, 0, 0, 0);
+        }
         ImGui::PopItemWidth();
         if (ImGui::Checkbox("Preserve Lightness", &_preserve_lightness)) {m_preserve_lightness = _preserve_lightness; changed = true; }
+        if (ImGui::Checkbox("Color Ganged", &_ganged)) {m_ganged = _ganged; changed = true; }
         if (_shadows != m_shadows) { m_shadows = _shadows; changed = true; }
         if (_midtones != m_midtones) { m_midtones = _midtones; changed = true; }
         if (_highlights != m_highlights) { m_highlights = _highlights; changed = true; }
@@ -143,6 +155,12 @@ struct ColorBalanceNode final : Node
             if (val.is_boolean())
                 m_preserve_lightness = val.get<imgui_json::boolean>();
         }
+        if (value.contains("ganged"))
+        { 
+            auto& val = value["ganged"];
+            if (val.is_boolean())
+                m_ganged = val.get<imgui_json::boolean>();
+        }
         return ret;
     }
 
@@ -175,6 +193,7 @@ struct ColorBalanceNode final : Node
             value["highlights"] = highlights;
         }
         value["preserve_lightness"] = imgui_json::boolean(m_preserve_lightness);
+        value["ganged"] = imgui_json::boolean(m_ganged);
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
@@ -200,5 +219,6 @@ private:
     ImVec4 m_midtones           {0, 0, 0, 0};
     ImVec4 m_highlights         {0, 0, 0, 0};
     bool m_preserve_lightness {false};
+    bool m_ganged {false};
 };
 } // namespace BluePrint

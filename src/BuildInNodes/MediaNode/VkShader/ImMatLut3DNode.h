@@ -144,6 +144,8 @@ struct Lut3DNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled);
+        ImGui::TextUnformatted("Please using Node Setting to change mode");
+        ImGui::TextUnformatted("Current mode:");
         if (!m_file_name.empty())
             ImGui::Text("Lut from file: %s", m_file_name.c_str());
         else

@@ -88,8 +88,8 @@ struct ChromaKeyNode final : Node
         float _lumaMask = m_lumaMask;
         float _alphaCutoffMin = m_alphaCutoffMin;
         float _alphaScale = m_alphaScale;
-        float _alphaExponent = m_alphaExponent;
         std::vector<float> _chromaColor = m_chromaColor;
+        _chromaColor[3] = m_alphaExponent;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled);
@@ -97,18 +97,14 @@ struct ChromaKeyNode final : Node
         ImGui::SliderFloat("Luma Mask##ChromaKey", &_lumaMask, 0.f, 20.f, "%.1f", flags);
         ImGui::SliderFloat("Alpha Cutoff Min##ChromaKey", &_alphaCutoffMin, 0.f, 1.f, "%.2f", flags);
         ImGui::SliderFloat("Alpha Scale##ChromaKey", &_alphaScale, 0.f, 40.f, "%.1f", flags);
-        ImGui::SliderFloat("Alpha Exponent##ChromaKey", &_alphaExponent, 0.f, 1.f, "%.2f", flags);
         ImGui::PopItemWidth();
-        ImGuiColorEditFlags misc_flags = ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_NoSidePreview | ImGuiColorEditFlags_NoSmallPreview | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_DisplayHex;
-        ImGui::SetNextItemWidth(100);
-        ImGui::ColorPicker4("ChromaColor##ChromaKey", (float *)_chromaColor.data(), misc_flags);
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(100);
+        ImGui::SetNextItemWidth(200);
+        ImGui::ColorPicker4("##ChromaKey", (float *)_chromaColor.data(), /*ImGuiColorEditFlags_NoLabel |*/ ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
         if (_lumaMask != m_lumaMask) { m_lumaMask = _lumaMask; changed = true; }
         if (_alphaCutoffMin != m_alphaCutoffMin) { m_alphaCutoffMin = _alphaCutoffMin; changed = true; }
         if (_alphaScale != m_alphaScale) { m_alphaScale = _alphaScale; changed = true; }
-        if (_alphaExponent != m_alphaExponent) { m_alphaExponent = _alphaExponent; changed = true; }
         if (_chromaColor[0] != m_chromaColor[0] || _chromaColor[1] != m_chromaColor[1] || _chromaColor[2] != m_chromaColor[2]) { m_chromaColor = _chromaColor; changed = true; }
+        if (_chromaColor[3] != m_alphaExponent) { m_alphaExponent = _chromaColor[3]; changed = true; }
         if (_alpha_only != m_alpha_only) { m_alpha_only = _alpha_only; changed = true; }
         ImGui::EndDisabled();
         return changed;
