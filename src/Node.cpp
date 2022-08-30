@@ -150,6 +150,7 @@ NodeRegistry::NodeRegistry()
         USMNode::GetStaticTypeInfo(),
         WhiteBalanceNode::GetStaticTypeInfo(),
         VibranceNode::GetStaticTypeInfo(),
+        GuidedNode::GetStaticTypeInfo(),
         // fusion nodes
         AlphaFusionNode::GetStaticTypeInfo(),
         BlurFusionNode::GetStaticTypeInfo(),
