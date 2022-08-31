@@ -397,7 +397,7 @@ private:
 # define VERSION_BUILT(v)   (v&0x000000FF)
 # define MAJOR  1
 # define MINOR  10
-# define PATCH  0
+# define PATCH  1
 # define BUILT  1
 
 // Please Set CMakeList.txt IMGUI_BP_SDK_VERSION_STRING also
