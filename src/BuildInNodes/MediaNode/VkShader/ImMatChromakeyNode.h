@@ -88,23 +88,24 @@ struct ChromaKeyNode final : Node
         float _lumaMask = m_lumaMask;
         float _alphaCutoffMin = m_alphaCutoffMin;
         float _alphaScale = m_alphaScale;
-        std::vector<float> _chromaColor = m_chromaColor;
-        _chromaColor[3] = m_alphaExponent;
+        ImVec4 _chromaColor = m_chromaColor;
+        _chromaColor.w = m_alphaExponent;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled);
         ImGui::Checkbox("Alpha Output##ChromaKey",&_alpha_only);
         ImGui::SliderFloat("Luma Mask##ChromaKey", &_lumaMask, 0.f, 20.f, "%.1f", flags);
         ImGui::SliderFloat("Alpha Cutoff Min##ChromaKey", &_alphaCutoffMin, 0.f, 1.f, "%.2f", flags);
-        ImGui::SliderFloat("Alpha Scale##ChromaKey", &_alphaScale, 0.f, 40.f, "%.1f", flags);
+        ImGui::SliderFloat("Alpha Scale##ChromaKey", &_alphaScale, 0.f, 100.f, "%.1f", flags);
         ImGui::PopItemWidth();
         ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("##ChromaKey", (float *)_chromaColor.data(), /*ImGuiColorEditFlags_NoLabel |*/ ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        ImGui::ColorPicker4("##ChromaKey", (float *)&_chromaColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
         if (_lumaMask != m_lumaMask) { m_lumaMask = _lumaMask; changed = true; }
         if (_alphaCutoffMin != m_alphaCutoffMin) { m_alphaCutoffMin = _alphaCutoffMin; changed = true; }
         if (_alphaScale != m_alphaScale) { m_alphaScale = _alphaScale; changed = true; }
-        if (_chromaColor[0] != m_chromaColor[0] || _chromaColor[1] != m_chromaColor[1] || _chromaColor[2] != m_chromaColor[2]) { m_chromaColor = _chromaColor; changed = true; }
-        if (_chromaColor[3] != m_alphaExponent) { m_alphaExponent = _chromaColor[3]; changed = true; }
+        if (_chromaColor.x != m_chromaColor.x || _chromaColor.y != m_chromaColor.y || _chromaColor.z != m_chromaColor.z) { 
+            m_chromaColor = _chromaColor; changed = true; }
+        if (_chromaColor.w != m_alphaExponent) { m_alphaExponent = _chromaColor.w; changed = true; }
         if (_alpha_only != m_alpha_only) { m_alpha_only = _alpha_only; changed = true; }
         ImGui::EndDisabled();
         return changed;
@@ -154,10 +155,9 @@ struct ChromaKeyNode final : Node
         }
         if (value.contains("chroma_color"))
         {
-            imgui_json::GetTo<imgui_json::number>(value["chroma_color"], "x", m_chromaColor[0]);
-            imgui_json::GetTo<imgui_json::number>(value["chroma_color"], "y", m_chromaColor[1]);
-            imgui_json::GetTo<imgui_json::number>(value["chroma_color"], "z", m_chromaColor[2]);
-            imgui_json::GetTo<imgui_json::number>(value["chroma_color"], "w", m_chromaColor[3]);
+            auto& val = value["chroma_color"];
+            if (val.is_vec4()) 
+                m_chromaColor = val.get<imgui_json::vec4>();
         }
         return ret;
     }
@@ -171,7 +171,7 @@ struct ChromaKeyNode final : Node
         value["alphaCutoffMin"] = imgui_json::number(m_alphaCutoffMin);
         value["alphaScale"] = imgui_json::number(m_alphaScale);
         value["alphaExponent"] = imgui_json::number(m_alphaExponent);
-        value["chroma_color"] = edd::Serialization::ToJson(m_chromaColor);
+        value["chroma_color"] = imgui_json::vec4(m_chromaColor);
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
@@ -195,9 +195,9 @@ private:
     ImGui::ChromaKey_vulkan * m_filter {nullptr};
     bool  m_alpha_only          {false};
     float m_lumaMask            {10.0f};
-    std::vector<float> m_chromaColor        {0.0f, 1.0f, 0.0f, 1.0f};
+    ImVec4 m_chromaColor        {0.0f, 1.0f, 0.0f, 1.0f};
     float m_alphaCutoffMin      {0.05f};
-    float m_alphaScale          {40.f};
+    float m_alphaScale          {50.f};
     float m_alphaExponent       {1.0f};
 };
 } //namespace BluePrint
