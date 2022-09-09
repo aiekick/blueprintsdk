@@ -1249,7 +1249,7 @@ void BluePrintUI::DrawNodes()
             const float textSizeButton = ImGui::CalcTextSize(titlebar_icons[0].c_str()).x;
             const float dummyWidth = titleTextWidth + textSizeButton * 5 + 10;
             ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
-            ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphOutlineWidth, 1.0);
+            ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphOutlineWidth, 1.0f);
             ImGui::PushStyleColor(ImGuiCol_TexGlyphOutline, ImVec4(0.5, 0.5, 1.0, 1.0));
             ImGui::Dummy(ImVec2(dummyWidth, 0));
             ImGui::BeginHorizontal("horizontal");
@@ -1535,7 +1535,7 @@ void BluePrintUI::DrawNodes()
                 //ImGui::Debug_DrawItemRect();
             });
             ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
-            ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphOutlineWidth, 1.0);
+            ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphOutlineWidth, 1.0f);
             ImGui::PushStyleColor(ImGuiCol_TexGlyphOutline, ImVec4(0.5, 0.5, 1.0, 1.0));
             ImGui::Dummy(ImVec2(0.1f, 0.f)); ImGui::SameLine(0);
             ImFont* font = HeaderFont();
@@ -2129,7 +2129,7 @@ Node* BluePrintUI::ShowNewNodeMenu(ImVec2 popupPosition, std::string catalog_fil
     if (!m_Document)
         return node;
     static string filter_string = "";
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.0f);
     if (ImGui::InputText(ICON_NODE_SEARCH "##search_string_value", (char*)filter_string.data(), filter_string.size() + 1, ImGuiInputTextFlags_CallbackEdit | ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data) -> int
     {
         if (data->EventFlag == ImGuiInputTextFlags_CallbackResize)
