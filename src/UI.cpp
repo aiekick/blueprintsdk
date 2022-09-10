@@ -296,7 +296,8 @@ void NodeSettingDialog::Show(BluePrintUI& UI)
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     if (ImGui::BeginPopupModal("##setting_node_dialog", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings))
     {
-        ImGui::Text("Setting %" PRI_node "\n", FMT_node(node));
+        ImGui::Text("Setting"); ImGui::SameLine();
+        ImGui::Text("%" PRI_node "\n", FMT_node(node));
         ImGui::Separator();
         node->DrawSettingLayout(ImGui::GetCurrentContext());
         ImGui::Separator();
@@ -337,7 +338,7 @@ void NodeDeleteDialog::Show(BluePrintUI& UI)
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     if (ImGui::BeginPopupModal("##delete_node_dialog", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings))
     {
-        ImGui::Text("Delete %" PRI_node "?\n", FMT_node(node));
+        ImGui::TextUnformatted("Delete Node"); ImGui::SameLine(); ImGui::Text("%" PRI_node " ?\n", FMT_node(node));
         ImGui::Separator();
         if (ImGui::Button("OK", ImVec2(120, 0))) 
         {
@@ -1109,6 +1110,7 @@ float BluePrintUI::DrawNodeToolBar(Node *node, Node **need_clone_node)
         m_NodeDeleteDialog.Open(node);
         ed::Resume();
     }
+    if (ImGui::IsItemHovered()) node->m_IconHovered = 1;
 
     icon_offset += icon_gap;
     ImGui::SetCursorScreenPos(current_pos + ImVec2(node_size.x - icon_offset, 8));
@@ -2473,7 +2475,8 @@ void BluePrintUI::HandleCreateAction(uint32_t flag)
         {
             ed::Suspend();
             ImGui::BeginTooltip();
-            ImGui::Text("Valid Link%s%s",
+            ImGui::TextUnformatted("Valid Link"); ImGui::SameLine();
+            ImGui::Text("%s%s",
                 canLinkResult.Reason().empty() ? "" : ": ",
                 canLinkResult.Reason().empty() ? "" : canLinkResult.Reason().c_str());
             ImGui::Separator();
@@ -2515,10 +2518,10 @@ void BluePrintUI::HandleCreateAction(uint32_t flag)
         else
         {
             ed::Suspend();
-            ImGui::SetTooltip(
-                "Invalid Link: %s",
-                canLinkResult.Reason().c_str()
-            );
+            ImGui::BeginTooltip();
+            ImGui::TextUnformatted("Invalid Link:"); ImGui::SameLine();
+            ImGui::Text(" %s", canLinkResult.Reason().c_str());
+            ImGui::EndTooltip();
             ed::Resume();
             linkBuilder->Reject();
         }

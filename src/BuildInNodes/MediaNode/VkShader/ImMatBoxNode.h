@@ -9,7 +9,7 @@ namespace BluePrint
 struct BoxBlurNode final : Node
 {
     BP_NODE_WITH_NAME(BoxBlurNode, "Box Blur", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Blur")
-    BoxBlurNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Box Blur"; }
+    BoxBlurNode(BP& blueprint): Node(blueprint) { m_Name = "Box Blur"; }
 
     ~BoxBlurNode()
     {

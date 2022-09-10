@@ -9,7 +9,7 @@ namespace BluePrint
 struct FlipNode final : Node
 {
     BP_NODE_WITH_NAME(FlipNode, "Flip", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Flip")
-    FlipNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Flip"; }
+    FlipNode(BP& blueprint): Node(blueprint) { m_Name = "Flip"; }
 
     ~FlipNode()
     {

@@ -9,7 +9,7 @@ namespace BluePrint
 struct ContrastNode final : Node
 {
     BP_NODE_WITH_NAME(ContrastNode, "Contrast", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Color")
-    ContrastNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Contrast"; }
+    ContrastNode(BP& blueprint): Node(blueprint) { m_Name = "Contrast"; }
 
     ~ContrastNode()
     {

@@ -16,8 +16,8 @@ namespace ed = ax::NodeEditor;
 # define PRI_pin            "s%s%" PRI_sv "%s(0x%08" PRIX32 ")"
 # define FMT_pin(pin)       "Pin", (pin)->m_Name.empty() ? "" : " \"", FMT_sv((pin)->m_Name), (pin)->m_Name.empty() ? "" : "\"", (pin)->m_ID
 
-# define PRI_node           "s%s%" PRI_sv "%s(0x%08" PRIX32 ")"
-# define FMT_node(node)     "Node", (node)->GetName().empty() ? "" : " \"", FMT_sv((node)->GetName()), (node)->GetName().empty() ? "" : "\"", (node)->m_ID
+# define PRI_node           "s%" PRI_sv "%s(0x%08" PRIX32 ")"
+# define FMT_node(node)     (node)->GetName().empty() ? "" : " \"", FMT_sv((node)->GetName()), (node)->GetName().empty() ? "" : "\"", (node)->m_ID
 namespace BluePrint
 {
 struct BluePrintUI;

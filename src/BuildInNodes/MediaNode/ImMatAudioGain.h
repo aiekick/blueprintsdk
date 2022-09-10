@@ -7,7 +7,7 @@ namespace BluePrint
 struct AudioGainNode final : Node
 {
     BP_NODE_WITH_NAME(AudioGainNode, "Gain", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Audio")
-    AudioGainNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Gain"; }
+    AudioGainNode(BP& blueprint): Node(blueprint) { m_Name = "Gain"; }
 
     ~AudioGainNode()
     {

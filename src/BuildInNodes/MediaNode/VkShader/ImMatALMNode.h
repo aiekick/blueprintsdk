@@ -8,7 +8,7 @@ namespace BluePrint
 struct AlmNode final : Node
 {
     BP_NODE_WITH_NAME(AlmNode, "ALM Enhancement", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Enhance")
-    AlmNode(BP& blueprint): Node(blueprint) { m_Name = "Mat ALM"; }
+    AlmNode(BP& blueprint): Node(blueprint) { m_Name = "ALM Enhancement"; }
     ~AlmNode()
     {
         if (m_filter) { delete m_filter; m_filter = nullptr; }

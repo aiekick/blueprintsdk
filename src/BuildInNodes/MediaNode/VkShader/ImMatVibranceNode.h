@@ -9,7 +9,7 @@ namespace BluePrint
 struct VibranceNode final : Node
 {
     BP_NODE_WITH_NAME(VibranceNode, "Vibrance", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Color")
-    VibranceNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Vibrance"; }
+    VibranceNode(BP& blueprint): Node(blueprint) { m_Name = "Vibrance"; }
 
     ~VibranceNode()
     {
