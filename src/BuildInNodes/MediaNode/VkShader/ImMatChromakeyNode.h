@@ -88,8 +88,8 @@ struct ChromaKeyNode final : Node
         float _lumaMask = m_lumaMask;
         float _alphaCutoffMin = m_alphaCutoffMin;
         float _alphaScale = m_alphaScale;
-        ImVec4 _chromaColor = m_chromaColor;
-        _chromaColor.w = m_alphaExponent;
+        ImPixel _chromaColor = m_chromaColor;
+        _chromaColor.a = m_alphaExponent;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled);
@@ -103,9 +103,9 @@ struct ChromaKeyNode final : Node
         if (_lumaMask != m_lumaMask) { m_lumaMask = _lumaMask; changed = true; }
         if (_alphaCutoffMin != m_alphaCutoffMin) { m_alphaCutoffMin = _alphaCutoffMin; changed = true; }
         if (_alphaScale != m_alphaScale) { m_alphaScale = _alphaScale; changed = true; }
-        if (_chromaColor.x != m_chromaColor.x || _chromaColor.y != m_chromaColor.y || _chromaColor.z != m_chromaColor.z) { 
+        if (_chromaColor.r != m_chromaColor.r || _chromaColor.g != m_chromaColor.g || _chromaColor.b != m_chromaColor.b) { 
             m_chromaColor = _chromaColor; changed = true; }
-        if (_chromaColor.w != m_alphaExponent) { m_alphaExponent = _chromaColor.w; changed = true; }
+        if (_chromaColor.a != m_alphaExponent) { m_alphaExponent = _chromaColor.a; changed = true; }
         if (_alpha_only != m_alpha_only) { m_alpha_only = _alpha_only; changed = true; }
         ImGui::EndDisabled();
         return changed;
@@ -156,8 +156,11 @@ struct ChromaKeyNode final : Node
         if (value.contains("chroma_color"))
         {
             auto& val = value["chroma_color"];
-            if (val.is_vec4()) 
-                m_chromaColor = val.get<imgui_json::vec4>();
+            if (val.is_vec4())
+            {
+                ImVec4 val4 = val.get<imgui_json::vec4>();
+                m_chromaColor = ImPixel(val4.x, val4.y, val4.z, val4.w);
+            }
         }
         return ret;
     }
@@ -171,7 +174,7 @@ struct ChromaKeyNode final : Node
         value["alphaCutoffMin"] = imgui_json::number(m_alphaCutoffMin);
         value["alphaScale"] = imgui_json::number(m_alphaScale);
         value["alphaExponent"] = imgui_json::number(m_alphaExponent);
-        value["chroma_color"] = imgui_json::vec4(m_chromaColor);
+        value["chroma_color"] = imgui_json::vec4(ImVec4(m_chromaColor.r, m_chromaColor.g, m_chromaColor.b, m_chromaColor.a));
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
@@ -195,7 +198,7 @@ private:
     ImGui::ChromaKey_vulkan * m_filter {nullptr};
     bool  m_alpha_only          {false};
     float m_lumaMask            {10.0f};
-    ImVec4 m_chromaColor        {0.0f, 1.0f, 0.0f, 1.0f};
+    ImPixel m_chromaColor       {0.0f, 1.0f, 0.0f, 1.0f};
     float m_alphaCutoffMin      {0.05f};
     float m_alphaScale          {50.f};
     float m_alphaExponent       {1.0f};
