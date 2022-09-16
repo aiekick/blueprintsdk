@@ -14,6 +14,13 @@ if (POLICY CMP0068)
     cmake_policy(SET CMP0068 NEW)
 endif()
 
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86|x86_64)")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mavx")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx2 -mavx")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -msse4.1 -mssse3 -msse2 -msse")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2 -msse4.1 -mssse3 -msse2 -msse")
+endif()
+
 option(IMGUI_BP_SDK_STATIC              "Build BluePrint as static library" OFF)
 
 set(IMGUI_BP_SDK_SRC
