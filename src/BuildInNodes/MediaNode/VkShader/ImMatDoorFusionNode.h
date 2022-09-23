@@ -58,54 +58,55 @@ struct DoorFusionNode final : Node
                 return {};
             }
             m_device = gpu;
+            double node_time = 0;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
             ImGui::VkMat first_half; first_half.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
             ImGui::VkMat second_half; second_half.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
             if (m_bOpen)
             {
-                m_copy->copyTo(mat_second, im_RGB, 0, 0);
+                node_time += m_copy->copyTo(mat_second, im_RGB, 0, 0);
                 if (m_bHorizon)
                 {
-                    m_crop->crop(mat_first, first_half, 0, 0, mat_first.w / 2, mat_first.h);
-                    m_crop->crop(mat_first, second_half, mat_first.w / 2, 0, mat_first.w / 2, mat_first.h);
+                    node_time += m_crop->crop(mat_first, first_half, 0, 0, mat_first.w / 2, mat_first.h);
+                    node_time += m_crop->crop(mat_first, second_half, mat_first.w / 2, 0, mat_first.w / 2, mat_first.h);
                     int x1 = - percentage * first_half.w;
-                    m_copy->copyTo(first_half, im_RGB, x1, 0);
+                    node_time += m_copy->copyTo(first_half, im_RGB, x1, 0);
                     int x2 = (percentage + 1.0) * second_half.w;
-                    m_copy->copyTo(second_half, im_RGB, x2, 0);
+                    node_time += m_copy->copyTo(second_half, im_RGB, x2, 0);
                 }
                 else
                 {
-                    m_crop->crop(mat_first, first_half, 0, 0, mat_first.w, mat_first.h / 2);
-                    m_crop->crop(mat_first, second_half, 0, mat_first.h / 2, mat_first.w, mat_first.h / 2);
+                    node_time += m_crop->crop(mat_first, first_half, 0, 0, mat_first.w, mat_first.h / 2);
+                    node_time += m_crop->crop(mat_first, second_half, 0, mat_first.h / 2, mat_first.w, mat_first.h / 2);
                     int y1 = - percentage * first_half.h;
-                    m_copy->copyTo(first_half, im_RGB, 0, y1);
+                    node_time += m_copy->copyTo(first_half, im_RGB, 0, y1);
                     int y2 = (percentage + 1.0) * second_half.h;
-                    m_copy->copyTo(second_half, im_RGB, 0, y2);
+                    node_time += m_copy->copyTo(second_half, im_RGB, 0, y2);
                 }
             }
             else
             {
-                m_copy->copyTo(mat_first, im_RGB, 0, 0);
+                node_time += m_copy->copyTo(mat_first, im_RGB, 0, 0);
                 if (m_bHorizon)
                 {
-                    m_crop->crop(mat_second, first_half, 0, 0, mat_second.w / 2, mat_second.h);
-                    m_crop->crop(mat_second, second_half, mat_second.w / 2, 0, mat_second.w / 2, mat_second.h);
+                    node_time += m_crop->crop(mat_second, first_half, 0, 0, mat_second.w / 2, mat_second.h);
+                    node_time += m_crop->crop(mat_second, second_half, mat_second.w / 2, 0, mat_second.w / 2, mat_second.h);
                     int x1 = - (1.0 - percentage) * first_half.w;
-                    m_copy->copyTo(first_half, im_RGB, x1, 0);
+                    node_time += m_copy->copyTo(first_half, im_RGB, x1, 0);
                     int x2 = (2.0 - percentage) * second_half.w;
-                    m_copy->copyTo(second_half, im_RGB, x2, 0);
+                    node_time += m_copy->copyTo(second_half, im_RGB, x2, 0);
                 }
                 else
                 {
-                    m_crop->crop(mat_second, first_half, 0, 0, mat_second.w, mat_second.h / 2);
-                    m_crop->crop(mat_second, second_half, 0, mat_second.h / 2, mat_second.w, mat_second.h / 2);
+                    node_time += m_crop->crop(mat_second, first_half, 0, 0, mat_second.w, mat_second.h / 2);
+                    node_time += m_crop->crop(mat_second, second_half, 0, mat_second.h / 2, mat_second.w, mat_second.h / 2);
                     int y1 = - (1.0 - percentage) * first_half.h;
-                    m_copy->copyTo(first_half, im_RGB, 0, y1);
+                    node_time += m_copy->copyTo(first_half, im_RGB, 0, y1);
                     int y2 = (2.0 - percentage) * second_half.h;
-                    m_copy->copyTo(second_half, im_RGB, 0, y2);
+                    node_time += m_copy->copyTo(second_half, im_RGB, 0, y2);
                 }
             }
-
+            m_NodeTimeMs = node_time;
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;

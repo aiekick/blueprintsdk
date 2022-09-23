@@ -1983,15 +1983,21 @@ void BluePrintUI::DrawInfoTooltip()
             {
                 ImGui::Bullet(); ImGui::Text(" Grouped: 0x%08" PRIX32, hoveredNode->m_GroupID);
             }
-            if (m_Document->m_Blueprint.IsExecuting())
+            else
             {
-                ImGui::Bullet(); ImGui::Text("    Hits: %s", std::to_string(hoveredNode->m_Hits).c_str());
+                ImGui::Bullet(); ImGui::Text(" Non-Grouped");
+            }
+            //if (m_Document->m_Blueprint.IsExecuting())
+            {
+                ImGui::Separator();
+                ImGui::Bullet(); ImGui::Text("     Hits: %s", std::to_string(hoveredNode->m_Hits).c_str());
                 std::ostringstream oss;
                 oss << std::setprecision(hoveredNode->m_Tick > 1000 ? 6 : 3) << (hoveredNode->m_Tick > 1000000 ? hoveredNode->m_Tick / 1000000.0 :
                                         hoveredNode->m_Tick > 1000 ? hoveredNode->m_Tick / 1000.0 :
                                         hoveredNode->m_Tick);
                 std::string tick_text = oss.str() + (hoveredNode->m_Tick > 1000000 ? "s" : hoveredNode->m_Tick > 1000 ? "ms" : "us");
-                ImGui::Bullet(); ImGui::Text("   Ticks: %s", tick_text.c_str());
+                ImGui::Bullet(); ImGui::Text("    Ticks: %s", tick_text.c_str());
+                ImGui::Bullet(); ImGui::Text("Node Time: %.3fms", hoveredNode->m_NodeTimeMs);
             }
             ImGui::EndTooltip();
         }

@@ -82,8 +82,10 @@ struct MoveFusionNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_copy->copyTo(mat_first, im_RGB, x1, y1);
-            m_copy->copyTo(mat_second, im_RGB, x2, y2);
+            double node_time = 0;
+            node_time += m_copy->copyTo(mat_first, im_RGB, x1, y1);
+            node_time += m_copy->copyTo(mat_second, im_RGB, x2, y2);
+            m_NodeTimeMs = node_time;
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;

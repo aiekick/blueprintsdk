@@ -55,12 +55,12 @@ struct FadeFusionNode final : Node
             if (percentage <= 0.5)
             {
                 float light = m_bBlack ? - percentage * 2 : percentage * 2;
-                m_light->filter(mat_first, im_RGB, light);
+                m_NodeTimeMs = m_light->filter(mat_first, im_RGB, light);
             }
             else
             {
                 float light = m_bBlack ? (percentage - 1.0) * 2 : (1.0 - percentage) * 2;
-                m_light->filter(mat_second, im_RGB, light);
+                m_NodeTimeMs = m_light->filter(mat_second, im_RGB, light);
             }
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;

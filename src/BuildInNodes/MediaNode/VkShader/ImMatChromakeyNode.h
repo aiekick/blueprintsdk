@@ -52,7 +52,7 @@ struct ChromaKeyNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            m_filter->filter(mat_in, im_RGB, m_lumaMask, m_chromaColor,
+            m_NodeTimeMs = m_filter->filter(mat_in, im_RGB, m_lumaMask, m_chromaColor,
                                 m_alphaCutoffMin, m_alphaScale, m_alphaExponent,
                                 m_alpha_only ? CHROMAKEY_OUTPUT_ALPHA_RGBA : CHROMAKEY_OUTPUT_NORMAL);
             im_RGB.time_stamp = mat_in.time_stamp;

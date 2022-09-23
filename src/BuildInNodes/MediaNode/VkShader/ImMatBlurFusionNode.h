@@ -67,13 +67,14 @@ struct BlurFusionNode final : Node
             int size_first = percentage * 50 + 1;
             int size_second = (1.0 - percentage) * 50 + 1;
             
+            double node_time = 0;
             m_blur->SetParam(size_first, size_first);
-            m_blur->filter(mat_first, im_First_Blur);
+            node_time += m_blur->filter(mat_first, im_First_Blur);
             m_blur->SetParam(size_second, size_second);
-            m_blur->filter(mat_second, im_Second_Blur);
+            node_time += m_blur->filter(mat_second, im_Second_Blur);
+            node_time += m_alpha->blend(im_First_Blur, im_Second_Blur, im_RGB, alpha);
+            m_NodeTimeMs = node_time;
 
-            m_alpha->blend(im_First_Blur, im_Second_Blur, im_RGB, alpha);
-            
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;

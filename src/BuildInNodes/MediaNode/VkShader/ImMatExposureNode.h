@@ -54,7 +54,7 @@ struct ExposureNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            m_filter->filter(mat_in, im_RGB, m_exposure);
+            m_NodeTimeMs = m_filter->filter(mat_in, im_RGB, m_exposure);
             im_RGB.time_stamp = mat_in.time_stamp;
             im_RGB.rate = mat_in.rate;
             im_RGB.flags = mat_in.flags;

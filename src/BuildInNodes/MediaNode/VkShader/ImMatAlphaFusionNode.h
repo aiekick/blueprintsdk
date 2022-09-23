@@ -52,7 +52,7 @@ struct AlphaFusionNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_alpha->blend(mat_first, mat_second, im_RGB, alpha);
+            m_NodeTimeMs = m_alpha->blend(mat_first, mat_second, im_RGB, alpha);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;

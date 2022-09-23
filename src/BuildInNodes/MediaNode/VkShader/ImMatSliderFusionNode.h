@@ -97,8 +97,10 @@ struct SliderFusionNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_copy->copyTo(mat_first, im_RGB, 0, 0);
-            m_copy->copyTo(mat_second, im_RGB, x, y);
+            double node_time = 0;
+            node_time += m_copy->copyTo(mat_first, im_RGB, 0, 0);
+            node_time += m_copy->copyTo(mat_second, im_RGB, x, y);
+            m_NodeTimeMs = node_time;
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
