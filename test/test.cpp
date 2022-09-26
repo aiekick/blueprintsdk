@@ -1,11 +1,10 @@
 #include <application.h>
 #include <UI.h>
-#include "Config_test.h"
 
 #define ENABLE_MULTI_VIEWPORT   1
 
-static std::string ini_file = std::string(DEFAULT_CONFIG_PATH) + "test_blueprint.ini";
-static std::string bluepoint_file = std::string(DEFAULT_CONFIG_PATH) + "test_bp.json";
+static std::string ini_file = "test_blueprint.ini";
+static std::string bluepoint_file = "test_bp.json";
 
 void Application_GetWindowProperties(ApplicationWindowProperty& property)
 {
@@ -51,7 +50,7 @@ void Application_Initialize(void** handle)
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.IniFilename = ini_file.c_str();
     BluePrint::BluePrintUI * UI = new BluePrint::BluePrintUI();
-    UI->Initialize(bluepoint_file.c_str(), DEFAULT_PLUGIN_PATH);
+    UI->Initialize(bluepoint_file.c_str(), nullptr);
     *handle = UI;
 #ifdef USE_THUMBNAILS
     ImGuiFileDialog::Instance()->SetCreateThumbnailCallback([](IGFD_Thumbnail_Info *vThumbnail_Info) -> void
