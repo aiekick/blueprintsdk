@@ -115,6 +115,7 @@ add_library(
 )
 set_property(TARGET BluePrintSDK PROPERTY POSITION_INDEPENDENT_CODE ON)
 
+
 set(IMGUI_BP_SDK_VERSION_MAJOR 1)
 set(IMGUI_BP_SDK_VERSION_MINOR 10)
 set(IMGUI_BP_SDK_VERSION_PATCH 2)
@@ -132,3 +133,17 @@ if(hasParent)
     set(IMGUI_BLUEPRINT_INCLUDES ${IMGUI_BP_SDK_INC} PARENT_SCOPE )
     set(IMGUI_BLUEPRINT_INCLUDE_DIRS ${IMGUI_BP_SDK_INC_DIRS} PARENT_SCOPE )
 endif()
+
+if (IMGUI_BUILD_EXAMPLE)
+# build sdk test
+add_executable(
+    test_blueprint
+    test/test.cpp
+    ../${IMGUI_APP_ENTRY_SRC}
+)
+target_link_libraries(
+    test_blueprint
+    BluePrintSDK
+    ${IMGUI_LIBRARYS}
+)
+endif (IMGUI_BUILD_EXAMPLE)
