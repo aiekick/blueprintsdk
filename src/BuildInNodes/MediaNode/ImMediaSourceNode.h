@@ -295,6 +295,7 @@ struct MediaSourceNode final : Node
         m_hw_type = AV_HWDEVICE_TYPE_NONE;
         m_total_time = 0;
         m_current_pts = 0;
+        m_need_update = false;
     }
 
     void OpenMedia()
@@ -306,10 +307,12 @@ struct MediaSourceNode final : Node
         {
             CloseMedia();
             m_paused = false;
+            m_need_update = false;
         }
         else
         {
             m_paused = false;
+            m_need_update = false;
         }
     }
 
@@ -323,6 +326,7 @@ struct MediaSourceNode final : Node
     void OnStop(Context& context) override
     {
         m_paused = false;
+        m_need_update = false;
     }
 
     int OutVideoFrame()
@@ -689,7 +693,15 @@ struct MediaSourceNode final : Node
         }
         if (m_fmt_ctx)
         {
-            if (m_paused)
+            if (m_need_update || !m_paused)
+            {
+                m_need_update = false;
+                auto ret = decoder_frame();
+                if (ret.m_Name != "Exit")
+                    context.PushReturnPoint(entryPoint);
+                return ret;
+            }
+            else
             {
                 if (threading)
                     ImGui::sleep((int)(40));
@@ -704,13 +716,6 @@ struct MediaSourceNode final : Node
                     return m_AudioOutput;
                 else
                     return {};
-            }
-            else
-            {
-                auto ret = decoder_frame();
-                if (ret.m_Name != "Exit")
-                    context.PushReturnPoint(entryPoint);
-                return ret;
             }
         }
         return {};
@@ -789,7 +794,7 @@ struct MediaSourceNode final : Node
                 int64_t seek_time = time * AV_TIME_BASE;
                 av_seek_frame(m_fmt_ctx, -1, seek_time, AVSEEK_FLAG_BACKWARD);
                 m_current_pts = time;
-                decoder_frame();
+                m_need_update = true;
             }
         }
         
@@ -902,6 +907,7 @@ private:
     double              m_total_time    {0};
     double              m_current_pts   {0};
     bool                m_paused        {false};
+    bool                m_need_update   {false};
 };
 }
 #endif // SDK_WITH_FFMPEG

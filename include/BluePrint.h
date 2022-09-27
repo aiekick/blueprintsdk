@@ -398,7 +398,7 @@ private:
 # define MAJOR  1
 # define MINOR  11
 # define PATCH  0
-# define BUILT  1
+# define BUILT  2
 
 // Please Set CMakeList.txt IMGUI_BP_SDK_VERSION_STRING also
 # define VERSION_BLUEPRINT  ((MAJOR << 24) | (MINOR << 16) | (PATCH << 8) | BUILT)
