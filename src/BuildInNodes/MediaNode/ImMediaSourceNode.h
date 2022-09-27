@@ -303,7 +303,14 @@ struct MediaSourceNode final : Node
                                 m_video_index, m_video_stream, m_video_dec_ctx,
                                 m_audio_index, m_audio_stream, m_audio_dec_ctx,
                                 m_frame, m_pkt, this) < 0)
+        {
             CloseMedia();
+            m_paused = false;
+        }
+        else
+        {
+            m_paused = false;
+        }
     }
 
     void Reset(Context& context) override
@@ -311,6 +318,11 @@ struct MediaSourceNode final : Node
         Node::Reset(context);
         m_V.SetValue(ImGui::ImMat());
         m_A.SetValue(ImGui::ImMat());
+    }
+
+    void OnStop(Context& context) override
+    {
+        m_paused = false;
     }
 
     int OutVideoFrame()
@@ -677,10 +689,29 @@ struct MediaSourceNode final : Node
         }
         if (m_fmt_ctx)
         {
-            auto ret = decoder_frame();
-            if (ret.m_Name != "Exit")
+            if (m_paused)
+            {
+                if (threading)
+                    ImGui::sleep((int)(40));
+                else
+                    ImGui::sleep(0);
                 context.PushReturnPoint(entryPoint);
-            return ret;
+                auto vmat = context.GetPinValue<ImGui::ImMat>(m_V);
+                auto amat = context.GetPinValue<ImGui::ImMat>(m_A);
+                if (!vmat.empty())
+                    return m_VideoOutput;
+                else if (!amat.empty())
+                    return m_AudioOutput;
+                else
+                    return {};
+            }
+            else
+            {
+                auto ret = decoder_frame();
+                if (ret.m_Name != "Exit")
+                    context.PushReturnPoint(entryPoint);
+                return ret;
+            }
         }
         return {};
     }
@@ -741,8 +772,13 @@ struct MediaSourceNode final : Node
         ImGui::SetCurrentContext(ctx);
         ImGui::Text("%s", m_file_name.c_str());
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput | ImGuiSliderFlags_NoLabel;
-        ImGui::Dummy(ImVec2(300, 8));
+        ImGui::Dummy(ImVec2(320, 8));
         ImGui::PushItemWidth(300);
+        if (ImGui::Button(m_paused ? ICON_FAD_PLAY : ICON_FAD_PAUSE, ImVec2(32.0f, 32.0f)))
+        {
+            if (m_fmt_ctx) m_paused = !m_paused;
+        }
+        ImGui::SameLine();
         float time = m_current_pts;
         float total_time = m_total_time;
         if (ImGui::SliderFloat("time", &time, 0, total_time, "%.2f", flags))
@@ -753,8 +789,10 @@ struct MediaSourceNode final : Node
                 int64_t seek_time = time * AV_TIME_BASE;
                 av_seek_frame(m_fmt_ctx, -1, seek_time, AVSEEK_FLAG_BACKWARD);
                 m_current_pts = time;
+                decoder_frame();
             }
         }
+        
         ImGui::Dummy(ImVec2(300, 8));
         string str_current_time = PrintTimeStamp(m_current_pts);
         string str_total_time = PrintTimeStamp(m_total_time);
@@ -863,6 +901,7 @@ private:
     AVRational          m_next_pts_tb {AVRational{0,1}};
     double              m_total_time    {0};
     double              m_current_pts   {0};
+    bool                m_paused        {false};
 };
 }
 #endif // SDK_WITH_FFMPEG
