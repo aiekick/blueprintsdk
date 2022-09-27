@@ -33,6 +33,20 @@ endif()
 
 option(IMGUI_BP_SDK_STATIC              "Build BluePrint as static library" OFF)
 
+find_package(PkgConfig REQUIRED)
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(
+        FFMPEG IMPORTED_TARGET
+        libavcodec
+        libavformat
+        libavutil
+        libswresample
+        libavfilter
+        libswscale
+        libavdevice
+    )
+endif(PKG_CONFIG_FOUND)
+
 set(IMGUI_BP_SDK_SRC
     src/BluePrint.cpp
     src/Context.cpp
@@ -64,6 +78,14 @@ set(IMGUI_BP_SDK_INC_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes/MediaNode
     ${CMAKE_CURRENT_SOURCE_DIR}/src/BuildInNodes/MediaNode/VkShader
 )
+
+if (FFMPEG_FOUND)
+    add_compile_definitions(SDK_WITH_FFMPEG)
+    set(LINK_LIBS
+        ${LINK_LIBS}
+        PkgConfig::FFMPEG
+    )
+endif(FFMPEG_FOUND)
 
 # Generate all buildin node files into one header file
 message(STATUS "Generate Build In Nodes")
@@ -123,7 +145,7 @@ set(IMGUI_BP_SDK_VERSION_STRING ${IMGUI_BP_SDK_VERSION_MAJOR}.${IMGUI_BP_SDK_VER
 #Please Set BluePrint.h VERSION_BLUEPRINT also
 
 if(NOT IMGUI_BP_SDK_STATIC)
-target_link_libraries(BluePrintSDK imgui)
+target_link_libraries(BluePrintSDK imgui ${LINK_LIBS})
 set_target_properties(BluePrintSDK PROPERTIES VERSION ${IMGUI_BP_SDK_VERSION_STRING} SOVERSION ${IMGUI_BP_SDK_VERSION_MAJOR})
 endif(NOT IMGUI_BP_SDK_STATIC)
 

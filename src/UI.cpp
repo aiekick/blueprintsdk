@@ -843,7 +843,7 @@ void BluePrintUI::CreateNewDocument()
     auto entryPointNode = blueprint->CreateNode<BluePrint::SystemEntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(32, 32));
 
-    auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
+    auto exitPointNode = blueprint->CreateNode<BluePrint::SystemExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, ed::GetViewSize() - ImVec2(32 + 64, 32));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     CommitLinksToEditor();

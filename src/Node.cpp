@@ -161,6 +161,11 @@ NodeRegistry::NodeRegistry()
 #endif
         // audio filter nodes
         AudioGainNode::GetStaticTypeInfo(),
+#ifdef SDK_WITH_FFMPEG
+        MediaSourceNode::GetStaticTypeInfo(),
+#endif
+        // Media nodes
+        MatRenderNode::GetStaticTypeInfo(),
     })
 {
     RebuildTypes();
