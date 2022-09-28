@@ -46,14 +46,6 @@ struct MatCropNode final : Node
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
             }
-            if (m_width != mat_in.w || m_height != mat_in.h)
-            {
-                m_width = mat_in.w;
-                m_height = mat_in.h;
-                m_x1 = 0; m_y1 = 0;
-                m_x2 = m_width;
-                m_y2 = m_height;
-            }
             if (m_x2 - m_x1 <= 0 || m_y2 - m_y1 <= 0)
             {
                 return {};
@@ -68,7 +60,7 @@ struct MatCropNode final : Node
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             im_RGB.w = mat_in.w;
             im_RGB.h = mat_in.h;
-            m_NodeTimeMs = m_filter->cropto(mat_in, im_RGB, m_x1, m_y1, m_x2 - m_x1, m_y2 - m_y1, m_xd * im_RGB.w, m_yd * im_RGB.h);
+            m_NodeTimeMs = m_filter->cropto(mat_in, im_RGB, m_x1 * im_RGB.w, m_y1 * im_RGB.h, (m_x2 - m_x1) * im_RGB.w, (m_y2 - m_y1) * im_RGB.h, m_xd * im_RGB.w, m_yd * im_RGB.h);
             im_RGB.time_stamp = mat_in.time_stamp;
             im_RGB.rate = mat_in.rate;
             im_RGB.flags = mat_in.flags;
@@ -97,10 +89,10 @@ struct MatCropNode final : Node
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        int _x1 = m_x1;
-        int _y1 = m_y1;
-        int _x2 = m_x2;
-        int _y2 = m_y2;
+        float _x1 = m_x1;
+        float _y1 = m_y1;
+        float _x2 = m_x2;
+        float _y2 = m_y2;
         float _xd = m_xd;
         float _yd = m_yd;
         // TODO::Hard to get focus and input number
@@ -108,14 +100,14 @@ struct MatCropNode final : Node
         ImGui::Dummy(ImVec2(300, 8));
         ImGui::PushItemWidth(300);
         ImGui::BeginDisabled(!m_Enabled);
-        ImGui::SliderInt("x1##Crop", &_x1, 0, m_width, "%d", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_x1##Crop")) { _x1 = 0; }
-        ImGui::SliderInt("y1##Crop", &_y1, 0, m_height, "%d", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_y1##Crop")) { _y1 = 0; }
-        ImGui::SliderInt("x2##Crop", &_x2, _x1, m_width, "%d", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_x2##Crop")) { _x2 = m_width; }
-        ImGui::SliderInt("y2##Crop", &_y2, _y1, m_height, "%d", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_y2##Crop")) { _y2 = m_height; }
+        ImGui::SliderFloat("x1##Crop", &_x1, 0.f, 1.f, "%.02f", flags);
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_x1##Crop")) { _x1 = 0.f; }
+        ImGui::SliderFloat("y1##Crop", &_y1, 0.f, 1.f, "%.02f", flags);
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_y1##Crop")) { _y1 = 0.f; }
+        ImGui::SliderFloat("x2##Crop", &_x2, _x1, 1.0f, "%.02f", flags);
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_x2##Crop")) { _x2 = 1.f; }
+        ImGui::SliderFloat("y2##Crop", &_y2, _y1, 1.f, "%.02f", flags);
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_y2##Crop")) { _y2 = 1.f; }
         ImGui::SliderFloat("xd##Crop", &_xd, -1.f, 1.f, "%.02f", flags);
         ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_xd##Crop")) { _xd = 0.0f; }
         ImGui::SliderFloat("yd##Crop", &_yd, -1.f, 1.f, "%.02f", flags);
@@ -142,18 +134,6 @@ struct MatCropNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
-        }
-        if (value.contains("width"))
-        {
-            auto& val = value["width"];
-            if (val.is_number()) 
-                m_width = val.get<imgui_json::number>();
-        }
-        if (value.contains("height"))
-        {
-            auto& val = value["height"];
-            if (val.is_number()) 
-                m_height = val.get<imgui_json::number>();
         }
         if (value.contains("x1"))
         {
@@ -198,8 +178,6 @@ struct MatCropNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["width"] = imgui_json::number(m_width);
-        value["height"] = imgui_json::number(m_height);
         value["x1"] = imgui_json::number(m_x1);
         value["y1"] = imgui_json::number(m_y1);
         value["x2"] = imgui_json::number(m_x2);
@@ -224,13 +202,11 @@ struct MatCropNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     ImGui::Crop_vulkan * m_filter {nullptr};
-    int m_x1 {0};
-    int m_y1 {0};
-    int m_x2 {0};
-    int m_y2 {0};
+    float m_x1 {0};
+    float m_y1 {0};
+    float m_x2 {1.0};
+    float m_y2 {1.0};
     float m_xd {0};
     float m_yd {0};
-    int m_width {0};
-    int m_height {0};
 };
 } //namespace BluePrint
