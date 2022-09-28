@@ -167,6 +167,7 @@ NodeRegistry::NodeRegistry()
         AudioGainNode::GetStaticTypeInfo(),
 #ifdef SDK_WITH_FFMPEG
         MediaSourceNode::GetStaticTypeInfo(),
+        AudioEqualizerNode::GetStaticTypeInfo(),
 #endif
         // Media nodes
         MatRenderNode::GetStaticTypeInfo(),
