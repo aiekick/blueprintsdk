@@ -158,6 +158,8 @@ NodeRegistry::NodeRegistry()
         FadeFusionNode::GetStaticTypeInfo(),
         MoveFusionNode::GetStaticTypeInfo(),
         SliderFusionNode::GetStaticTypeInfo(),
+        // Media node
+        MatCropNode::GetStaticTypeInfo(),
 #endif
         // audio filter nodes
         AudioGainNode::GetStaticTypeInfo(),
