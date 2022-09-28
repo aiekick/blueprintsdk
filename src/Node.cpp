@@ -160,6 +160,8 @@ NodeRegistry::NodeRegistry()
         SliderFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
+        MatWarpPerspectiveNode::GetStaticTypeInfo(),
+        MatWarpAffineNode::GetStaticTypeInfo(),
 #endif
         // audio filter nodes
         AudioGainNode::GetStaticTypeInfo(),
