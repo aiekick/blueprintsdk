@@ -123,15 +123,20 @@ public:
     {
         amat.release();
         ImDataType dtype = GetImDataTypeByAVSampleFormat((AVSampleFormat)avfrm->format);
-        amat.create_type(avfrm->nb_samples, (int)1, avfrm->channels, dtype);
         bool isPlanar = av_sample_fmt_is_planar((AVSampleFormat)avfrm->format) == 1;
-        amat.elempack = isPlanar ? 1 : avfrm->channels;
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
+        const int channels = avfrm->channels;
+#else
+        const int channels = avfrm->ch_layout.nb_channels;
+#endif
+        amat.create_type(avfrm->nb_samples, (int)1, channels, dtype);
+        amat.elempack = isPlanar ? 1 : channels;
         int bytesPerSample = av_get_bytes_per_sample((AVSampleFormat)avfrm->format);
-        int bytesPerLine = avfrm->nb_samples*bytesPerSample*(isPlanar?1:avfrm->channels);
+        int bytesPerLine = avfrm->nb_samples*bytesPerSample*(isPlanar?1:channels);
         if (isPlanar)
         {
             uint8_t* dstptr = (uint8_t*)amat.data;
-            for (int i = 0; i < avfrm->channels; i++)
+            for (int i = 0; i < channels; i++)
             {
                 const uint8_t* srcptr = i < 8 ? avfrm->data[i] : avfrm->extended_data[i-8];
                 memcpy(dstptr, srcptr, bytesPerLine);
@@ -140,7 +145,7 @@ public:
         }
         else
         {
-            int totalBytes = bytesPerLine*avfrm->channels;
+            int totalBytes = bytesPerLine*channels;
             memcpy(amat.data, avfrm->data[0], totalBytes);
         }
         amat.rate = { avfrm->sample_rate, 1 };
@@ -153,21 +158,26 @@ public:
         bool isPlanar = amat.elempack == 1;
         avfrm->format = (int)GetAVSampleFormatByImDataType(amat.type, isPlanar);
         avfrm->nb_samples = amat.w;
-        avfrm->channels = amat.c;
-        avfrm->channel_layout = av_get_default_channel_layout(amat.c);
+        const int channels = amat.c;
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
+        avfrm->channels = channels;
+        avfrm->channel_layout = av_get_default_channel_layout(channels);
+#else
+        av_channel_layout_default(&avfrm->ch_layout, channels);
+#endif
         int fferr = av_frame_get_buffer(avfrm, 0);
         if (fferr < 0)
         {
             std::cerr << "FAILED to allocate buffer for audio AVFrame! format=" << av_get_sample_fmt_name((AVSampleFormat)avfrm->format)
-                 << ", nb_samples=" << avfrm->nb_samples << ", channels=" << avfrm->channels << ". fferr=" << fferr << "." << std::endl;
+                 << ", nb_samples=" << avfrm->nb_samples << ", channels=" << channels << ". fferr=" << fferr << "." << std::endl;
             return false;
         }
         int bytesPerSample = av_get_bytes_per_sample((AVSampleFormat)avfrm->format);
-        int bytesPerLine = avfrm->nb_samples*bytesPerSample*(isPlanar?1:avfrm->channels);
+        int bytesPerLine = avfrm->nb_samples*bytesPerSample*(isPlanar?1:channels);
         if (isPlanar)
         {
             const uint8_t* srcptr = (const uint8_t*)amat.data;
-            for (int i = 0; i < avfrm->channels; i++)
+            for (int i = 0; i < channels; i++)
             {
                 uint8_t* dstptr = i < 8 ? avfrm->data[i] : avfrm->extended_data[i-8];
                 memcpy(dstptr, srcptr, bytesPerLine);
@@ -176,7 +186,7 @@ public:
         }
         else
         {
-            int totalBytes = bytesPerLine*avfrm->channels;
+            int totalBytes = bytesPerLine*channels;
             memcpy(avfrm->data[0], amat.data, totalBytes);
         }
         avfrm->sample_rate = amat.rate.num;
@@ -198,12 +208,11 @@ struct AudioEqualizerNode final : Node
         m_Name = "Audio Equalizer";
         memcpy(&m_bandCfg, &DEFAULT_BAND_CFG, sizeof(m_bandCfg));
         std::string errMsg;
-        if (!InitFFmpegFilterGraph(AV_SAMPLE_FMT_FLT, 48000, 3, errMsg))
-        {
-            std::ostringstream oss;
-            oss << "FAILED to initialize ffmpeg filter-graph to build audio equalizer! Error message is '" << errMsg << "'.";
-            throw std::runtime_error(oss.str());
-        }
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
+        m_channels = -1;
+#else
+        m_chlyt.nb_channels = -1;
+#endif
     }
 
     ~AudioEqualizerNode()
@@ -240,7 +249,11 @@ struct AudioEqualizerNode final : Node
         return argstrOss.str();
     }
 
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
     bool InitFFmpegFilterGraph(AVSampleFormat sampleFormat, int sampleRate, uint64_t channelLayout, std::string& err)
+#else
+    bool InitFFmpegFilterGraph(AVSampleFormat sampleFormat, int sampleRate, const AVChannelLayout& chlyt, std::string& err)
+#endif
     {
         std::string argstr = GenerateEqFilterString();
 
@@ -250,8 +263,16 @@ struct AudioEqualizerNode final : Node
         AVFilterContext* outFilterCtx   {nullptr};
         filterGraph = avfilter_graph_alloc();
         char abuffersrcArgs[256];
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
         snprintf(abuffersrcArgs, sizeof(abuffersrcArgs), "sample_rate=%d:sample_fmt=%d:channel_layout=%llu:time_base=%d/%d",
                  sampleRate, sampleFormat, channelLayout, 1, sampleRate);
+#else
+        char chlytDescBuff[256] = {0};
+        av_channel_layout_describe(&chlyt, chlytDescBuff, sizeof(chlytDescBuff));
+        snprintf(abuffersrcArgs, sizeof(abuffersrcArgs), "sample_rate=%d:sample_fmt=%d:channel_layout=%s:time_base=%d/%d",
+                 sampleRate, sampleFormat, chlytDescBuff, 1, sampleRate);
+#endif
+
         const AVFilter *avFilter;
         avFilter = avfilter_get_by_name("abuffer");
         fferr = avfilter_graph_create_filter(&inFilterCtx, avFilter, "buffer_source", abuffersrcArgs, NULL, filterGraph);
@@ -340,13 +361,26 @@ struct AudioEqualizerNode final : Node
                 return m_Exit;
             }
 
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
             if (m_channels == -1)
+#else
+            if (m_chlyt.nb_channels == -1)
+#endif
             {
                 if (inMat.c != 1 && inMat.c != 2)
                     throw std::runtime_error("ONLY SUPPORT audio 'channels' of 1 or 2.");
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
                 m_channels = inMat.c;
+                m_channelLayout = av_get_default_channel_layout(m_channels);
+#else
+                av_channel_layout_default(&m_chlyt, inMat.c);
+#endif
             }
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
             if (m_channels != inMat.c)
+#else
+            if (m_chlyt.nb_channels != inMat.c)
+#endif
                 throw std::runtime_error("Do NOT SUPPORT audio 'channels' changing during runtime!");
             if (!m_pDataConverter)
             {
@@ -377,16 +411,15 @@ struct AudioEqualizerNode final : Node
 
             if (!m_inputAttrSet)
             {
-                uint64_t channelLayout = avfrmptr->channel_layout;
-                if (channelLayout == 0)
-                    channelLayout = av_get_default_channel_layout(avfrmptr->channels);
-                bool success = InitFFmpegFilterGraph((AVSampleFormat)avfrmptr->format, avfrmptr->sample_rate, channelLayout, m_filterGraphInitErrMsg);
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
+                bool success = InitFFmpegFilterGraph((AVSampleFormat)avfrmptr->format, avfrmptr->sample_rate, m_channelLayout, m_filterGraphInitErrMsg);
+#else
+                bool success = InitFFmpegFilterGraph((AVSampleFormat)avfrmptr->format, avfrmptr->sample_rate, avfrmptr->ch_layout, m_filterGraphInitErrMsg);
+#endif
                 if (!success)
                     throw std::runtime_error(m_filterGraphInitErrMsg);
                 m_sampleFormat = (AVSampleFormat)avfrmptr->format;
                 m_sampleRate = avfrmptr->sample_rate;
-                m_channelLayout = channelLayout;
-                m_channels = avfrmptr->channels;
                 m_inputAttrSet = true;
             }
 
@@ -547,8 +580,12 @@ private:
     bool m_inputAttrSet {false};
     AVSampleFormat m_sampleFormat   {AV_SAMPLE_FMT_NONE};
     int m_sampleRate    {-1};
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
     int m_channels      {-1};
     uint64_t m_channelLayout    {0};
+#else
+    AVChannelLayout m_chlyt;
+#endif
     BandConfig m_bandCfg[10];
     int m_filterArgsMaxChars    {2048};
     bool m_filterArgsChanged    {false};
