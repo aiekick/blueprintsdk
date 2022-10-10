@@ -500,7 +500,30 @@ struct AudioEqualizerNode final : Node
             ImGui::EndGroup();
         }
         ImGui::TextColored({ 0.4, 0.4, 0.9, 1.0 }, "Db");
-        ImGui::SameLine(260); if (ImGui::Button(ICON_RESET "##reset_equ##AudioEqualizer")) { for (int i = 0; i < 10; i++) m_bandCfg[i].gain = 0; changed = true; }
+        ImGui::SameLine(260);
+        if (ImGui::Button(ICON_RESET "##reset_equ##AudioEqualizer"))
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                if (m_bandCfg[i].gain != 0)
+                {
+                    char targetFilter[32] = {0};
+                    snprintf(targetFilter, sizeof(targetFilter)-1, "equalizer@%d", i);
+                    char cmdarg[8] = {0};
+                    snprintf(cmdarg, sizeof(cmdarg)-1, "%d", 0);
+                    char res[128] = {0};
+                    int fferr = avfilter_graph_send_command(m_filterGraph, targetFilter, "gain", cmdarg, res, sizeof(res)-1, 0);
+                    if (fferr < 0)
+                    {
+                        std::ostringstream oss;
+                        oss << "FAILED to invoke 'avfilter_graph_send_command' to set gain value " << 0 << " to target filter '" << targetFilter << "'!";
+                        throw std::runtime_error(oss.str());
+                    }
+                    m_bandCfg[i].gain = 0;
+                    changed = true;
+                }
+            }
+        }
         ImGui::EndDisabled();
         return m_Enabled ? changed : false;
     }
