@@ -165,6 +165,8 @@ NodeRegistry::NodeRegistry()
 #endif
         // audio filter nodes
         AudioGainNode::GetStaticTypeInfo(),
+        // audio fusion nodes
+        AudioFadeNode::GetStaticTypeInfo(),
 #ifdef SDK_WITH_FFMPEG
         MediaSourceNode::GetStaticTypeInfo(),
         AudioEqualizerNode::GetStaticTypeInfo(),
