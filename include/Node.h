@@ -230,6 +230,7 @@ struct IMGUI_API Node
     virtual void DrawSettingLayout(ImGuiContext * ctx);
     virtual void DrawMenuLayout(ImGuiContext * ctx);
     virtual bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key = nullptr);
+    virtual void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size);
 
     ID_TYPE         m_ID                {0};
     string          m_Name              {""};

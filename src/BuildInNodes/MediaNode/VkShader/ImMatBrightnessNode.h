@@ -125,6 +125,12 @@ struct BrightnessNode final : Node
         return ret;
     }
 
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    {
+        if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
+        ImGui::Button((std::string(u8"\uf1b3") + "##" + std::to_string(m_ID)).c_str(), size);
+    }
+
     void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) const override
     {
         Node::Save(value, MapID);
