@@ -473,11 +473,14 @@ void Node::DrawMenuLayout(ImGuiContext * ctx)
 void Node::DrawNodeLogo(ImGuiContext * ctx, ImVec2 size)
 {
     if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
+    float font_size = ImGui::GetFontSize();
+    ImGui::SetWindowFontScale((size.x - 8) / font_size);
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
     ImGui::Button((std::string(ICON_NODE) + "##" + std::to_string(m_ID)).c_str(), size); // set default logo is a icon button
     ImGui::PopStyleColor(3);
+    ImGui::SetWindowFontScale(1.0);
 }
 
 bool Node::DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key)
