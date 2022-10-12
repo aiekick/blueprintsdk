@@ -25,179 +25,6 @@ extern "C"
 };
 #include <memory>
 
-static ImDataType GetImDataTypeByAVSampleFormat(AVSampleFormat smpfmt)
-{
-    ImDataType dtype = IM_DT_UNDEFINED;
-    switch (smpfmt)
-    {
-    case AV_SAMPLE_FMT_U8:
-    case AV_SAMPLE_FMT_U8P:
-        dtype = IM_DT_INT8;
-        break;
-    case AV_SAMPLE_FMT_S16:
-    case AV_SAMPLE_FMT_S16P:
-        dtype = IM_DT_INT16;
-        break;
-    case AV_SAMPLE_FMT_S32:
-    case AV_SAMPLE_FMT_S32P:
-        dtype = IM_DT_INT32;
-        break;
-    case AV_SAMPLE_FMT_FLT:
-    case AV_SAMPLE_FMT_FLTP:
-        dtype = IM_DT_FLOAT32;
-        break;
-    case AV_SAMPLE_FMT_DBL:
-    case AV_SAMPLE_FMT_DBLP:
-        dtype = IM_DT_FLOAT64;
-        break;
-    case AV_SAMPLE_FMT_S64:
-    case AV_SAMPLE_FMT_S64P:
-        dtype = IM_DT_INT64;
-        break;
-    default:
-        break;
-    }
-    return dtype;
-}
-
-static AVSampleFormat GetAVSampleFormatByImDataType(ImDataType dtype, bool isPlanar)
-{
-    AVSampleFormat smpfmt = AV_SAMPLE_FMT_NONE;
-    switch (dtype)
-    {
-    case IM_DT_INT8:
-        smpfmt = AV_SAMPLE_FMT_U8;
-        break;
-    case IM_DT_INT16:
-        smpfmt = AV_SAMPLE_FMT_S16;
-        break;
-    case IM_DT_INT32:
-        smpfmt = AV_SAMPLE_FMT_S32;
-        break;
-    case IM_DT_FLOAT32:
-        smpfmt = AV_SAMPLE_FMT_FLT;
-        break;
-    case IM_DT_FLOAT64:
-        smpfmt = AV_SAMPLE_FMT_DBL;
-        break;
-    case IM_DT_INT64:
-        smpfmt = AV_SAMPLE_FMT_S64;
-        break;
-    default:
-        break;
-    }
-    if (smpfmt != AV_SAMPLE_FMT_NONE && isPlanar)
-        smpfmt = av_get_planar_sample_fmt(smpfmt);
-    return smpfmt;
-}
-
-static std::string GetFrequencyTag(uint32_t freq)
-{
-    char tag[16]= {0};
-    if (freq < 1000)
-        sprintf(tag, "%u", freq);
-    else if (freq%1000 > 0)
-        snprintf(tag, sizeof(tag)-1, "%.1fK", (float)(freq/1000));
-    else
-        snprintf(tag, sizeof(tag)-1, "%uK", freq/1000);
-    return std::string(tag);
-}
-
-using SelfFreeAVFramePtr = std::shared_ptr<AVFrame>;
-static SelfFreeAVFramePtr AllocSelfFreeAVFramePtr()
-{
-    SelfFreeAVFramePtr frm = shared_ptr<AVFrame>(av_frame_alloc(), [](AVFrame* avfrm) {
-        if (avfrm)
-            av_frame_free(&avfrm);
-    });
-    if (!frm.get())
-        return nullptr;
-    return frm;
-}
-
-class AudioAVFrameImMatConverter
-{
-public:
-    AudioAVFrameImMatConverter(uint32_t sampleRate) { m_sampleRate = sampleRate; };
-    bool ConvertAVFrameToImMat(const AVFrame* avfrm, ImGui::ImMat& amat, double timestamp)
-    {
-        amat.release();
-        ImDataType dtype = GetImDataTypeByAVSampleFormat((AVSampleFormat)avfrm->format);
-        bool isPlanar = av_sample_fmt_is_planar((AVSampleFormat)avfrm->format) == 1;
-#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
-        const int channels = avfrm->channels;
-#else
-        const int channels = avfrm->ch_layout.nb_channels;
-#endif
-        amat.create_type(avfrm->nb_samples, (int)1, channels, dtype);
-        amat.elempack = isPlanar ? 1 : channels;
-        int bytesPerSample = av_get_bytes_per_sample((AVSampleFormat)avfrm->format);
-        int bytesPerLine = avfrm->nb_samples*bytesPerSample*(isPlanar?1:channels);
-        if (isPlanar)
-        {
-            uint8_t* dstptr = (uint8_t*)amat.data;
-            for (int i = 0; i < channels; i++)
-            {
-                const uint8_t* srcptr = i < 8 ? avfrm->data[i] : avfrm->extended_data[i-8];
-                memcpy(dstptr, srcptr, bytesPerLine);
-                dstptr += bytesPerLine;
-            }
-        }
-        else
-        {
-            int totalBytes = bytesPerLine*channels;
-            memcpy(amat.data, avfrm->data[0], totalBytes);
-        }
-        amat.rate = { avfrm->sample_rate, 1 };
-        amat.time_stamp = timestamp;
-        return true;
-    }
-    bool ConvertImMatToAVFrame(const ImGui::ImMat& amat, AVFrame* avfrm, int64_t pts)
-    {
-        av_frame_unref(avfrm);
-        bool isPlanar = amat.elempack == 1;
-        avfrm->format = (int)GetAVSampleFormatByImDataType(amat.type, isPlanar);
-        avfrm->nb_samples = amat.w;
-        const int channels = amat.c;
-#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
-        avfrm->channels = channels;
-        avfrm->channel_layout = av_get_default_channel_layout(channels);
-#else
-        av_channel_layout_default(&avfrm->ch_layout, channels);
-#endif
-        int fferr = av_frame_get_buffer(avfrm, 0);
-        if (fferr < 0)
-        {
-            std::cerr << "FAILED to allocate buffer for audio AVFrame! format=" << av_get_sample_fmt_name((AVSampleFormat)avfrm->format)
-                 << ", nb_samples=" << avfrm->nb_samples << ", channels=" << channels << ". fferr=" << fferr << "." << std::endl;
-            return false;
-        }
-        int bytesPerSample = av_get_bytes_per_sample((AVSampleFormat)avfrm->format);
-        int bytesPerLine = avfrm->nb_samples*bytesPerSample*(isPlanar?1:channels);
-        if (isPlanar)
-        {
-            const uint8_t* srcptr = (const uint8_t*)amat.data;
-            for (int i = 0; i < channels; i++)
-            {
-                uint8_t* dstptr = i < 8 ? avfrm->data[i] : avfrm->extended_data[i-8];
-                memcpy(dstptr, srcptr, bytesPerLine);
-                srcptr += bytesPerLine;
-            }
-        }
-        else
-        {
-            int totalBytes = bytesPerLine*channels;
-            memcpy(avfrm->data[0], amat.data, totalBytes);
-        }
-        avfrm->sample_rate = amat.rate.num;
-        avfrm->pts = pts;
-        return true;
-    }
-    uint32_t SampleRate() const { return m_sampleRate; }
-private:
-    uint32_t m_sampleRate {0};
-};
-
 namespace BluePrint
 {
 struct AudioEqualizerNode final : Node
@@ -243,9 +70,10 @@ struct AudioEqualizerNode final : Node
         std::ostringstream argstrOss;
         for (int i = 0; i < 10; i++)
         {
-            argstrOss << "equalizer@" << i << "=f=" << m_bandCfg[i].centerFreq << ":t=h:width=" << m_bandCfg[i].bandWidth << ":g=" << m_bandCfg[i].gain;
+            argstrOss << "equalizer@" << i << "=f=" << m_bandCfg[i].centerFreq << ":t=h:w=" << m_bandCfg[i].bandWidth << ":g=" << m_bandCfg[i].gain;
             if (i < 9) argstrOss << ",";
         }
+        // argstrOss << ",aformat=flt";
         return argstrOss.str();
     }
 
@@ -303,8 +131,6 @@ struct AudioEqualizerNode final : Node
         inputs->pad_idx = 0;
         inputs->next = NULL;
         int orgNbFilters = filterGraph->nb_filters;
-        if (inFilterCtx->av_class)
-            std::cout << "here!" << std::endl;
         fferr = avfilter_graph_parse_ptr(filterGraph, argstr.c_str(), &inputs, &outputs, NULL);
         if (fferr < 0)
         {
@@ -597,6 +423,181 @@ struct AudioEqualizerNode final : Node
     };
     const int32_t MAX_GAIN = 12;
     const int32_t MIN_GAIN = -12;
+
+private:
+    static ImDataType GetImDataTypeByAVSampleFormat(AVSampleFormat smpfmt)
+    {
+        ImDataType dtype = IM_DT_UNDEFINED;
+        switch (smpfmt)
+        {
+        case AV_SAMPLE_FMT_U8:
+        case AV_SAMPLE_FMT_U8P:
+            dtype = IM_DT_INT8;
+            break;
+        case AV_SAMPLE_FMT_S16:
+        case AV_SAMPLE_FMT_S16P:
+            dtype = IM_DT_INT16;
+            break;
+        case AV_SAMPLE_FMT_S32:
+        case AV_SAMPLE_FMT_S32P:
+            dtype = IM_DT_INT32;
+            break;
+        case AV_SAMPLE_FMT_FLT:
+        case AV_SAMPLE_FMT_FLTP:
+            dtype = IM_DT_FLOAT32;
+            break;
+        case AV_SAMPLE_FMT_DBL:
+        case AV_SAMPLE_FMT_DBLP:
+            dtype = IM_DT_FLOAT64;
+            break;
+        case AV_SAMPLE_FMT_S64:
+        case AV_SAMPLE_FMT_S64P:
+            dtype = IM_DT_INT64;
+            break;
+        default:
+            break;
+        }
+        return dtype;
+    }
+
+    static AVSampleFormat GetAVSampleFormatByImDataType(ImDataType dtype, bool isPlanar)
+    {
+        AVSampleFormat smpfmt = AV_SAMPLE_FMT_NONE;
+        switch (dtype)
+        {
+        case IM_DT_INT8:
+            smpfmt = AV_SAMPLE_FMT_U8;
+            break;
+        case IM_DT_INT16:
+            smpfmt = AV_SAMPLE_FMT_S16;
+            break;
+        case IM_DT_INT32:
+            smpfmt = AV_SAMPLE_FMT_S32;
+            break;
+        case IM_DT_FLOAT32:
+            smpfmt = AV_SAMPLE_FMT_FLT;
+            break;
+        case IM_DT_FLOAT64:
+            smpfmt = AV_SAMPLE_FMT_DBL;
+            break;
+        case IM_DT_INT64:
+            smpfmt = AV_SAMPLE_FMT_S64;
+            break;
+        default:
+            break;
+        }
+        if (smpfmt != AV_SAMPLE_FMT_NONE && isPlanar)
+            smpfmt = av_get_planar_sample_fmt(smpfmt);
+        return smpfmt;
+    }
+
+    static std::string GetFrequencyTag(uint32_t freq)
+    {
+        char tag[16]= {0};
+        if (freq < 1000)
+            sprintf(tag, "%u", freq);
+        else if (freq%1000 > 0)
+            snprintf(tag, sizeof(tag)-1, "%.1fK", (float)(freq/1000));
+        else
+            snprintf(tag, sizeof(tag)-1, "%uK", freq/1000);
+        return std::string(tag);
+    }
+
+    using SelfFreeAVFramePtr = std::shared_ptr<AVFrame>;
+    static SelfFreeAVFramePtr AllocSelfFreeAVFramePtr()
+    {
+        SelfFreeAVFramePtr frm = shared_ptr<AVFrame>(av_frame_alloc(), [](AVFrame* avfrm) {
+            if (avfrm)
+                av_frame_free(&avfrm);
+        });
+        if (!frm.get())
+            return nullptr;
+        return frm;
+    }
+
+    class AudioAVFrameImMatConverter
+    {
+    public:
+        AudioAVFrameImMatConverter(uint32_t sampleRate) { m_sampleRate = sampleRate; };
+        bool ConvertAVFrameToImMat(const AVFrame* avfrm, ImGui::ImMat& amat, double timestamp)
+        {
+            amat.release();
+            ImDataType dtype = GetImDataTypeByAVSampleFormat((AVSampleFormat)avfrm->format);
+            bool isPlanar = av_sample_fmt_is_planar((AVSampleFormat)avfrm->format) == 1;
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
+            const int channels = avfrm->channels;
+#else
+            const int channels = avfrm->ch_layout.nb_channels;
+#endif
+            amat.create_type(avfrm->nb_samples, (int)1, channels, dtype);
+            amat.elempack = isPlanar ? 1 : channels;
+            int bytesPerSample = av_get_bytes_per_sample((AVSampleFormat)avfrm->format);
+            int bytesPerLine = avfrm->nb_samples*bytesPerSample*(isPlanar?1:channels);
+            if (isPlanar)
+            {
+                uint8_t* dstptr = (uint8_t*)amat.data;
+                for (int i = 0; i < channels; i++)
+                {
+                    const uint8_t* srcptr = i < 8 ? avfrm->data[i] : avfrm->extended_data[i-8];
+                    memcpy(dstptr, srcptr, bytesPerLine);
+                    dstptr += bytesPerLine;
+                }
+            }
+            else
+            {
+                int totalBytes = bytesPerLine;
+                memcpy(amat.data, avfrm->data[0], totalBytes);
+            }
+            amat.rate = { avfrm->sample_rate, 1 };
+            amat.time_stamp = timestamp;
+            amat.elempack = isPlanar ? 1 : channels;
+            return true;
+        }
+        bool ConvertImMatToAVFrame(const ImGui::ImMat& amat, AVFrame* avfrm, int64_t pts)
+        {
+            av_frame_unref(avfrm);
+            bool isPlanar = amat.elempack == 1;
+            avfrm->format = (int)GetAVSampleFormatByImDataType(amat.type, isPlanar);
+            avfrm->nb_samples = amat.w;
+            const int channels = amat.c;
+#if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
+            avfrm->channels = channels;
+            avfrm->channel_layout = av_get_default_channel_layout(channels);
+#else
+            av_channel_layout_default(&avfrm->ch_layout, channels);
+#endif
+            int fferr = av_frame_get_buffer(avfrm, 0);
+            if (fferr < 0)
+            {
+                std::cerr << "FAILED to allocate buffer for audio AVFrame! format=" << av_get_sample_fmt_name((AVSampleFormat)avfrm->format)
+                    << ", nb_samples=" << avfrm->nb_samples << ", channels=" << channels << ". fferr=" << fferr << "." << std::endl;
+                return false;
+            }
+            int bytesPerSample = av_get_bytes_per_sample((AVSampleFormat)avfrm->format);
+            int bytesPerLine = avfrm->nb_samples*bytesPerSample*(isPlanar?1:channels);
+            if (isPlanar)
+            {
+                const uint8_t* srcptr = (const uint8_t*)amat.data;
+                for (int i = 0; i < channels; i++)
+                {
+                    uint8_t* dstptr = i < 8 ? avfrm->data[i] : avfrm->extended_data[i-8];
+                    memcpy(dstptr, srcptr, bytesPerLine);
+                    srcptr += bytesPerLine;
+                }
+            }
+            else
+            {
+                int totalBytes = bytesPerLine;
+                memcpy(avfrm->data[0], amat.data, totalBytes);
+            }
+            avfrm->sample_rate = amat.rate.num;
+            avfrm->pts = pts;
+            return true;
+        }
+        uint32_t SampleRate() const { return m_sampleRate; }
+    private:
+        uint32_t m_sampleRate {0};
+    };
 
 private:
     ImDataType m_pcmDataType {IM_DT_UNDEFINED};
