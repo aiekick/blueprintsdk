@@ -69,7 +69,7 @@ struct DummyNode final : Node
     span<Pin*> GetInputPins() override { return m_InputPins; }
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     int  Load(const imgui_json::value& value) override { m_node_value = value; return BP_ERR_NONE; };
-    void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const override { value = m_node_value; };
+    void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) override { value = m_node_value; };
 
     std::vector<Pin *> m_InputPins;
     std::vector<Pin *> m_OutputPins;

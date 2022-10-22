@@ -239,7 +239,7 @@ struct MatWarpAffineNode final : Node
         return ret;
     }
 
-    void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) const override
+    void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) override
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);

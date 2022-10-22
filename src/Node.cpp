@@ -139,6 +139,7 @@ NodeRegistry::NodeRegistry()
         CasNode::GetStaticTypeInfo(),
         ChromaKeyNode::GetStaticTypeInfo(),
         ColorBalanceNode::GetStaticTypeInfo(),
+        ColorCurveNode::GetStaticTypeInfo(),
         ColorInvertNode::GetStaticTypeInfo(),
         ContrastNode::GetStaticTypeInfo(),
         DeBandNode::GetStaticTypeInfo(),
@@ -615,7 +616,7 @@ int Node::Load(const imgui_json::value& value)
     return BP_ERR_NONE;
 }
 
-void Node::Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) const
+void Node::Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID)
 {
     bool isRemap = MapID.size() > 0;
     value["id"] = imgui_json::number(GetIDFromMap(m_ID, MapID)); // required

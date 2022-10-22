@@ -131,7 +131,7 @@ struct BrightnessNode final : Node
         ImGui::Button((std::string(u8"\uf1b3") + "##" + std::to_string(m_ID)).c_str(), size);
     }
 
-    void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) const override
+    void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) override
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);

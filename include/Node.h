@@ -225,7 +225,7 @@ struct IMGUI_API Node
     virtual void            OnNodeDelete(Node * node = nullptr) {};
 
     virtual int  Load(const imgui_json::value& value);
-    virtual void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {}) const;
+    virtual void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID = {});
 
     virtual void DrawSettingLayout(ImGuiContext * ctx);
     virtual void DrawMenuLayout(ImGuiContext * ctx);
