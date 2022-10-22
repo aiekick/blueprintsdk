@@ -3,7 +3,7 @@
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
 #include <Histogram_vulkan.h>
-//#include <ColorBalance_vulkan.h>
+#include <ColorCurve_vulkan.h>
 
 namespace BluePrint
 {
@@ -21,6 +21,7 @@ struct ColorCurveNode final : Node
     ~ColorCurveNode()
     {
         if (m_histogram) { delete m_histogram; m_histogram = nullptr; }
+        if (m_filter) { delete m_filter; m_filter = nullptr; }
     }
 
     void ResetCurve()
@@ -100,20 +101,25 @@ struct ColorCurveNode final : Node
                 m_MatOut.SetValue(mat_in);
                 return m_Exit;
             }
-            if (!m_histogram || gpu != m_device)
+            if (!m_histogram || !m_filter || gpu != m_device)
             {
                 if (m_histogram) { delete m_histogram; m_histogram = nullptr; }
+                if (m_filter) { delete m_filter; m_filter = nullptr; }
                 m_histogram = new ImGui::Histogram_vulkan(gpu);
+                m_filter = new ImGui::ColorCurve_vulkan(gpu);
             }
-            if (!m_histogram)
+            if (!m_histogram || !m_filter)
             {
                 return {};
             }
-            // TODO::Dicky filter init
             m_device = gpu;
             m_histogram->scope(mat_in, mMat_histogram, 256, mHistogramScale, mHistogramLog);
-
-            m_MatOut.SetValue(mat_in); // for test
+            ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
+            m_NodeTimeMs = m_filter->filter(mat_in, im_RGB, mMat_curve);
+            im_RGB.time_stamp = mat_in.time_stamp;
+            im_RGB.rate = mat_in.rate;
+            im_RGB.flags = mat_in.flags;
+            m_MatOut.SetValue(im_RGB);
         }
 
         return m_Exit;
@@ -271,6 +277,7 @@ struct ColorCurveNode final : Node
         if (ImGui::Button(ICON_RESET "##color_curve_reset_Y"))
         {
             ResetCurve(0);
+            changed = true;
         }
         ImGui::PopStyleColor(2);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5, 0, 0, 0.75));
@@ -292,6 +299,7 @@ struct ColorCurveNode final : Node
         if (ImGui::Button(ICON_RESET "##color_curve_reset_R"))
         {
             ResetCurve(1);
+            changed = true;
         }
         ImGui::PopStyleColor(2);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0.5, 0, 0.75));
@@ -313,6 +321,7 @@ struct ColorCurveNode final : Node
         if (ImGui::Button(ICON_RESET "##color_curve_reset_G"))
         {
             ResetCurve(2);
+            changed = true;
         }
         ImGui::PopStyleColor(2);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0.5, 0.75));
@@ -334,6 +343,7 @@ struct ColorCurveNode final : Node
         if (ImGui::Button(ICON_RESET "##color_curve_reset_B"))
         {
             ResetCurve(3);
+            changed = true;
         }
         ImGui::PopStyleColor(2);
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.5, 0.5, 0.5, 0.5));
@@ -342,6 +352,7 @@ struct ColorCurveNode final : Node
         if (ImGui::Button(ICON_RESET "##color_curve_reset"))
         {
             ResetCurve();
+            changed = true;
         }
         ImGui::PopStyleColor(2);
         ImGui::PopStyleColor();
@@ -446,6 +457,7 @@ private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device                {-1};
     ImGui::Histogram_vulkan *   m_histogram {nullptr};
+    ImGui::ColorCurve_vulkan *  m_filter {nullptr};
     ImGui::ImMat                mMat_histogram;
     ImGui::ImMat                mMat_curve;
     float                       mHistogramScale {0.005};
