@@ -144,6 +144,7 @@ struct ColorCurveNode final : Node
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key) override
     {
         ImGui::SetCurrentContext(ctx);
+        ImDrawList *draw_list = ImGui::GetWindowDrawList();
         bool changed = false;
         bool need_update_scope = false;
         ImGuiIO &io = ImGui::GetIO();
@@ -182,7 +183,6 @@ struct ColorCurveNode final : Node
             ImGui::PopStyleColor(2);
             ImGui::PopStyleColor();
         }
-        ImDrawList *draw_list = ImGui::GetWindowDrawList();
         ImRect scrop_rect = ImRect(pos, pos + scope_view_size);
         draw_list->AddRect(scrop_rect.Min, scrop_rect.Max, IM_COL32(112, 112, 112, 255), 0);
         // draw graticule line
@@ -195,13 +195,13 @@ struct ColorCurveNode final : Node
         for (int i = 1; i <= 10; i++)
         {
             ImVec2 p0 = scrop_rect.Min + ImVec2(i * histogram_step, 0);
-            ImVec2 p1 = scrop_rect.Min + ImVec2(i * histogram_step, scrop_rect.Max.y);
+            ImVec2 p1 = scrop_rect.Min + ImVec2(i * histogram_step, scope_view_size.y);
             draw_list->AddLine(p0, p1, IM_COL32(128,  96,   0, 128), 1);
         }
         for (int i = 0; i < histogram_seg; i++)
         {
             ImVec2 pr0 = scrop_rect.Min + ImVec2(0, (scope_view_size.y / graticule_scale) - i * histogram_vstep);
-            ImVec2 pr1 = scrop_rect.Min + ImVec2(scrop_rect.Max.x, (scope_view_size.y / graticule_scale) - i * histogram_vstep);
+            ImVec2 pr1 = scrop_rect.Min + ImVec2(scope_view_size.x, (scope_view_size.y / graticule_scale) - i * histogram_vstep);
             draw_list->AddLine(pr0, pr1, IM_COL32(128,  96,   0, 128), 1);
         }
         for (int i = 0; i < 50; i++)
@@ -214,7 +214,8 @@ struct ColorCurveNode final : Node
         bool _changed = false;
         float curses_pos = -1.f;
         ImGui::SetCursorScreenPos(pos);
-        ImGui::ImCurveEdit::Edit(mKeyPoints,
+        ImGui::ImCurveEdit::Edit(draw_list,
+                                mKeyPoints,
                                 scope_view_size, 
                                 ImGui::GetID("##color_curve_keypoint_editor"), 
                                 curses_pos,
