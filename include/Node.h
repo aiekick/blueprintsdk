@@ -4,6 +4,7 @@
 #include <Debug.h>
 #include <imgui_node_editor.h>
 #include <imgui_extra_widget.h>
+#include <imgui_curve.h>
 #include <inttypes.h>
 #include <DynObjectLoader.h>
 
