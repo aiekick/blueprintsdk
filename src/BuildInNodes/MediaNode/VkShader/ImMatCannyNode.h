@@ -157,6 +157,23 @@ struct CannyNode final : Node
         value["maxThreshold"] = imgui_json::number(m_maxThreshold);
     }
 
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    {
+        if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
+        float font_size = ImGui::GetFontSize();
+        ImGui::SetWindowFontScale((size.x - 16) / font_size);
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+#if IMGUI_ICONS
+        ImGui::Button((std::string(u8"\ue155") + "##" + std::to_string(m_ID)).c_str(), size);
+#else
+        ImGui::Button((std::string("F") + "##" + std::to_string(m_ID)).c_str(), size);
+#endif
+        ImGui::PopStyleColor(3);
+        ImGui::SetWindowFontScale(1.0);
+    }
+
     span<Pin*> GetInputPins() override { return m_InputPins; }
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     Pin* GetAutoLinkInputFlowPin() override { return &m_Enter; }

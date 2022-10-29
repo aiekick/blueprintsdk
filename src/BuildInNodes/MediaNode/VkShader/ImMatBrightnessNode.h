@@ -125,17 +125,28 @@ struct BrightnessNode final : Node
         return ret;
     }
 
-    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
-    {
-        if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
-        ImGui::Button((std::string(u8"\uf1b3") + "##" + std::to_string(m_ID)).c_str(), size);
-    }
-
     void Save(imgui_json::value& value, std::map<ID_TYPE, ID_TYPE> MapID) override
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
         value["brightness"] = imgui_json::number(m_brightness);
+    }
+
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    {
+        if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
+        float font_size = ImGui::GetFontSize();
+        ImGui::SetWindowFontScale((size.x - 16) / font_size);
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
+#if IMGUI_ICONS
+        ImGui::Button((std::string(u8"\ue3ac") + "##" + std::to_string(m_ID)).c_str(), size);
+#else
+        ImGui::Button((std::string("F") + "##" + std::to_string(m_ID)).c_str(), size);
+#endif
+        ImGui::PopStyleColor(3);
+        ImGui::SetWindowFontScale(1.0);
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }
