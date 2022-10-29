@@ -313,12 +313,14 @@ struct AudioEqualizerNode final : Node
                 char cmdarg[8] = {0};
                 snprintf(cmdarg, sizeof(cmdarg)-1, "%d", gain);
                 char res[128] = {0};
-                int fferr = avfilter_graph_send_command(m_filterGraph, targetFilter, "gain", cmdarg, res, sizeof(res)-1, 0);
-                if (fferr < 0)
+                if (m_filterGraph)
                 {
-                    std::ostringstream oss;
-                    oss << "FAILED to invoke 'avfilter_graph_send_command' to set gain value " << gain << " to target filter '" << targetFilter << "'!";
-                    throw std::runtime_error(oss.str());
+                    if (avfilter_graph_send_command(m_filterGraph, targetFilter, "gain", cmdarg, res, sizeof(res)-1, 0) < 0)
+                    {
+                        std::ostringstream oss;
+                        oss << "FAILED to invoke 'avfilter_graph_send_command' to set gain value " << gain << " to target filter '" << targetFilter << "'!";
+                        throw std::runtime_error(oss.str());
+                    }
                 }
                 m_bandCfg[i].gain = gain;
             }
