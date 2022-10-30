@@ -172,15 +172,18 @@ struct ColorCurveNode final : Node
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key) override
     {
         ImGui::SetCurrentContext(ctx);
-        ImDrawList *draw_list = ImGui::GetWindowDrawList();
         bool changed = false;
         bool curve_changed = false;
         bool need_update_scope = false;
         ImGuiIO &io = ImGui::GetIO();
         // draw histogram and curve
         ImGui::BeginGroup();
+        ImDrawList *draw_list = ImGui::GetWindowDrawList();
+        std::string label_id = "##mat_color_curve_node@" + std::to_string(m_ID);
         auto pos = ImGui::GetCursorScreenPos();
         static int dragging_dot = -1;
+        ImGui::InvisibleButton(label_id.c_str(), scope_view_size);
+        ImGui::SetItemUsingMouseWheel();
         if (!mMat_histogram.empty())
         {
             ImGui::PushStyleColor(ImGuiCol_FrameBg, 0);
@@ -215,8 +218,8 @@ struct ColorCurveNode final : Node
         ImRect scrop_rect = ImRect(pos, pos + scope_view_size);
         ImRect drag_rect = ImRect(scrop_rect.Min - ImVec2(8, 8) , scrop_rect.Max + ImVec2(8, 8));
         draw_list->AddRect(scrop_rect.Min, scrop_rect.Max, IM_COL32(128, 128, 128, 255), 0);
-        // draw graticule line
-        draw_list->PushClipRect(drag_rect.Min, drag_rect.Max);
+
+        // draw graticule line        
         float graticule_scale = 1.f;
         auto histogram_step = scope_view_size.x / 10;
         auto histogram_sub_vstep = scope_view_size.x / 50;
@@ -240,6 +243,7 @@ struct ColorCurveNode final : Node
             ImVec2 p1 = scrop_rect.Min + ImVec2(i * histogram_sub_vstep, 5);
             draw_list->AddLine(p0, p1, IM_COL32(255, 196,   0, 128), 1);
         }
+
         // spline curve
         if (mCurve.size() == 4)
         {
@@ -347,7 +351,6 @@ struct ColorCurveNode final : Node
             dragging_dot = -1;
         }
         
-        draw_list->PopClipRect();
         // draw control bar
         ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
