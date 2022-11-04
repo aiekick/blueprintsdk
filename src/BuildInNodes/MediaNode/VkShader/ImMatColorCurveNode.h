@@ -69,7 +69,7 @@ struct ColorCurveNode final : Node
                         int current_x = ps.x * 1023;
                         if (point_index == -1)
                         {
-                            for (int i = 0; i < current_x; i++)
+                            for (int i = 0; i <= current_x; i++)
                                 mat.at<float>(i, 0) = ps.y;
                         }
                         else if (current_x > point_index)
