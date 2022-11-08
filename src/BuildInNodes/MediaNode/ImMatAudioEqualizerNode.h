@@ -515,7 +515,7 @@ private:
     {
         char tag[16]= {0};
         if (freq < 1000)
-            sprintf(tag, "%u", freq);
+            snprintf(tag, 16, "%u", freq);
         else if (freq%1000 > 0)
             snprintf(tag, sizeof(tag)-1, "%.1fK", (float)(freq/1000));
         else

@@ -29,7 +29,7 @@ struct ToStringNode final : Node
                 if (m_format_type == FORMAT_TYPE_HEX)
                 {
                     char buffer[128] = {0};
-                    sprintf(buffer, "0x%08X", value.As<int32_t>());
+                    snprintf(buffer, 128, "0x%08X", value.As<int32_t>());
                     result = string(buffer);
                 }
                 else
@@ -40,7 +40,7 @@ struct ToStringNode final : Node
                         format = "%0" + std::to_string(m_zero_count) + (m_format_type == FORMAT_TYPE_UNSIGNED ? "u" : "d");
                     else
                         format = m_format_type == FORMAT_TYPE_UNSIGNED ? "%u" : "%d";
-                    sprintf(buffer, format.c_str(), value.As<int32_t>());
+                    snprintf(buffer, 128, format.c_str(), value.As<int32_t>());
                     result = string(buffer);
                 }
             break;
@@ -48,7 +48,7 @@ struct ToStringNode final : Node
                 if (m_format_type == FORMAT_TYPE_HEX)
                 {
                     char buffer[128] = {0};
-                    sprintf(buffer, "0x%016" PRIX64, value.As<int64_t>());
+                    snprintf(buffer, 128, "0x%016" PRIX64, value.As<int64_t>());
                     result = string(buffer);
                 }
                 else
@@ -59,7 +59,7 @@ struct ToStringNode final : Node
                         format = "%0" + std::to_string(m_zero_count) + (m_format_type == FORMAT_TYPE_UNSIGNED ? "lu" : "ld");
                     else
                         format = m_format_type == FORMAT_TYPE_UNSIGNED ? "%lu" : "%ld";
-                    sprintf(buffer, format.c_str(), value.As<int64_t>());
+                    snprintf(buffer, 128, format.c_str(), value.As<int64_t>());
                     result = string(buffer);
                 }
             break;
@@ -71,7 +71,7 @@ struct ToStringNode final : Node
                     format = "%." + std::to_string(m_floating_decimal) + "f";
                 else
                     format = "%f";
-                sprintf(buffer, format.c_str(), value.As<float>());
+                snprintf(buffer, 128, format.c_str(), value.As<float>());
                 result = string(buffer);
             }
             break;
@@ -83,7 +83,7 @@ struct ToStringNode final : Node
                     format = "%." + std::to_string(m_floating_decimal) + "f";
                 else
                     format = "%f";
-                sprintf(buffer, format.c_str(), value.As<double>());
+                snprintf(buffer, 128, format.c_str(), value.As<double>());
                 result = string(buffer);
             }
             break;

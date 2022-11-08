@@ -81,7 +81,7 @@ static inline std::string PrintTimeStamp(double time_stamp)
         secs = time_stamp / 1000; time_stamp -= secs * 1000;
         ms = time_stamp;
     }
-    sprintf(buffer, "%02d:%02d:%02d.%03d", hours, mins, secs, ms);
+    snprintf(buffer, 1024, "%02d:%02d:%02d.%03d", hours, mins, secs, ms);
     return std::string(buffer);
 }
 
