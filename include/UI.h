@@ -238,7 +238,6 @@ struct BluePrintUI
     Pin*                            m_newNodeLinkPin {nullptr};
     ImVec4                          m_StyleColors[BluePrintStyleColor_Count];
     ImVec2                          m_PopupMousePos {};
-    ImVec2                          m_ViewSize {};
     enum BluePrintStyle             m_Style {BluePrintStyle::BP_Style_BluePrint};
 private:
     DebugOverlay*                   m_DebugOverlay {nullptr};
@@ -259,7 +258,7 @@ public:
     void    ShowStyleEditor(bool* show = nullptr);
     void    ShowToolbar(bool* show = nullptr);
     void    ShowShortToolbar(bool vertical = true, bool* show = nullptr);
-    void    Thumbnails(bool* show = nullptr);
+    void    Thumbnails(bool* show = nullptr, ImVec2 size = ImVec2(0, 0), ImVec2 pos = ImVec2(-1, -1), float scale = 0.25f);
     bool    Blueprint_IsValid();
 
     bool File_IsOpen();

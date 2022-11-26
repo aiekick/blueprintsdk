@@ -570,14 +570,10 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
             LOGI("Successfully loaded PinEx from '%s'!", pinex_path.c_str());
         }
     }
-
-    if (!bp_file || m_Document->Load(bp_file) != BP_ERR_NONE)
+    if (bp_file)
     {
-        //if (bp_file)
-        //    LOGE("Load BluePrint file %s Failed!!! We will build new file.", bp_file);
-        //else
-        //    LOGE("No BluePrint file set!!! We will build new file.");
-        //CreateNewDocument();
+        if (m_Document->Load(bp_file) != BP_ERR_NONE)
+            CreateNewDocument();
     }
 
     if (bp_file) m_Document->SetPath(bp_file);
@@ -817,6 +813,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, uint
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
         ShowShortToolbar(flag & BluePrintFlag_Vertical);
+        //Thumbnails();
         ed::Begin("###main_editor");
         if (bp_enabled)
         {
@@ -844,7 +841,7 @@ void BluePrintUI::CreateNewDocument()
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(32, 32));
 
     auto exitPointNode = blueprint->CreateNode<BluePrint::SystemExitPointNode>();
-                            ed::SetNodePosition(exitPointNode->m_ID, ed::GetViewSize() - ImVec2(32 + 64, 32));
+                            ed::SetNodePosition(exitPointNode->m_ID, ImVec2(128, 128));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     CommitLinksToEditor();
     blueprint->SetOpen(true);
@@ -856,9 +853,7 @@ void BluePrintUI::CreateNewFilterDocument()
     auto entryPointNode = blueprint->CreateNode<BluePrint::FilterEntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(32, 32));
 
-    auto view_size = m_ViewSize;
-    if (view_size.x == 0 || view_size.y == 0)
-        view_size = ed::GetViewSize();
+    auto view_size = ed::GetViewSize();
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ImVec2(400, 200);
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
@@ -875,9 +870,7 @@ void BluePrintUI::CreateNewFusionDocument()
     auto entryPointNode = blueprint->CreateNode<BluePrint::FusionEntryPointNode>();
                             ed::SetNodePosition(entryPointNode->m_ID, ImVec2(32, 32));
 
-    auto view_size = m_ViewSize;
-    if (view_size.x == 0 || view_size.y == 0)
-        view_size = ed::GetViewSize();
+    auto view_size = ed::GetViewSize();
     if (view_size.x == 0 || view_size.y == 0)
         view_size = ImVec2(400, 200);
 
@@ -3653,11 +3646,6 @@ void BluePrintUI::ShowToolbar(bool* show)
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, m_StyleColors[BluePrintStyleColor_ToolButtonHovered]);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, m_StyleColors[BluePrintStyleColor_ToolButtonActive]);
     ImGui::PushStyleVar(ImGuiStyleVar_TexGlyphShadowOffset, ImVec2(2.0, 2.0));
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        window_flags |= ImGuiWindowFlags_NoDocking;
-        io.ConfigViewportsNoDecoration = true;
-    }
     if (ImGui::Begin("##floating_toolbar", show, window_flags))
     {
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -3758,18 +3746,25 @@ void BluePrintUI::ShowToolbar(bool* show)
     }
 }
 
-void BluePrintUI::Thumbnails(bool* show)
+void BluePrintUI::Thumbnails(bool* show, ImVec2 size, ImVec2 pos, float scale)
 {
-    float SCALE = 1.0f / 4.0f;
+    auto& io = ImGui::GetIO();
     float zoom = ed::GetCurrentZoom();
-    auto screen_size = ed::GetScreenSize();
+    auto screen_size = (size.x == 0 || size.y == 0) ? ed::GetScreenSize() : size;
+    auto screen_pos = (pos.x < 0 || pos.y < 0) ? screen_size - screen_size * scale : pos;
     auto view_rect = ed::GetViewRect();
-    //auto view_size = ed::GetViewSize();
-    //ImVec2 origin = ed::GetCurrentOrigin();
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoInputs;
+
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoInputs;
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        const ImGuiViewport* viewport = ImGui::GetWindowViewport();
+        window_flags |= ImGuiWindowFlags_NoDocking;
+        io.ConfigViewportsNoDecoration = true;
+        ImGui::SetNextWindowViewport(viewport->ID);
+    }
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-    ImGui::SetNextWindowPos(screen_size - screen_size * SCALE);
-    ImGui::SetNextWindowSize(screen_size * SCALE);
+    ImGui::SetNextWindowPos(screen_pos);
+    ImGui::SetNextWindowSize(screen_size * scale);
     if (ImGui::Begin("##floating_thumbnails", show, window_flags))
     {
         auto cursorPos = ImGui::GetCursorScreenPos();
@@ -3777,8 +3772,8 @@ void BluePrintUI::Thumbnails(bool* show)
         auto drawList  = ImGui::GetWindowDrawList();
         for (auto& node : m_Document->m_Blueprint.GetNodes())
         {
-            auto node_pos = (ed::GetNodePosition(node->m_ID) - view_rect.Min) * SCALE / zoom;
-            auto node_size = ed::GetNodeSize(node->m_ID) * SCALE / zoom;
+            auto node_pos = (ed::GetNodePosition(node->m_ID) - view_rect.Min) * scale / zoom;
+            auto node_size = ed::GetNodeSize(node->m_ID) * scale / zoom;
             drawList->AddRectFilled(cursorPos + node_pos, cursorPos + node_pos + node_size, ImGui::GetColorU32(ImGuiCol_Border, 0.40f));
         }
     }
