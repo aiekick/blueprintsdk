@@ -788,7 +788,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, uint
             ed::SetCurrentEditor(m_Editor);
             UpdateActions();
             ShowToolbar();
-            //Thumbnails();
+            if (m_isShowThumbnails) Thumbnails(2.f);
             ed::Begin("###main_editor");
                 if (show_node)
                     DrawNodes();
@@ -813,7 +813,12 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, uint
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
         ShowShortToolbar(flag & BluePrintFlag_Vertical);
-        //Thumbnails();
+        if (m_isShowThumbnails)
+        {
+            ImVec2 window_pos = ImGui::GetWindowPos();
+            ImVec2 window_size = ImGui::GetWindowSize();
+            Thumbnails(2.f, window_size, window_pos + window_size - window_size * m_ThumbnailScale);
+        }
         ed::Begin("###main_editor");
         if (bp_enabled)
         {
@@ -950,13 +955,13 @@ void BluePrintUI::InstallDocumentCallbacks()
             : m_Transaction(std::move(transaction))
         {
         }
-        /*
         void AddAction(ed::TransactionAction action, const char* name) override
         {
-            ++m_ActionCount;
-            m_Transaction->AddAction("%s", name);
+            if (action == ed::TransactionAction::Navigation)
+            {
+                // TODO::Mark to show Thumbnails
+            }
         }
-        */
         void Commit() override
         {
             ImGuiTextBuffer name;
@@ -3618,6 +3623,12 @@ void BluePrintUI::ShowShortToolbar(bool vertical, bool* show)
         string info_button_title = string(ICON_MD_INFO_OUTLINE) + "##info_tooltips";
         ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips);
         ImGui::ShowTooltipOnHover("Show Info in tooltips");
+        // Show Thumbnails
+        //if (!vertical) { ImGui::SameLine(); ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); ImGui::SameLine(); }
+        //else ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
+        //string thumbnail_button_title = string(ICON_THUMBNAIL) + "##thumbnails";
+        //ImGui::CheckButton(thumbnail_button_title.c_str(), &m_isShowThumbnails);
+        //ImGui::ShowTooltipOnHover("Show Thumbnails");
     }
     ImGui::End();
     ImGui::PopStyleVar(1);
@@ -3727,6 +3738,10 @@ void BluePrintUI::ShowToolbar(bool* show)
         ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips);
         ImGui::ShowTooltipOnHover("Show Info in tooltips");
         ImGui::SameLine();
+        string thumbnail_button_title = string(ICON_THUMBNAIL) + "##thumbnails";
+        ImGui::CheckButton(thumbnail_button_title.c_str(), &m_isShowThumbnails);
+        ImGui::ShowTooltipOnHover("Show Thumbnails");
+        ImGui::SameLine();
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
         ImGui::SameLine();
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
@@ -3746,13 +3761,19 @@ void BluePrintUI::ShowToolbar(bool* show)
     }
 }
 
-void BluePrintUI::Thumbnails(bool* show, ImVec2 size, ImVec2 pos, float scale)
+void BluePrintUI::Thumbnails(float view_expand, ImVec2 size, ImVec2 pos)
 {
     auto& io = ImGui::GetIO();
     float zoom = ed::GetCurrentZoom();
     auto screen_size = (size.x == 0 || size.y == 0) ? ed::GetScreenSize() : size;
-    auto screen_pos = (pos.x < 0 || pos.y < 0) ? screen_size - screen_size * scale : pos;
+    auto screen_pos = (pos.x < 0 || pos.y < 0) ? screen_size - screen_size * m_ThumbnailScale : pos;
     auto view_rect = ed::GetViewRect();
+    auto view_size = view_rect.GetSize();
+    auto view_center = view_rect.GetCenter();
+    if (view_expand < 1.f) view_expand = 1.0f;
+    float view_scale = 1.f / view_expand;
+    ImRect screen_rect(ImVec2(view_center.x - view_size.x * view_expand / 2.f, view_center.y - view_size.y * view_expand / 2.f), 
+                        ImVec2(view_center.x + view_size.x * view_expand / 2.f, view_center.y + view_size.y * view_expand / 2.f));
 
     ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoInputs;
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -3764,16 +3785,19 @@ void BluePrintUI::Thumbnails(bool* show, ImVec2 size, ImVec2 pos, float scale)
     }
     ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
     ImGui::SetNextWindowPos(screen_pos);
-    ImGui::SetNextWindowSize(screen_size * scale);
-    if (ImGui::Begin("##floating_thumbnails", show, window_flags))
+    ImGui::SetNextWindowSize(screen_size * m_ThumbnailScale);
+    if (ImGui::Begin("##floating_thumbnails", nullptr, window_flags))
     {
         auto cursorPos = ImGui::GetCursorScreenPos();
         auto window = ImGui::GetCurrentWindow();
         auto drawList  = ImGui::GetWindowDrawList();
+        auto view_area_pos = (view_rect.Min - screen_rect.Min) * m_ThumbnailScale * view_scale / zoom;
+        auto view_area_size = view_size * m_ThumbnailScale * view_scale / zoom;
+        drawList->AddRect(cursorPos + view_area_pos, cursorPos + view_area_pos + view_area_size, ImGui::GetColorU32(ImGuiCol_Border, 0.40f));
         for (auto& node : m_Document->m_Blueprint.GetNodes())
         {
-            auto node_pos = (ed::GetNodePosition(node->m_ID) - view_rect.Min) * scale / zoom;
-            auto node_size = ed::GetNodeSize(node->m_ID) * scale / zoom;
+            auto node_pos = (ed::GetNodePosition(node->m_ID) - screen_rect.Min) * m_ThumbnailScale * view_scale / zoom;
+            auto node_size = ed::GetNodeSize(node->m_ID) * m_ThumbnailScale * view_scale / zoom;
             drawList->AddRectFilled(cursorPos + node_pos, cursorPos + node_pos + node_size, ImGui::GetColorU32(ImGuiCol_Border, 0.40f));
         }
     }
