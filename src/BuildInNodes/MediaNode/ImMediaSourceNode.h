@@ -723,7 +723,7 @@ struct MediaSourceNode final : Node
     
     void DrawSettingLayout(ImGuiContext * ctx) override
     {
-        const char *filters = "Media Files(*.mp4 *.mov *.mkv *.webm *.avi){.mp4,.mov,.mkv,.webm,.avi,.MP4,.MOV,.MKV,WEBM,.AVI},.*";
+        const char *filters = "Media Files(*.mp4 *.mov *.mkv *.webm *.mxf *.avi){.mp4,.mov,.mkv,.webm,.mxf,.avi,.MP4,.MOV,.MKV,.MXF,.WEBM,.AVI},.*";
         // Draw Setting
         Node::DrawSettingLayout(ctx);
         ImGui::Separator();
