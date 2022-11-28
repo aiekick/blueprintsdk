@@ -3,7 +3,8 @@
 #include <imgui_node_editor_internal.h>
 #include <iomanip>
 #include <utility>
-
+#define THUMBNAIL_COUNT     100
+#define THUMBNAIL_HIDDEN    30
 #define DEBUG_NODE_DRAWING  0
 #define DEBUG_GROUP_NODE    0
 extern std::mutex g_Mutex;
@@ -522,6 +523,7 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
     m_Editor = ed::CreateEditor(&m_Config);
     ed::SetCurrentEditor(m_Editor);
     m_Document = make_unique<BluePrint::Document>();
+    m_Document->m_UserData = this;
 
     // load dynamic node
     auto nodeRegistry = m_Document->m_Blueprint.GetNodeRegistry();
@@ -788,7 +790,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, uint
             ed::SetCurrentEditor(m_Editor);
             UpdateActions();
             ShowToolbar();
-            if (m_isShowThumbnails) Thumbnails(2.f);
+            if (m_isShowThumbnails || m_ThumbnailShowCount > 0) Thumbnails(2.f);
             ed::Begin("###main_editor");
                 if (show_node)
                     DrawNodes();
@@ -813,7 +815,7 @@ bool BluePrintUI::Frame(bool child_window, bool show_node, bool bp_enabled, uint
         ed::SetCurrentEditor(m_Editor);
         UpdateActions();
         ShowShortToolbar(flag & BluePrintFlag_Vertical);
-        if (m_isShowThumbnails)
+        if (m_isShowThumbnails || m_ThumbnailShowCount > 0)
         {
             ImVec2 window_pos = ImGui::GetWindowPos();
             ImVec2 window_size = ImGui::GetWindowSize();
@@ -959,7 +961,8 @@ void BluePrintUI::InstallDocumentCallbacks()
         {
             if (action == ed::TransactionAction::Navigation)
             {
-                // TODO::Mark to show Thumbnails
+                auto self = reinterpret_cast<BluePrintUI*>(m_Transaction->GetDocument()->m_UserData);
+                if (self) self->m_ThumbnailShowCount = THUMBNAIL_COUNT;
             }
         }
         void Commit() override
@@ -3783,7 +3786,15 @@ void BluePrintUI::Thumbnails(float view_expand, ImVec2 size, ImVec2 pos)
         io.ConfigViewportsNoDecoration = true;
         ImGui::SetNextWindowViewport(viewport->ID);
     }
-    ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+    float window_alpha = 0.5f;
+    if (m_ThumbnailShowCount > 0)
+    {
+        if (m_isShowThumbnails)
+            m_ThumbnailShowCount = 0;
+        else if (m_ThumbnailShowCount <= THUMBNAIL_HIDDEN)
+            window_alpha *= (float)m_ThumbnailShowCount / (float)THUMBNAIL_HIDDEN;
+    }
+    ImGui::SetNextWindowBgAlpha(window_alpha);
     ImGui::SetNextWindowPos(screen_pos);
     ImGui::SetNextWindowSize(screen_size * m_ThumbnailScale);
     if (ImGui::Begin("##floating_thumbnails", nullptr, window_flags))
@@ -3793,14 +3804,16 @@ void BluePrintUI::Thumbnails(float view_expand, ImVec2 size, ImVec2 pos)
         auto drawList  = ImGui::GetWindowDrawList();
         auto view_area_pos = (view_rect.Min - screen_rect.Min) * m_ThumbnailScale * view_scale / zoom;
         auto view_area_size = view_size * m_ThumbnailScale * view_scale / zoom;
-        drawList->AddRect(cursorPos + view_area_pos, cursorPos + view_area_pos + view_area_size, ImGui::GetColorU32(ImGuiCol_Border, 0.40f));
+        drawList->AddRect(cursorPos + view_area_pos, cursorPos + view_area_pos + view_area_size, ImGui::GetColorU32(ImGuiCol_Border, window_alpha));
         for (auto& node : m_Document->m_Blueprint.GetNodes())
         {
             auto node_pos = (ed::GetNodePosition(node->m_ID) - screen_rect.Min) * m_ThumbnailScale * view_scale / zoom;
             auto node_size = ed::GetNodeSize(node->m_ID) * m_ThumbnailScale * view_scale / zoom;
-            drawList->AddRectFilled(cursorPos + node_pos, cursorPos + node_pos + node_size, ImGui::GetColorU32(ImGuiCol_Border, 0.40f));
+            drawList->AddRectFilled(cursorPos + node_pos, cursorPos + node_pos + node_size, ImGui::GetColorU32(ImGuiCol_Border, window_alpha));
         }
     }
     ImGui::End();
+    m_ThumbnailShowCount --;
+    if (m_ThumbnailShowCount <= 0) m_ThumbnailShowCount = 0;
 }
 } // namespace BluePrint

@@ -117,6 +117,7 @@ struct IMGUI_API Document
     shared_ptr<UndoTransaction> m_SaveTransaction = nullptr;
 
     BP                      m_Blueprint;
+    void *                  m_UserData {nullptr};
 };
 
 } // namespace BluePrint

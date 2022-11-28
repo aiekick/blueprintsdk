@@ -239,6 +239,7 @@ struct BluePrintUI
     bool                            m_isShowInfoTooltips {false};
     bool                            m_isShowThumbnails {false};
     float                           m_ThumbnailScale {0.25f};
+    int                             m_ThumbnailShowCount {0};
     Pin*                            m_newNodeLinkPin {nullptr};
     ImVec4                          m_StyleColors[BluePrintStyleColor_Count];
     ImVec2                          m_PopupMousePos {};

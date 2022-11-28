@@ -66,7 +66,7 @@ struct ColorCurveNode final : Node
                         ImVec2 ps = ImGui::ImSpline::Position(splines[i], t);
                         ps.x = ImClamp(ps.x, 0.f, 1.f);
                         ps.y = 1.0 - ImClamp(ps.y, 0.f, 1.f);
-                        int current_x = ps.x * 1023;
+                        int current_x = ImClamp((int)(ps.x * 1024), 0, 1023);
                         if (point_index == -1)
                         {
                             for (int i = 0; i <= current_x; i++)
