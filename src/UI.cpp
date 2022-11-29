@@ -1747,53 +1747,53 @@ void BluePrintUI::DrawInfoTooltip()
     if (!hoveredNode && hoveredPin)
         hoveredNode = hoveredPin->m_Node;
     
-    auto pinTooltip = [](const char* label, const Pin& pin, bool showNode)
+    auto pinTooltip = [](const char* label, const Pin* pin, bool showNode)
     {
-        auto isDummy = pin.m_Node->GetStyle() == NodeStyle::Dummy;
-        ImGui::Text("%s %s", label, !pin.m_Name.empty() ? pin.m_Name.c_str() : "");
-        ImGui::Bullet(); ImGui::Text("         ID: %u", pin.m_ID);
-        if (pin.m_Link)
+        auto isDummy = pin->m_Node->GetStyle() == NodeStyle::Dummy;
+        ImGui::Text("%s %s", label, !pin->m_Name.empty() ? pin->m_Name.c_str() : "");
+        ImGui::Bullet(); ImGui::Text("         ID: %u", pin->m_ID);
+        if (pin->m_Link)
         {
-            if (pin.m_Type == PinType::Flow)
-                ImGui::Text("          ->: %u", pin.m_Link);
+            if (pin->m_Type == PinType::Flow)
+                ImGui::Text("          ->: %u", pin->m_Link);
             else
-                ImGui::Text("          <-: %u", pin.m_Link);
+                ImGui::Text("          <-: %u", pin->m_Link);
         }
-        for (auto link_from : pin.m_LinkFrom)
+        for (auto link_from : pin->m_LinkFrom)
         {
-            if (pin.m_Type == PinType::Flow)
+            if (pin->m_Type == PinType::Flow)
                 ImGui::Text("          <-: %u", link_from);
             else
                 ImGui::Text("          ->: %u", link_from);
         }
-        if (pin.m_MappedPin)
+        if (pin->m_MappedPin)
         {
-            ImGui::Text("      Mapped: %u", pin.m_MappedPin);
+            ImGui::Text("      Mapped: %u", pin->m_MappedPin);
         }
 
-        if (showNode && pin.m_Node)
+        if (showNode && pin->m_Node)
         {
-            auto isDummy = pin.m_Node->GetStyle() == NodeStyle::Dummy;
-            auto nodeName = !isDummy ? pin.m_Node->GetName() : ((DummyNode *)pin.m_Node)->m_name + "*load fail*";
+            auto isDummy = pin->m_Node->GetStyle() == NodeStyle::Dummy;
+            auto nodeName = !isDummy ? pin->m_Node->GetName() : ((DummyNode *)pin->m_Node)->m_name + "*load fail*";
             ImGui::Bullet(); ImGui::Text("      Node: %" PRI_sv, FMT_sv(nodeName));
         }
-        ImGui::Bullet(); ImGui::Text("      Type: %s", PinTypeToString(pin.GetType()).c_str());
-        ImGui::Bullet(); ImGui::Text("Value Type: %s", PinTypeToString(pin.GetValueType()).c_str());
-        if (!isDummy && !pin.m_MappedPin && pin.GetValueType() == PinType::Mat)
+        ImGui::Bullet(); ImGui::Text("      Type: %s", PinTypeToString(pin->GetType()).c_str());
+        ImGui::Bullet(); ImGui::Text("Value Type: %s", PinTypeToString(pin->GetValueType()).c_str());
+        if (!isDummy && !pin->m_MappedPin && pin->GetValueType() == PinType::Mat)
         {
             ImGui::TextUnformatted("=============ImMat===========");
-            pin.m_Node->m_mutex.lock();
+            pin->m_Node->m_mutex.lock();
             PinValue pinValue;
-            if (!pin.IsInput())
+            if (!pin->IsInput())
             {
-                pinValue = pin.GetValue();
+                pinValue = pin->GetValue();
             }
             else
             {
-                auto bp = pin.m_Node->m_Blueprint;
+                auto bp = pin->m_Node->m_Blueprint;
                 if (bp)
                 {
-                    auto link = pin.GetLink(bp);
+                    auto link = pin->GetLink(bp);
                     while (link && link->IsMappedPin())
                         link = link->GetLink(bp);
                     if (link)
@@ -1804,7 +1804,7 @@ void BluePrintUI::DrawInfoTooltip()
                     }
                 }
             }
-            pin.m_Node->m_mutex.unlock();
+            pin->m_Node->m_mutex.unlock();
             ImGui::ImMat mat;
             if (pinValue.GetType() == PinType::Mat)
                 mat = pinValue.As<ImGui::ImMat>();
@@ -1856,21 +1856,21 @@ void BluePrintUI::DrawInfoTooltip()
             }
             ImGui::TextUnformatted("=============================");
         }
-        if (!isDummy && !pin.m_MappedPin && pin.GetValueType() == PinType::Array)
+        if (!isDummy && !pin->m_MappedPin && pin->GetValueType() == PinType::Array)
         {
             ImGui::TextUnformatted("=============Array===========");
-            pin.m_Node->m_mutex.lock();
+            pin->m_Node->m_mutex.lock();
             PinValue pinValue;
-            if (!pin.IsInput())
+            if (!pin->IsInput())
             {
-                pinValue = pin.GetValue();
+                pinValue = pin->GetValue();
             }
             else
             {
-                auto bp = pin.m_Node->m_Blueprint;
+                auto bp = pin->m_Node->m_Blueprint;
                 if (bp)
                 {
-                    auto link = pin.GetLink(bp);
+                    auto link = pin->GetLink(bp);
                     while (link && link->IsMappedPin())
                         link = link->GetLink(bp);
                     if (link)
@@ -1881,7 +1881,7 @@ void BluePrintUI::DrawInfoTooltip()
                     }
                 }
             }
-            pin.m_Node->m_mutex.unlock();
+            pin->m_Node->m_mutex.unlock();
             imgui_json::array array;
             if (pinValue.GetType() == PinType::Array)
                 array = pinValue.As<imgui_json::array>();
@@ -1899,21 +1899,21 @@ void BluePrintUI::DrawInfoTooltip()
             ImGui::TextUnformatted("=============================");
         }
         string flags;
-        if (pin.IsMappedPin())
+        if (pin->IsMappedPin())
             flags += "mapped, ";
-        if (pin.m_Flags & PIN_FLAG_EXPORTED)
+        if (pin->m_Flags & PIN_FLAG_EXPORTED)
             flags += "exported, ";
-        if (pin.m_Flags & PIN_FLAG_PUBLICIZED)
+        if (pin->m_Flags & PIN_FLAG_PUBLICIZED)
             flags += "publicized, ";
-        if (pin.IsLinked())
+        if (pin->IsLinked())
             flags += "linked, ";
-        if (pin.IsInput())
+        if (pin->IsInput())
             flags += "input, ";
-        if (pin.IsOutput())
+        if (pin->IsOutput())
             flags += "output, ";
-        if (pin.IsProvider())
+        if (pin->IsProvider())
             flags += "provider, ";
-        if (pin.IsReceiver())
+        if (pin->IsReceiver())
             flags += "receiver, ";
         if (!flags.empty())
             flags = flags.substr(0, flags.size() - 2);
@@ -1968,7 +1968,7 @@ void BluePrintUI::DrawInfoTooltip()
                         m_Document->m_IsModified = true;
                     }
                 }
-                pinTooltip("Pin:", *hoveredPin, false);
+                pinTooltip("Pin:", hoveredPin, false);
                 ImGui::Separator();
             }
             ImGui::Text("Node: %" PRI_sv, FMT_sv(nodeName));
@@ -2032,9 +2032,9 @@ void BluePrintUI::DrawInfoTooltip()
                 ImGui::Text("Link ID: 0x%08" PRIX32, startPin->m_ID);
                 ImGui::Text("Type: %s", PinTypeToString(startPin->GetValueType()).c_str());
                 ImGui::Separator();
-                pinTooltip("Start Pin:", *startPin, true);
+                pinTooltip("Start Pin:", startPin, true);
                 ImGui::Separator();
-                pinTooltip("End Pin:", *endPin, true);
+                pinTooltip("End Pin:", endPin, true);
                 ImGui::EndTooltip();
                 ed::Resume();
             }

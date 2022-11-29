@@ -380,6 +380,29 @@ unique_ptr<Pin> Node::CreatePin(PinType pinType, std::string name)
     return nullptr;
 }
 
+Pin * Node::NewPin(PinType pinType, std::string name)
+{
+    Pin * pin = nullptr;
+    switch (pinType)
+    {
+        case PinType::Any :     pin = new AnyPin(this, name); break;
+        case PinType::Flow :    pin = new FlowPin(this, name); break;
+        case PinType::Bool :    pin = new BoolPin(this, name); break;
+        case PinType::Int32 :   pin = new Int32Pin(this, name); break;
+        case PinType::Int64 :   pin = new Int64Pin(this, name); break;
+        case PinType::Float :   pin = new FloatPin(this, name); break;
+        case PinType::Double :  pin = new DoublePin(this, name); break;
+        case PinType::String :  pin = new StringPin(this, name, ""); break;
+        case PinType::Point :   pin = new PointPin(this, name); break;
+        case PinType::Vec2 :    pin = new Vec2Pin(this, name); break;
+        case PinType::Vec4 :    pin = new Vec4Pin(this, name); break;
+        case PinType::Mat :     pin = new MatPin(this, name); break;
+        case PinType::Array :   pin = new ArrayPin(this, name); break;
+        default: break;
+    }
+    return pin;
+}
+
 std::string Node::GetName() const
 {
     return m_Name;

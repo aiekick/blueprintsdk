@@ -97,6 +97,7 @@ struct IMGUI_API Node
     template <typename T>
     unique_ptr<T> CreatePin(std::string name = "");
     unique_ptr<Pin> CreatePin(PinType pinType, std::string name = "");
+    Pin * NewPin(PinType pinType, std::string name = "");
     
     virtual void Reset(Context& context) // Reset state of the node before execution. Allows to set initial state for the specified execution context.
     {
