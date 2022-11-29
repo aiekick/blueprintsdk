@@ -67,8 +67,6 @@ extern "C" {
     format == AV_PIX_FMT_NV42 || \
     format == AV_PIX_FMT_NV20)
 
-#define HW_DECODER 1
-
 static inline std::string PrintTimeStamp(double time_stamp)
 {
     char buffer[1024] = {0};
@@ -89,14 +87,12 @@ static enum AVPixelFormat  m_hw_pix_fmt {AV_PIX_FMT_NONE};
 static enum AVHWDeviceType m_hw_type {AV_HWDEVICE_TYPE_NONE};
 static enum AVPixelFormat get_hw_format(AVCodecContext *ctx, const enum AVPixelFormat *pix_fmts)
 {
-#if HW_DECODER
     const enum AVPixelFormat *p;
     for (p = pix_fmts; *p != -1; p++) {
         if (*p == m_hw_pix_fmt)
             return *p;
     }
     av_log(NULL, AV_LOG_WARNING, "Failed to get HW surface format.");
-#endif 
     return ctx->pix_fmt;//AV_PIX_FMT_NONE;
 }
 
@@ -120,147 +116,81 @@ static int open_codec_context(int *stream_idx, AVCodecContext **dec_ctx, AVForma
     AVStream *st;
     AVCodec *dec = NULL;
     AVDictionary *opts = NULL;
-    ret = av_find_best_stream(fmt_ctx, type, -1, -1, NULL, 0);
-    if (ret < 0) 
+    if (*stream_idx == -1)
     {
-        fprintf(stderr, "Could not find %s stream in input file\n", av_get_media_type_string(type));
-        return ret;
-    } 
+        ret = av_find_best_stream(fmt_ctx, type, -1, -1, NULL, 0);
+        if (ret < 0) 
+        {
+            fprintf(stderr, "Could not find %s stream in input file\n", av_get_media_type_string(type));
+            return ret;
+        } 
+        *stream_idx = ret;
+    }
     else
     {
-        stream_index = ret;
-        st = fmt_ctx->streams[stream_index];
-        /* find decoder for the stream */
-        dec = (AVCodec*)avcodec_find_decoder(st->codecpar->codec_id);
-        if (!dec) 
+        ret = *stream_idx;
+    }
+
+    stream_index = ret;
+    st = fmt_ctx->streams[stream_index];
+    /* find decoder for the stream */
+    dec = (AVCodec*)avcodec_find_decoder(st->codecpar->codec_id);
+    if (!dec) 
+    {
+        fprintf(stderr, "Failed to find %s codec\n", av_get_media_type_string(type));
+        return AVERROR(EINVAL);
+    }
+    /* Allocate a codec context for the decoder */
+    *dec_ctx = avcodec_alloc_context3(dec);
+    if (!*dec_ctx) 
+    {
+        fprintf(stderr, "Failed to allocate the %s codec context\n", av_get_media_type_string(type));
+        return AVERROR(ENOMEM);
+    }
+    /* Copy codec parameters from input stream to output codec context */
+    if ((ret = avcodec_parameters_to_context(*dec_ctx, st->codecpar)) < 0) 
+    {
+        fprintf(stderr, "Failed to copy %s codec parameters to decoder context\n", av_get_media_type_string(type));
+        return ret;
+    }
+    if ((*dec_ctx)->codec_type == AVMEDIA_TYPE_VIDEO && device_type == 0)
+    {
+        // try hw codec
+        for (int i = 0;; i++) 
         {
-            fprintf(stderr, "Failed to find %s codec\n", av_get_media_type_string(type));
-            return AVERROR(EINVAL);
-        }
-        /* Allocate a codec context for the decoder */
-        *dec_ctx = avcodec_alloc_context3(dec);
-        if (!*dec_ctx) 
-        {
-            fprintf(stderr, "Failed to allocate the %s codec context\n", av_get_media_type_string(type));
-            return AVERROR(ENOMEM);
-        }
-        /* Copy codec parameters from input stream to output codec context */
-        if ((ret = avcodec_parameters_to_context(*dec_ctx, st->codecpar)) < 0) 
-        {
-            fprintf(stderr, "Failed to copy %s codec parameters to decoder context\n", av_get_media_type_string(type));
-            return ret;
-        }
-        if ((*dec_ctx)->codec_type == AVMEDIA_TYPE_VIDEO && device_type == 0)
-        {
-            // try hw codec
-            for (int i = 0;; i++) 
+            const AVCodecHWConfig *config = avcodec_get_hw_config(dec, i);
+            if (!config)
             {
-                const AVCodecHWConfig *config = avcodec_get_hw_config(dec, i);
-                if (!config)
-                {
-                    av_log(NULL, AV_LOG_WARNING,"Decoder %s does not support HW.", dec->name);
-                    m_hw_pix_fmt = AV_PIX_FMT_NONE;
-                    m_hw_type = AV_HWDEVICE_TYPE_NONE;
-                    break;
-                }
-                if (config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) 
-                {
-                    m_hw_pix_fmt = config->pix_fmt;
-                    m_hw_type = config->device_type;
-                    break;
-                }
+                av_log(NULL, AV_LOG_WARNING,"Decoder %s does not support HW.", dec->name);
+                m_hw_pix_fmt = AV_PIX_FMT_NONE;
+                m_hw_type = AV_HWDEVICE_TYPE_NONE;
+                break;
+            }
+            if (config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX) 
+            {
+                m_hw_pix_fmt = config->pix_fmt;
+                m_hw_type = config->device_type;
+                break;
             }
         }
-        (*dec_ctx)->codec_id = dec->id;
-        // init hw codec
-        if ((*dec_ctx)->codec_type == AVMEDIA_TYPE_VIDEO && device_type == 0 && m_hw_pix_fmt != AV_PIX_FMT_NONE)
-        {
-            (*dec_ctx)->get_format = get_hw_format;
-            if ((ret = hw_decoder_init(*dec_ctx, m_hw_type)) < 0)
-                return ret;
-        }
-        /* Init the decoders */
-        if ((ret = avcodec_open2(*dec_ctx, dec, &opts)) < 0) 
-        {
-            fprintf(stderr, "Failed to open %s codec\n", av_get_media_type_string(type));
+    }
+    (*dec_ctx)->codec_id = dec->id;
+    // init hw codec
+    if ((*dec_ctx)->codec_type == AVMEDIA_TYPE_VIDEO && device_type == 0 && m_hw_pix_fmt != AV_PIX_FMT_NONE)
+    {
+        (*dec_ctx)->get_format = get_hw_format;
+        if ((ret = hw_decoder_init(*dec_ctx, m_hw_type)) < 0)
             return ret;
-        }
-        *stream_idx = stream_index;
-        (*dec_ctx)->pkt_timebase = st->time_base;
     }
-    return 0;
-}
+    /* Init the decoders */
+    if ((ret = avcodec_open2(*dec_ctx, dec, &opts)) < 0) 
+    {
+        fprintf(stderr, "Failed to open %s codec\n", av_get_media_type_string(type));
+        return ret;
+    }
+    
+    (*dec_ctx)->pkt_timebase = st->time_base;
 
-static int open_media(string file_path, AVFormatContext*& fmt_ctx, double & total_time, int device_type,
-                    int& video_index, AVStream*& video_stream, AVCodecContext*& video_dec_ctx,
-                    int& audio_index, AVStream*& audio_stream, AVCodecContext*& audio_dec_ctx,
-                    AVFrame*& frame, AVPacket*& pkt, void * handle)
-{
-    // Open New file
-    if (avformat_open_input(&fmt_ctx, file_path.c_str(), NULL, NULL) < 0) 
-    {
-        // Could not open source file
-        return -1;
-    }
-    if (avformat_find_stream_info(fmt_ctx, NULL) < 0) 
-    {
-        // Could not find stream information
-        avformat_close_input(&fmt_ctx); fmt_ctx = nullptr;
-        return -1;
-    }
-    if (open_codec_context(&video_index, &video_dec_ctx, fmt_ctx, AVMEDIA_TYPE_VIDEO, device_type) >= 0)
-    {
-        video_stream = fmt_ctx->streams[video_index];
-        video_dec_ctx->opaque = handle;
-        video_dec_ctx->thread_count = 8;
-    }
-    if (open_codec_context(&audio_index, &audio_dec_ctx, fmt_ctx, AVMEDIA_TYPE_AUDIO) >= 0)
-    {
-        audio_stream = fmt_ctx->streams[audio_index];
-        audio_dec_ctx->opaque = handle;
-    }
-    if (video_index < 0 && audio_index < 0)
-    {
-        if (video_dec_ctx) { avcodec_free_context(&video_dec_ctx); video_dec_ctx = nullptr; }
-        if (audio_dec_ctx) { avcodec_free_context(&audio_dec_ctx); audio_dec_ctx = nullptr; }
-        video_stream = nullptr; audio_stream = nullptr;
-        avformat_close_input(&fmt_ctx); fmt_ctx = nullptr;
-        return -1;
-    }
-
-    av_dump_format(fmt_ctx, 0, file_path.c_str(), 0);
-    total_time = (double)fmt_ctx->duration / (double)AV_TIME_BASE;
-    if (total_time < 1e-6)
-    {
-        if (video_stream)
-            total_time = (double)video_stream->duration * av_q2d(video_stream->time_base);
-        else if (audio_stream)
-            total_time = (double)audio_stream->duration * av_q2d(audio_stream->time_base);
-    }
-
-    frame = av_frame_alloc();
-    if (!frame)
-    {
-        // Could not allocate frame
-        if (video_dec_ctx) { avcodec_free_context(&video_dec_ctx); video_dec_ctx = nullptr; }
-        if (audio_dec_ctx) { avcodec_free_context(&audio_dec_ctx); audio_dec_ctx = nullptr; }
-        video_stream = nullptr; audio_stream = nullptr;
-        video_index = -1; audio_index = -1;
-        avformat_close_input(&fmt_ctx); fmt_ctx = nullptr;
-        return -1;
-    }
-
-    pkt = av_packet_alloc();
-    if (!pkt) 
-    {
-        // Could not allocate packet
-        if (video_dec_ctx) { avcodec_free_context(&video_dec_ctx); video_dec_ctx = nullptr; }
-        if (audio_dec_ctx) { avcodec_free_context(&audio_dec_ctx); audio_dec_ctx = nullptr; }
-        video_stream = nullptr; audio_stream = nullptr;
-        video_index = -1; audio_index = -1;
-        avformat_close_input(&fmt_ctx); fmt_ctx = nullptr;
-        return -1;
-    }
     return 0;
 }
 
@@ -268,28 +198,90 @@ namespace BluePrint
 {
 struct MediaSourceNode final : Node
 {
+    struct media_stream
+    {
+        int                 m_index {-1};
+        enum AVMediaType    m_type {AVMEDIA_TYPE_UNKNOWN};
+        AVCodecContext *    m_dec_ctx {nullptr};
+        AVStream *          m_stream {nullptr};
+        AVFrame *           m_frame {nullptr};
+        Pin *               m_flow {nullptr};
+        Pin *               m_mat {nullptr};
+#if IMGUI_VULKAN_SHADER
+        ImGui::ColorConvert_vulkan * m_yuv2rgb {nullptr};
+#else
+        struct SwsContext*  m_img_convert_ctx {nullptr};
+#endif
+    };
+
     BP_NODE_WITH_NAME(MediaSourceNode, "Media Source", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Media")
-    MediaSourceNode(BP& blueprint): Node(blueprint) { m_Name = "Media Source"; }
+    MediaSourceNode(BP& blueprint): Node(blueprint)
+    {
+        m_Name = "Media Source";
+        m_OutputPins.push_back(&m_Exit);
+        m_OutputPins.push_back(&m_OReset);
+    }
 
     ~MediaSourceNode()
     {
         CloseMedia();
     }
 
+    Pin* InsertOutputPin(PinType type, const std::string name) override
+    {
+        auto pin = FindPin(name);
+        if (pin) return pin;
+        pin = NewPin(type, name);
+        if (pin)
+        {
+            pin->m_Flags |= PIN_FLAG_FORCESHOW;
+            m_OutputPins.push_back(pin);
+        }
+        return pin;
+    }
+
     void CloseMedia()
     {
-        if (m_video_dec_ctx) { avcodec_free_context(&m_video_dec_ctx); m_video_dec_ctx = nullptr; }
-        if (m_audio_dec_ctx) { avcodec_free_context(&m_audio_dec_ctx); m_audio_dec_ctx = nullptr; }
-        if (m_fmt_ctx) { avformat_close_input(&m_fmt_ctx); m_fmt_ctx = nullptr; }
+        // rebuild output pins
+        for (auto iter = m_OutputPins.begin(); iter != m_OutputPins.end();)
+        {
+            if ((*iter)->m_Name != m_Exit.m_Name && (*iter)->m_Name != m_OReset.m_Name)
+            {
+                (*iter)->Unlink();
+                if ((*iter)->m_LinkFrom.size() > 0)
+                {
+                    for (auto from_pin : (*iter)->m_LinkFrom)
+                    {
+                        auto link = m_Blueprint->GetPinFromID(from_pin);
+                        if (link)
+                        {
+                            link->Unlink();
+                        }
+                    }
+                }
+                iter = m_OutputPins.erase(iter);
+            }
+            else
+                ++iter;
+        }
+        for (auto stream : m_streams)
+        {
+            if (stream->m_dec_ctx) avcodec_free_context(&stream->m_dec_ctx);
+            if (stream->m_frame) av_frame_free(&stream->m_frame);
 #if IMGUI_VULKAN_SHADER
-        if (m_yuv2rgb) { delete m_yuv2rgb; m_yuv2rgb = nullptr; }
+            if (stream->m_yuv2rgb) delete stream->m_yuv2rgb;
 #else
-        if (m_img_convert_ctx) { sws_freeContext(m_img_convert_ctx); m_img_convert_ctx = nullptr; }
+            if (stream->m_img_convert_ctx) sws_freeContext(stream->m_img_convert_ctx);
 #endif
-        m_video_stream = nullptr; m_audio_stream = nullptr;
-        av_packet_free(&m_pkt); m_pkt = nullptr;
-        av_frame_free(&m_frame); m_frame = nullptr;
-        m_next_pts = AV_NOPTS_VALUE;
+            if (stream->m_flow) delete stream->m_flow;
+            if (stream->m_mat) delete stream->m_mat;
+            delete stream;
+        }
+        m_streams.clear();
+
+        if (m_fmt_ctx) { avformat_close_input(&m_fmt_ctx); m_fmt_ctx = nullptr; }
+        if (m_pkt) { av_packet_free(&m_pkt); m_pkt = nullptr; }
+        //m_next_pts = AV_NOPTS_VALUE;
         m_last_video_pts = AV_NOPTS_VALUE;
         m_hw_pix_fmt = AV_PIX_FMT_NONE;
         m_hw_type = AV_HWDEVICE_TYPE_NONE;
@@ -300,36 +292,80 @@ struct MediaSourceNode final : Node
 
     void OpenMedia()
     {
-        if (open_media(m_path, m_fmt_ctx, m_total_time, m_device,
-                                m_video_index, m_video_stream, m_video_dec_ctx,
-                                m_audio_index, m_audio_stream, m_audio_dec_ctx,
-                                m_frame, m_pkt, this) < 0)
+        // Open New file
+        if (avformat_open_input(&m_fmt_ctx, m_path.c_str(), NULL, NULL) < 0) 
+            return; // Could not open source file
+        if (avformat_find_stream_info(m_fmt_ctx, NULL) < 0) 
         {
-            CloseMedia();
-            m_paused = false;
-            m_need_update = false;
+            avformat_close_input(&m_fmt_ctx); m_fmt_ctx = nullptr;
+            return; // Could not find stream information
         }
-        else
+        // check all a/v streams
+        for (int i = 0; i < m_fmt_ctx->nb_streams; i++)
         {
-            m_paused = false;
-            m_need_update = false;
+            auto stream = m_fmt_ctx->streams[i];
+            int stream_index = stream->index;
+            if (stream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO)
+            {
+                // create video codec context
+                AVCodecContext* video_dec_ctx = nullptr;
+                if (open_codec_context(&stream_index, &video_dec_ctx, m_fmt_ctx, AVMEDIA_TYPE_VIDEO, m_device) >= 0)
+                {
+                    struct media_stream * new_stream = new media_stream;
+                    if (new_stream)
+                    {
+                        new_stream->m_index = stream_index;
+                        new_stream->m_type = AVMEDIA_TYPE_VIDEO;
+                        new_stream->m_dec_ctx = video_dec_ctx;
+                        new_stream->m_stream = m_fmt_ctx->streams[stream_index];
+                        new_stream->m_frame = av_frame_alloc();
+                        std::string flow_pin_name = "VOut:" + std::to_string(stream_index);
+                        new_stream->m_flow = InsertOutputPin(BluePrint::PinType::Flow, flow_pin_name);
+                        std::string mat_pin_name = "V:" + std::to_string(stream_index);
+                        new_stream->m_mat = InsertOutputPin(BluePrint::PinType::Mat, mat_pin_name);
+                        m_streams.push_back(new_stream);
+                    }
+                }
+            }
+            else if (stream->codecpar->codec_type == AVMEDIA_TYPE_AUDIO)
+            {
+                AVCodecContext* audio_dec_ctx = nullptr;
+                if (open_codec_context(&stream_index, &audio_dec_ctx, m_fmt_ctx, AVMEDIA_TYPE_AUDIO) >= 0)
+                {
+                    struct media_stream * new_stream = new media_stream;
+                    if (new_stream)
+                    {
+                        new_stream->m_index = stream_index;
+                        new_stream->m_type = AVMEDIA_TYPE_AUDIO;
+                        new_stream->m_dec_ctx = audio_dec_ctx;
+                        new_stream->m_stream = m_fmt_ctx->streams[stream_index];
+                        new_stream->m_frame = av_frame_alloc();
+                        std::string flow_pin_name = "AOut:" + std::to_string(stream_index);
+                        new_stream->m_flow = InsertOutputPin(BluePrint::PinType::Flow, flow_pin_name);
+                        std::string mat_pin_name = "A:" + std::to_string(stream_index);
+                        new_stream->m_mat = InsertOutputPin(BluePrint::PinType::Mat, mat_pin_name);
+                        m_streams.push_back(new_stream);
+                    }
+                }
+            }
         }
-    }
-
-    void Reset(Context& context) override
-    {
-        Node::Reset(context);
-        m_V.SetValue(ImGui::ImMat());
-        m_A.SetValue(ImGui::ImMat());
-    }
-
-    void OnStop(Context& context) override
-    {
+        av_dump_format(m_fmt_ctx, 0, m_path.c_str(), 0);
+        m_total_time = (double)m_fmt_ctx->duration / (double)AV_TIME_BASE;
+        if (m_total_time < 1e-6)
+        {
+            for (auto stream : m_streams)
+            {
+                m_total_time = (double)stream->m_stream->duration * av_q2d(stream->m_stream->time_base);
+                if (m_total_time > 1e-6)
+                    break;
+            }
+        }
+        m_pkt = av_packet_alloc();
         m_paused = false;
         m_need_update = false;
     }
 
-    int OutVideoFrame()
+    int OutVideoFrame(media_stream* stream)
     {
         int ret;
         AVFrame *tmp_frame = nullptr;
@@ -341,7 +377,7 @@ struct MediaSourceNode final : Node
         }
         if (m_last_video_pts != AV_NOPTS_VALUE)
         {
-            if (m_frame->pict_type == AV_PICTURE_TYPE_B && m_frame->pts < m_last_video_pts)
+            if (stream->m_frame->pict_type == AV_PICTURE_TYPE_B && stream->m_frame->pts < m_last_video_pts)
             {
                 // do we only need skip first gop B frame after first I frame?
                 fprintf(stderr, "Output frame isn't in current GOP and decoder maybe not completed\n");
@@ -349,11 +385,11 @@ struct MediaSourceNode final : Node
                 return -1;
             }
         }
-        m_last_video_pts = m_frame->pts;
-        if (m_frame->format == m_hw_pix_fmt)
+        m_last_video_pts = stream->m_frame->pts;
+        if (stream->m_frame->format == m_hw_pix_fmt)
         {
             /* retrieve data from GPU to CPU */
-            if ((ret = av_hwframe_transfer_data(sw_frame, m_frame, 0)) < 0) 
+            if ((ret = av_hwframe_transfer_data(sw_frame, stream->m_frame, 0)) < 0) 
             {
                 fprintf(stderr, "Error transferring the data to system memory\n");
                 av_frame_free(&sw_frame);
@@ -366,31 +402,29 @@ struct MediaSourceNode final : Node
         }
         else
         {
-            tmp_frame = m_frame;
+            tmp_frame = stream->m_frame;
         }
-
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get((AVPixelFormat)tmp_frame->format);
-        int video_depth = m_video_dec_ctx->bits_per_raw_sample;
+        int video_depth = stream->m_dec_ctx->bits_per_raw_sample;
         if (video_depth == 0 && desc)
             video_depth = desc->comp[0].depth != 0 ? desc->comp[0].depth : 8;
-        m_video_depth = video_depth;
         int data_shift = video_depth > 8 ? 1 : 0;
 
-        ImColorSpace color_space =  m_video_dec_ctx->colorspace == AVCOL_SPC_BT470BG ||
-                                    m_video_dec_ctx->colorspace == AVCOL_SPC_SMPTE170M ||
-                                    m_video_dec_ctx->colorspace == AVCOL_SPC_BT470BG ? IM_CS_BT601 :
-                                    m_video_dec_ctx->colorspace == AVCOL_SPC_BT709 ? IM_CS_BT709 :
-                                    m_video_dec_ctx->colorspace == AVCOL_SPC_BT2020_NCL ||
-                                    m_video_dec_ctx->colorspace == AVCOL_SPC_BT2020_CL ? IM_CS_BT2020 : IM_CS_BT709;
-        ImColorRange color_range =  m_video_dec_ctx->color_range == AVCOL_RANGE_MPEG ? IM_CR_NARROW_RANGE :
-                                    m_video_dec_ctx->color_range == AVCOL_RANGE_JPEG ? IM_CR_FULL_RANGE : IM_CR_NARROW_RANGE;
+        ImColorSpace color_space =  stream->m_dec_ctx->colorspace == AVCOL_SPC_BT470BG ||
+                                    stream->m_dec_ctx->colorspace == AVCOL_SPC_SMPTE170M ||
+                                    stream->m_dec_ctx->colorspace == AVCOL_SPC_BT470BG ? IM_CS_BT601 :
+                                    stream->m_dec_ctx->colorspace == AVCOL_SPC_BT709 ? IM_CS_BT709 :
+                                    stream->m_dec_ctx->colorspace == AVCOL_SPC_BT2020_NCL ||
+                                    stream->m_dec_ctx->colorspace == AVCOL_SPC_BT2020_CL ? IM_CS_BT2020 : IM_CS_BT709;
+        ImColorRange color_range =  stream->m_dec_ctx->color_range == AVCOL_RANGE_MPEG ? IM_CR_NARROW_RANGE :
+                                    stream->m_dec_ctx->color_range == AVCOL_RANGE_JPEG ? IM_CR_FULL_RANGE : IM_CR_NARROW_RANGE;
         ImColorFormat color_format = ISYUV420P(tmp_frame->format) ? IM_CF_YUV420 :
                                     ISYUV422P(tmp_frame->format) ? IM_CF_YUV422 :
                                     ISYUV444P(tmp_frame->format) ? IM_CF_YUV444 :
                                     ISNV12(tmp_frame->format) ? video_depth == 10 ? IM_CF_P010LE : IM_CF_NV12 : IM_CF_YUV420;
 
-        AVRational tb = m_video_stream->time_base;
-        int64_t time_stamp = m_frame->best_effort_timestamp;
+        AVRational tb = stream->m_stream->time_base;
+        int64_t time_stamp = stream->m_frame->best_effort_timestamp;
         double current_video_pts = (time_stamp == AV_NOPTS_VALUE) ? NAN : time_stamp * av_q2d(tb);
         int out_w = tmp_frame->width;
         int out_h = tmp_frame->height;
@@ -468,22 +502,22 @@ struct MediaSourceNode final : Node
         mat_V.color_format = color_format;
         mat_V.depth = video_depth;
         mat_V.flags = IM_MAT_FLAGS_VIDEO_FRAME;
-        if (m_frame->pict_type == AV_PICTURE_TYPE_I) mat_V.flags |= IM_MAT_FLAGS_VIDEO_FRAME_I;
-        if (m_frame->pict_type == AV_PICTURE_TYPE_P) mat_V.flags |= IM_MAT_FLAGS_VIDEO_FRAME_P;
-        if (m_frame->pict_type == AV_PICTURE_TYPE_B) mat_V.flags |= IM_MAT_FLAGS_VIDEO_FRAME_B;
-        if (m_frame->interlaced_frame) mat_V.flags |= IM_MAT_FLAGS_VIDEO_INTERLACED;
+        if (stream->m_frame->pict_type == AV_PICTURE_TYPE_I) mat_V.flags |= IM_MAT_FLAGS_VIDEO_FRAME_I;
+        if (stream->m_frame->pict_type == AV_PICTURE_TYPE_P) mat_V.flags |= IM_MAT_FLAGS_VIDEO_FRAME_P;
+        if (stream->m_frame->pict_type == AV_PICTURE_TYPE_B) mat_V.flags |= IM_MAT_FLAGS_VIDEO_FRAME_B;
+        if (stream->m_frame->interlaced_frame) mat_V.flags |= IM_MAT_FLAGS_VIDEO_INTERLACED;
         
 #if IMGUI_VULKAN_SHADER
-        if (!m_yuv2rgb)
+        if (!stream->m_yuv2rgb)
         {
             int gpu = m_device == IM_DD_CPU ? -1 : ImGui::get_default_gpu_index();
-            m_yuv2rgb = new ImGui::ColorConvert_vulkan(gpu);
-            if (!m_yuv2rgb)
+            stream->m_yuv2rgb = new ImGui::ColorConvert_vulkan(gpu);
+            if (!stream->m_yuv2rgb)
             {
                 return -1;
             }
         }
-        if (m_yuv2rgb)
+        if (stream->m_yuv2rgb)
         {
             ImGui::ImMat im_RGB;
             im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_V.type : m_mat_data_type;
@@ -494,15 +528,15 @@ struct MediaSourceNode final : Node
             {
                 im_RGB.device = IM_DD_VULKAN;
             }
-            m_yuv2rgb->ConvertColorFormat(mat_V, im_RGB, IM_INTERPOLATE_BILINEAR);
+            stream->m_yuv2rgb->ConvertColorFormat(mat_V, im_RGB, IM_INTERPOLATE_BILINEAR);
             im_RGB.flags = mat_V.flags;
             im_RGB.time_stamp = current_video_pts;
             im_RGB.color_space = color_space;
             im_RGB.color_range = color_range;
-            //im_RGB.color_format = color_format;
             im_RGB.depth = video_depth;
-            im_RGB.rate = {m_video_stream->avg_frame_rate.num, m_video_stream->avg_frame_rate.den};
-            m_V.SetValue(im_RGB);
+            im_RGB.rate = {stream->m_stream->avg_frame_rate.num, stream->m_stream->avg_frame_rate.den};
+            auto pin = (MatPin*)stream->m_mat;
+            if (pin) pin->SetValue(im_RGB);
         }
 #else
         // ffmpeg swscale
@@ -551,10 +585,10 @@ struct MediaSourceNode final : Node
             im_RGB.time_stamp = current_video_pts;
             im_RGB.color_space = color_space;
             im_RGB.color_range = color_range;
-            //im_RGB.color_format = color_format;
             im_RGB.depth = video_depth;
-            im_RGB.rate = {m_video_stream->avg_frame_rate.num, m_video_stream->avg_frame_rate.den};
-            m_V.SetValue(im_RGB);
+            im_RGB.rate = {stream->m_stream->avg_frame_rate.num, stream->m_stream->avg_frame_rate.den};
+            auto pin = (MatPin*)stream->m_mat;
+            if (pin) pin->SetValue(im_RGB);
         }
 #endif
         m_mutex.unlock();
@@ -563,49 +597,49 @@ struct MediaSourceNode final : Node
         return 0;
     }
 
-    int OutAudioFrame()
+    int OutAudioFrame(media_stream* stream)
     {
         // Generate Audio Mat
         ImGui::ImMat mat_A;
-        int data_size = av_get_bytes_per_sample((enum AVSampleFormat)m_frame->format);
-        m_audio_depth = data_size * 8;
-        AVRational tb = (AVRational){1, m_frame->sample_rate};
-        ImDataType type  =  (m_frame->format == AV_SAMPLE_FMT_FLT) || (m_frame->format == AV_SAMPLE_FMT_FLTP) ? IM_DT_FLOAT32 :
-                            (m_frame->format == AV_SAMPLE_FMT_S32) || (m_frame->format == AV_SAMPLE_FMT_S32P) ? IM_DT_INT32:
-                            (m_frame->format == AV_SAMPLE_FMT_S16) || (m_frame->format == AV_SAMPLE_FMT_S16P) ? IM_DT_INT16:
+        int data_size = av_get_bytes_per_sample((enum AVSampleFormat)stream->m_frame->format);
+        AVRational tb = (AVRational){1, stream->m_frame->sample_rate};
+        ImDataType type  =  (stream->m_frame->format == AV_SAMPLE_FMT_FLT) || (stream->m_frame->format == AV_SAMPLE_FMT_FLTP) ? IM_DT_FLOAT32 :
+                            (stream->m_frame->format == AV_SAMPLE_FMT_S32) || (stream->m_frame->format == AV_SAMPLE_FMT_S32P) ? IM_DT_INT32:
+                            (stream->m_frame->format == AV_SAMPLE_FMT_S16) || (stream->m_frame->format == AV_SAMPLE_FMT_S16P) ? IM_DT_INT16:
                             IM_DT_INT8;
-        double current_audio_pts = (m_frame->pts == AV_NOPTS_VALUE) ? NAN : m_frame->pts * av_q2d(tb);
+        double current_audio_pts = (stream->m_frame->pts == AV_NOPTS_VALUE) ? NAN : stream->m_frame->pts * av_q2d(tb);
         m_mutex.lock();
 #if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
-        int channels = m_frame->channels;
+        int channels = stream->m_frame->channels;
 #else
-        int channels = m_frame->ch_layout.nb_channels;
+        int channels = stream->m_frame->ch_layout.nb_channels;
 #endif
-        mat_A.create_type(m_frame->nb_samples, 1, channels, type);
+        mat_A.create_type(stream->m_frame->nb_samples, 1, channels, type);
         for (int i = 0; i < channels; i++)
         {
-            for (int x = 0; x < m_frame->nb_samples; x++)
+            for (int x = 0; x < stream->m_frame->nb_samples; x++)
             {
                 if (type == IM_DT_FLOAT32)
-                    mat_A.at<float>(x, 0, i) = ((float *)m_frame->data[i])[x];
+                    mat_A.at<float>(x, 0, i) = ((float *)stream->m_frame->data[i])[x];
                 else if (type == IM_DT_INT32)
-                    mat_A.at<int32_t>(x, 0, i) = ((int32_t *)m_frame->data[i])[x];
+                    mat_A.at<int32_t>(x, 0, i) = ((int32_t *)stream->m_frame->data[i])[x];
                 else if (type == IM_DT_INT16)
-                    mat_A.at<int16_t>(x, 0, i) = ((int16_t *)m_frame->data[i])[x];
+                    mat_A.at<int16_t>(x, 0, i) = ((int16_t *)stream->m_frame->data[i])[x];
                 else
-                    mat_A.at<int8_t>(x, 0, i) = ((int8_t *)m_frame->data[i])[x];
+                    mat_A.at<int8_t>(x, 0, i) = ((int8_t *)stream->m_frame->data[i])[x];
             }
         }
         mat_A.time_stamp = current_audio_pts;
-        mat_A.rate = {m_frame->sample_rate, 1};
+        mat_A.rate = {stream->m_frame->sample_rate, 1};
         mat_A.flags = IM_MAT_FLAGS_AUDIO_FRAME;
-        m_A.SetValue(mat_A);
+        auto pin = (MatPin*)stream->m_mat;
+        if (pin) pin->SetValue(mat_A);
         m_mutex.unlock();
         m_current_pts = current_audio_pts;
         return 0;
     }
 
-    FlowPin decoder_frame()
+    FlowPin DecodeMedia()
     {
         while (true)
         {
@@ -613,77 +647,72 @@ struct MediaSourceNode final : Node
             ret = av_read_frame(m_fmt_ctx, m_pkt);
             if (ret < 0)
             {
-                if (ret == AVERROR_EOF) { avcodec_flush_buffers(m_video_dec_ctx); return m_Exit; }
+                if (ret == AVERROR_EOF) 
+                {
+                    for (auto stream : m_streams) avcodec_flush_buffers(stream->m_dec_ctx); 
+                    return m_Exit;
+                }
                 break;
             }
-            if (m_video_index >= 0 && m_pkt->stream_index == m_video_index)
+            // find stream index
+            auto iter = std::find_if(m_streams.begin(), m_streams.end(), [&](const media_stream* ss) {
+                return ss->m_index == m_pkt->stream_index;
+            });
+            if (iter == m_streams.end())
+                break;
+            media_stream * stream = *iter;
+            ret = avcodec_send_packet(stream->m_dec_ctx, m_pkt);
+            av_packet_unref(m_pkt);
+            if (ret < 0)
             {
-                ret = avcodec_send_packet(m_video_dec_ctx, m_pkt);
-                av_packet_unref(m_pkt);
-                if (ret < 0)
+                if (ret == AVERROR_EOF)
                 {
-                    if (ret == AVERROR_EOF) { avcodec_flush_buffers(m_video_dec_ctx); return m_Exit; }
-                    break;
+                    for (auto stream : m_streams) avcodec_flush_buffers(stream->m_dec_ctx); 
+                    return m_Exit;
                 }
-                ret = avcodec_receive_frame(m_video_dec_ctx, m_frame);
-                if (ret < 0) 
-                {
-                    if (ret == AVERROR_EOF) { avcodec_flush_buffers(m_video_dec_ctx); return m_Exit; }
-                    else if (ret == AVERROR(EAGAIN)) continue;
-                    else break;
-                }
-                else
-                {
-                    if (OutVideoFrame() != 0)
-                    {
-                        av_frame_unref(m_frame);
-                        break;
-                    }
-                    av_frame_unref(m_frame);
-                    return m_VideoOutput;
-                }
+                break;
             }
-            else if (m_audio_index >= 0 && m_pkt->stream_index == m_audio_index)
+            ret = avcodec_receive_frame(stream->m_dec_ctx, stream->m_frame);
+            if (ret < 0) 
             {
-                ret = avcodec_send_packet(m_audio_dec_ctx, m_pkt);
-                av_packet_unref(m_pkt);
-                if (ret < 0)
+                if (ret == AVERROR_EOF)
                 {
-                    if (ret == AVERROR_EOF) { avcodec_flush_buffers(m_audio_dec_ctx); return m_Exit; }
-                    break;
+                    for (auto stream : m_streams) avcodec_flush_buffers(stream->m_dec_ctx); 
+                    return m_Exit;
                 }
-                ret = avcodec_receive_frame(m_audio_dec_ctx, m_frame);
-                if (ret < 0) 
-                {
-                    if (ret == AVERROR_EOF) { avcodec_flush_buffers(m_audio_dec_ctx); return m_Exit; }
-                    else if (ret == AVERROR(EAGAIN)) continue;
-                    else break;
-                }
-                else
-                {
-                    AVRational tb = (AVRational){1, m_frame->sample_rate};
-                    if (m_frame->pts != AV_NOPTS_VALUE)
-                        m_frame->pts = av_rescale_q(m_frame->pts, m_audio_dec_ctx->pkt_timebase, tb);
-                    else if (m_next_pts != AV_NOPTS_VALUE)
-                        m_frame->pts = av_rescale_q(m_next_pts, m_next_pts_tb, tb);
-                    if (m_frame->pts != AV_NOPTS_VALUE) 
-                    {
-                        m_next_pts = m_frame->pts + m_frame->nb_samples;
-                        m_next_pts_tb = tb;
-                    }
-                    OutAudioFrame();
-                    av_frame_unref(m_frame);
-                    return m_AudioOutput;
-                }
+                else if (ret == AVERROR(EAGAIN)) continue;
+                else break;
             }
             else
             {
-                av_packet_unref(m_pkt);
-                break;
+                if (stream->m_type == AVMEDIA_TYPE_VIDEO)
+                {
+                    ret = OutVideoFrame(stream);
+                    av_frame_unref(stream->m_frame);
+                    if (ret != 0)
+                        break;
+                    return *(FlowPin*)stream->m_flow;
+                }
+                else if (stream->m_type == AVMEDIA_TYPE_AUDIO)
+                {
+                    ret = OutAudioFrame(stream);
+                    av_frame_unref(stream->m_frame);
+                    if (ret != 0)
+                        break;
+                    return *(FlowPin*)stream->m_flow;
+                }
             }
         }
-
         return {};
+    }
+
+    void Reset(Context& context) override
+    {
+        Node::Reset(context);
+    }
+
+    void OnStop(Context& context) override
+    {
     }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
@@ -698,7 +727,7 @@ struct MediaSourceNode final : Node
             if (m_need_update || !m_paused)
             {
                 m_need_update = false;
-                auto ret = decoder_frame();
+                auto ret = DecodeMedia();
                 if (ret.m_Name != "Exit")
                     context.PushReturnPoint(entryPoint);
                 return ret;
@@ -710,14 +739,6 @@ struct MediaSourceNode final : Node
                 else
                     ImGui::sleep(0);
                 context.PushReturnPoint(entryPoint);
-                auto vmat = context.GetPinValue<ImGui::ImMat>(m_V);
-                auto amat = context.GetPinValue<ImGui::ImMat>(m_A);
-                if (!vmat.empty())
-                    return m_VideoOutput;
-                else if (!amat.empty())
-                    return m_AudioOutput;
-                else
-                    return {};
             }
         }
         return {};
@@ -799,36 +820,94 @@ struct MediaSourceNode final : Node
                 m_need_update = true;
             }
         }
-        
         ImGui::Dummy(ImVec2(300, 8));
+
         string str_current_time = PrintTimeStamp(m_current_pts);
         string str_total_time = PrintTimeStamp(m_total_time);
         ImGui::Text("%s / %s", str_current_time.c_str(), str_total_time.c_str());
-        if (m_video_index != -1 && m_video_stream)
+        for (auto stream : m_streams)
         {
-            ImGui::Text("     Video: %d x %d @ %.2f", m_video_stream->codecpar->width, 
-                                                    m_video_stream->codecpar->height, 
-                                                    (float)m_video_stream->r_frame_rate.num / (float)m_video_stream->r_frame_rate.den);
-            ImGui::Text("            %d bit depth", m_video_stream->codecpar->bits_per_raw_sample == 0 ? m_video_depth : m_video_stream->codecpar->bits_per_raw_sample);
-        }
-        if (m_audio_index != -1 && m_audio_stream)
-        {
+            if (stream->m_type == AVMEDIA_TYPE_VIDEO)
+            {
+                ImGui::Text("     Video: %d x %d @ %.2f", stream->m_stream->codecpar->width, 
+                                                    stream->m_stream->codecpar->height, 
+                                                    (float)stream->m_stream->r_frame_rate.num / (float)stream->m_stream->r_frame_rate.den);
+                ImGui::Text("            %d bit depth", stream->m_stream->codecpar->bits_per_raw_sample > 0 ? stream->m_stream->codecpar->bits_per_raw_sample : 0);
+
+            }
+            if (stream->m_type == AVMEDIA_TYPE_AUDIO)
+            {
 #if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
-            ImGui::Text("     Audio: %d @ %d", m_audio_stream->codecpar->channels, m_audio_stream->codecpar->sample_rate);
+                ImGui::Text("     Audio: %d @ %d", stream->m_stream->codecpar->channels, stream->m_stream->codecpar->sample_rate);
 #else
-            ImGui::Text("     Audio: %d @ %d", m_audio_stream->codecpar->ch_layout.nb_channels, m_audio_stream->codecpar->sample_rate);
+                ImGui::Text("     Audio: %d @ %d", stream->m_stream->codecpar->ch_layout.nb_channels, stream->m_stream->codecpar->sample_rate);
 #endif
-            ImGui::Text("            %d bit depth", m_audio_stream->codecpar->bits_per_coded_sample == 0 ? m_audio_depth : m_audio_stream->codecpar->bits_per_coded_sample);
+                ImGui::Text("            %d bit depth", stream->m_stream->codecpar->bits_per_coded_sample > 0 ? stream->m_stream->codecpar->bits_per_coded_sample : 0);
+            }
         }
+
         ImGui::PopItemWidth();
         return false;
+    }
+
+    int LoadPins(const imgui_json::array* PinValueArray, std::vector<Pin *>& pinArray)
+    {
+        for (auto& pinValue : *PinValueArray)
+        {
+            string pinType;
+            PinType type = PinType::Any;
+            if (!imgui_json::GetTo<imgui_json::string>(pinValue, "type", pinType)) // check pin type
+                continue;
+            PinTypeFromString(pinType, type);
+
+            std::string name;
+            if (pinValue.contains("name"))
+                imgui_json::GetTo<imgui_json::string>(pinValue, "name", name);
+
+            auto iter = std::find_if(m_OutputPins.begin(), m_OutputPins.end(), [name](const Pin * pin)
+            {
+                return pin->m_Name == name;
+            });
+            if (iter != m_OutputPins.end())
+            {
+                if (!(*iter)->Load(pinValue))
+                {
+                    return BP_ERR_GENERAL;
+                }
+            }
+            else
+            {
+                Pin *new_pin = NewPin(type, name);
+                if (new_pin)
+                {
+                    if (!new_pin->Load(pinValue))
+                    {
+                        delete new_pin;
+                        return BP_ERR_GENERAL;
+                    }
+                    pinArray.push_back(new_pin);
+                }
+            }
+        }
+        return BP_ERR_NONE;
     }
 
     int Load(const imgui_json::value& value) override
     {
         int ret = BP_ERR_NONE;
-        if ((ret = Node::Load(value)) != BP_ERR_NONE)
-            return ret;
+        if (!value.is_object())
+            return BP_ERR_NODE_LOAD;
+
+        if (!imgui_json::GetTo<imgui_json::number>(value, "id", m_ID)) // required
+            return BP_ERR_NODE_LOAD;
+
+        if (!imgui_json::GetTo<imgui_json::string>(value, "name", m_Name)) // required
+            return BP_ERR_NODE_LOAD;
+
+        imgui_json::GetTo<imgui_json::boolean>(value, "break_point", m_BreakPoint); // optional
+
+        imgui_json::GetTo<imgui_json::number>(value, "group_id", m_GroupID); // optional
+
         if (value.contains("mat_type"))
         {
             auto& val = value["mat_type"];
@@ -855,6 +934,33 @@ struct MediaSourceNode final : Node
                 m_file_name = val.get<imgui_json::string>();
             }
         }
+
+        const imgui_json::array* inputPinsArray = nullptr;
+        if (imgui_json::GetPtrTo(value, "input_pins", inputPinsArray)) // optional
+        {
+            auto pins = GetInputPins();
+
+            if (pins.size() != inputPinsArray->size())
+                return BP_ERR_PIN_NUMPER;
+
+            auto pin = pins.data();
+            for (auto& pinValue : *inputPinsArray)
+            {
+                if (!(*pin)->Load(pinValue))
+                {
+                    return BP_ERR_INPIN_LOAD;
+                }
+                ++pin;
+            }
+        }
+
+        const imgui_json::array* outputPinsArray = nullptr;
+        if (imgui_json::GetPtrTo(value, "output_pins", outputPinsArray)) // optional
+        {
+            if (LoadPins(outputPinsArray, m_OutputPins) != BP_ERR_NONE)
+                return BP_ERR_INPIN_LOAD;
+        }
+
         if (!m_path.empty())
             OpenMedia();
         return ret;
@@ -876,40 +982,22 @@ struct MediaSourceNode final : Node
     FlowPin   m_Reset           = { this, "Reset" };
     FlowPin   m_Exit            = { this, "Exit" };
     FlowPin   m_OReset          = { this, "Reset Out"};
-    FlowPin   m_VideoOutput     = { this, "VOut" };
-    FlowPin   m_AudioOutput     = { this, "AOut" };
-    MatPin    m_V               = { this, "V" };
-    MatPin    m_A               = { this, "A"};
-    Pin*      m_InputPins[2] = { &m_Enter, &m_Reset };
-    Pin*      m_OutputPins[6] = { &m_Exit, &m_OReset, &m_VideoOutput, &m_AudioOutput, &m_V, &m_A };
 
+    Pin*      m_InputPins[2] = { &m_Enter, &m_Reset };
+    std::vector<Pin *>          m_OutputPins;
 private:
     int                 m_device  {0};          // 0 = GPU -1 = CPU
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     std::string         m_path;
     std::string         m_file_name;
+
     AVFormatContext*    m_fmt_ctx {nullptr};
-    AVCodec*            m_codec {nullptr};
-    AVCodecContext*     m_video_dec_ctx {nullptr};
-    AVStream*           m_video_stream {nullptr};
-    int                 m_video_index {-1};
-    AVCodecContext*     m_audio_dec_ctx {nullptr};
-    AVStream*           m_audio_stream {nullptr};
-    int                 m_audio_index {-1};
-    int                 m_video_depth {0};
-    int                 m_audio_depth {0};
-    AVFrame*            m_frame {nullptr};
     AVPacket*           m_pkt {nullptr};
-#if IMGUI_VULKAN_SHADER
-    ImGui::ColorConvert_vulkan * m_yuv2rgb {nullptr};
-#else
-    struct SwsContext*  m_img_convert_ctx {nullptr};
-#endif
-    int64_t             m_next_pts {AV_NOPTS_VALUE};
-    int64_t             m_last_video_pts {AV_NOPTS_VALUE};
-    AVRational          m_next_pts_tb {AVRational{0,1}};
+    std::vector<media_stream*> m_streams;
+
     double              m_total_time    {0};
     double              m_current_pts   {0};
+    int64_t             m_last_video_pts {AV_NOPTS_VALUE};
     bool                m_paused        {false};
     bool                m_need_update   {false};
 };

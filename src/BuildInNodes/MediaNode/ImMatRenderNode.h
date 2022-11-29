@@ -345,10 +345,34 @@ struct MatRenderNode final : Node
                 ImVec2 scope_view_size = ImVec2(m_preview_width, m_preview_height / m_RenderMat.c);
                 for (int i = 0; i < m_RenderMat.c; i++)
                 {
+                    ImGui::ImMat wave_mat;
                     ImGui::ImMat channel = m_RenderMat.channel(i);
-                    ImGui::PushID(i);
-                    ImGui::PlotLinesEx("##wave", (float *)channel.data, channel.w, 0, nullptr, -1.0, 1.0, scope_view_size, 4, false, false);
-                    ImGui::PopID();
+                    if (m_RenderMat.type == IM_DT_FLOAT32)
+                        wave_mat = channel;
+                    else if (m_RenderMat.type == IM_DT_INT16)
+                    {
+                        wave_mat.create_type(channel.w, channel.h, IM_DT_FLOAT32);
+                        for (int i = 0; i < channel.w; i++)
+                            wave_mat.at<float>(i, 0) = channel.at<short>(i, 0) / (float)(INT16_MAX);
+                    }
+                    else if (m_RenderMat.type == IM_DT_INT32)
+                    {
+                        wave_mat.create_type(channel.w, channel.h, IM_DT_FLOAT32);
+                        for (int i = 0; i < channel.w; i++)
+                            wave_mat.at<float>(i, 0) = channel.at<int32_t>(i, 0) / (float)(INT32_MAX);
+                    }
+                    else if (m_RenderMat.type == IM_DT_INT8)
+                    {
+                        wave_mat.create_type(channel.w, channel.h, IM_DT_FLOAT32);
+                        for (int i = 0; i < channel.w; i++)
+                            wave_mat.at<float>(i, 0) = channel.at<int8_t>(i, 0) / (float)(INT8_MAX);
+                    }
+                    if (!wave_mat.empty())
+                    {
+                        ImGui::PushID(i);
+                        ImGui::PlotLinesEx("##wave", (float *)wave_mat.data, wave_mat.w, 0, nullptr, -1.0, 1.0, scope_view_size, 4, false, false);
+                        ImGui::PopID();
+                    }
                 }
             }
             else
