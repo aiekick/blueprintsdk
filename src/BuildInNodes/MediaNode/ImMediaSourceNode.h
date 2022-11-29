@@ -373,6 +373,7 @@ struct MediaSourceNode final : Node
         int video_depth = m_video_dec_ctx->bits_per_raw_sample;
         if (video_depth == 0 && desc)
             video_depth = desc->comp[0].depth != 0 ? desc->comp[0].depth : 8;
+        m_video_depth = video_depth;
         int data_shift = video_depth > 8 ? 1 : 0;
 
         ImColorSpace color_space =  m_video_dec_ctx->colorspace == AVCOL_SPC_BT470BG ||
@@ -567,6 +568,7 @@ struct MediaSourceNode final : Node
         // Generate Audio Mat
         ImGui::ImMat mat_A;
         int data_size = av_get_bytes_per_sample((enum AVSampleFormat)m_frame->format);
+        m_audio_depth = data_size * 8;
         AVRational tb = (AVRational){1, m_frame->sample_rate};
         ImDataType type  =  (m_frame->format == AV_SAMPLE_FMT_FLT) || (m_frame->format == AV_SAMPLE_FMT_FLTP) ? IM_DT_FLOAT32 :
                             (m_frame->format == AV_SAMPLE_FMT_S32) || (m_frame->format == AV_SAMPLE_FMT_S32P) ? IM_DT_INT32:
@@ -807,7 +809,7 @@ struct MediaSourceNode final : Node
             ImGui::Text("     Video: %d x %d @ %.2f", m_video_stream->codecpar->width, 
                                                     m_video_stream->codecpar->height, 
                                                     (float)m_video_stream->r_frame_rate.num / (float)m_video_stream->r_frame_rate.den);
-            ImGui::Text("            %d bit depth", m_video_stream->codecpar->bits_per_raw_sample);
+            ImGui::Text("            %d bit depth", m_video_stream->codecpar->bits_per_raw_sample == 0 ? m_video_depth : m_video_stream->codecpar->bits_per_raw_sample);
         }
         if (m_audio_index != -1 && m_audio_stream)
         {
@@ -816,7 +818,7 @@ struct MediaSourceNode final : Node
 #else
             ImGui::Text("     Audio: %d @ %d", m_audio_stream->codecpar->ch_layout.nb_channels, m_audio_stream->codecpar->sample_rate);
 #endif
-            ImGui::Text("            %d bit depth", m_audio_stream->codecpar->bits_per_coded_sample);
+            ImGui::Text("            %d bit depth", m_audio_stream->codecpar->bits_per_coded_sample == 0 ? m_audio_depth : m_audio_stream->codecpar->bits_per_coded_sample);
         }
         ImGui::PopItemWidth();
         return false;
@@ -894,6 +896,8 @@ private:
     AVCodecContext*     m_audio_dec_ctx {nullptr};
     AVStream*           m_audio_stream {nullptr};
     int                 m_audio_index {-1};
+    int                 m_video_depth {0};
+    int                 m_audio_depth {0};
     AVFrame*            m_frame {nullptr};
     AVPacket*           m_pkt {nullptr};
 #if IMGUI_VULKAN_SHADER
