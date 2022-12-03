@@ -27,6 +27,9 @@ elseif(CMAKE_OSX_ARCHITECTURES MATCHES "x86" OR CMAKE_SYSTEM_PROCESSOR MATCHES "
     if(MSVC OR MSVC_IDE)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX2 /arch:AVX /arch:FMA /arch:SSE /arch:SSE2 /arch:SSSE3 /arch:SSE4.1 /arch:SSE4.2")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /arch:AVX2 /arch:AVX /arch:FMA /arch:SSE /arch:SSE2 /arch:SSSE3 /arch:SSE4.1 /arch:SSE4.2")
+    elseif (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -msse4.1 -mssse3 -msse2 -msse -mrelaxed-simd")
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2 -msse4.1 -mssse3 -msse2 -msse -mrelaxed-simd")
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mavx")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx2 -mavx")
@@ -38,6 +41,8 @@ endif()
 option(IMGUI_BP_SDK_STATIC              "Build BluePrint as static library" OFF)
 
 find_package(PkgConfig REQUIRED)
+
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 if(PKG_CONFIG_FOUND)
     pkg_check_modules(
         FFMPEG IMPORTED_TARGET
@@ -50,6 +55,10 @@ if(PKG_CONFIG_FOUND)
         libavdevice
     )
 endif(PKG_CONFIG_FOUND)
+else()
+set(IMGUI_BP_SDK_STATIC ON CACHE BOOL "Enable Static Build by Force" FORCE)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s WASM=1 -s TOTAL_MEMORY=256MB -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -Wno-unused-command-line-argument")
+endif()
 
 set(IMGUI_BP_SDK_SRC
     src/BluePrint.cpp

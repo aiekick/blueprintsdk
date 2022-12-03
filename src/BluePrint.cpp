@@ -369,7 +369,7 @@ StepResult BP::Execute(Node& entryPointNode)
     if (!entry_pin)
         return StepResult::Error;
 #if defined(__EMSCRIPTEN__)
-    return m_Context.Start(entryPointNode.m_Exit);
+    return m_Context.Start(*entry_pin);
 #else
     return m_Context.Execute(*entry_pin);
 #endif
