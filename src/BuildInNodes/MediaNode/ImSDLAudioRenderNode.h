@@ -1,3 +1,4 @@
+#ifdef SDK_WITH_SDL2
 #include <BluePrint.h>
 #include <Node.h>
 #include <Pin.h>
@@ -391,3 +392,4 @@ static void sdl_audio_callback(void *opaque, Uint8 *stream, int len)
     }
     node->m_mutex.unlock();
 }
+#endif // SDK_WITH_SDL2

@@ -57,7 +57,7 @@ if(PKG_CONFIG_FOUND)
 endif(PKG_CONFIG_FOUND)
 else()
 set(IMGUI_BP_SDK_STATIC ON CACHE BOOL "Enable Static Build by Force" FORCE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s WASM=1 -s TOTAL_MEMORY=256MB -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -Wno-unused-command-line-argument")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2  -s USE_GLFW=3 -s USE_WEBGPU=1 -s WASM=1 -s TOTAL_MEMORY=256MB -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -Wno-unused-command-line-argument")
 endif()
 
 set(IMGUI_BP_SDK_SRC
@@ -99,6 +99,10 @@ if (FFMPEG_FOUND)
         PkgConfig::FFMPEG
     )
 endif(FFMPEG_FOUND)
+
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+    add_compile_definitions(SDK_WITH_SDL2)
+endif()
 
 # Generate all buildin node files into one header file
 message(STATUS "Generate Build In Nodes")

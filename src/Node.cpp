@@ -170,8 +170,10 @@ NodeRegistry::NodeRegistry()
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
         MatWarpAffineNode::GetStaticTypeInfo(),
 #endif
+#ifdef SDK_WITH_SDL2
         // audio render node
         SDLAudioRenderingNode::GetStaticTypeInfo(),
+#endif
         // audio filter nodes
         AudioGainNode::GetStaticTypeInfo(),
         // audio fusion nodes
