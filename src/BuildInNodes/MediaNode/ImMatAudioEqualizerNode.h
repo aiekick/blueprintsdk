@@ -93,7 +93,7 @@ struct AudioEqualizerNode final : Node
         filterGraph = avfilter_graph_alloc();
         char abuffersrcArgs[256];
 #if !defined(FF_API_OLD_CHANNEL_LAYOUT) && (LIBAVUTIL_VERSION_MAJOR < 58)
-        snprintf(abuffersrcArgs, sizeof(abuffersrcArgs), "sample_rate=%d:sample_fmt=%d:channel_layout=%lu:time_base=%d/%d",
+        snprintf(abuffersrcArgs, sizeof(abuffersrcArgs), "sample_rate=%d:sample_fmt=%d:channel_layout=%llu:time_base=%d/%d",
                  sampleRate, sampleFormat, channelLayout, 1, sampleRate);
 #else
         char chlytDescBuff[256] = {0};
