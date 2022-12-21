@@ -170,6 +170,7 @@ NodeRegistry::NodeRegistry()
         BowTieFusionNode::GetStaticTypeInfo(),
         ButterflyWaveFusionNode::GetStaticTypeInfo(),
         SwapFusionNode::GetStaticTypeInfo(),
+        RadialFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),

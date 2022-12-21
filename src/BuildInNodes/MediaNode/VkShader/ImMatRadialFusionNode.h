@@ -2,16 +2,16 @@
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
-#include <Bounce_vulkan.h>
+#include <Radial_vulkan.h>
 
 namespace BluePrint
 {
-struct BounceFusionNode final : Node
+struct RadialFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(BounceFusionNode, "Bounce Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
-    BounceFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Bounce Transform"; }
+    BP_NODE_WITH_NAME(RadialFusionNode, "Radial Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    RadialFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Radial Transform"; }
 
-    ~BounceFusionNode()
+    ~RadialFusionNode()
     {
         if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
     }
@@ -44,7 +44,7 @@ struct BounceFusionNode final : Node
             if (!m_fusion || m_device != gpu)
             {
                 if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
-                m_fusion = new ImGui::Bounce_vulkan(gpu);
+                m_fusion = new ImGui::Radial_vulkan(gpu);
             }
             if (!m_fusion)
             {
@@ -52,7 +52,7 @@ struct BounceFusionNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_shadowColor, m_shadow_height, m_bounces);
+            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_smoothness);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -81,23 +81,14 @@ struct BounceFusionNode final : Node
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        float _shadow_height = m_shadow_height;
-        float _bounces = m_bounces;
-        ImPixel _shadowColor = m_shadowColor;
+        float _smoothness = m_smoothness;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::SliderFloat("ShadowHeight##Bounce", &_shadow_height, 0.0, 0.3f, "%.3f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_shadow_height##Bounce")) { _shadow_height = 0.075f; }
-        ImGui::SliderFloat("Bounces##Bounce", &_bounces, 1.0, 10.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_bounces##Bounce")) { _bounces = 3.f; }
+        ImGui::SliderFloat("Smoothness##Radial", &_smoothness, 0.0, 1.f, "%.1f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##Radial")) { _smoothness = 1.f; }
         ImGui::PopItemWidth();
-        ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("##ShadowColor", (float *)&_shadowColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
-        if (_shadow_height != m_shadow_height) { m_shadow_height = _shadow_height; changed = true; }
-        if (_bounces != m_bounces) { m_bounces = _bounces; changed = true; }
-        if (_shadowColor.r != m_shadowColor.r || _shadowColor.g != m_shadowColor.g || _shadowColor.b != m_shadowColor.b || _shadowColor.a != m_shadowColor.a) { 
-            m_shadowColor = _shadowColor; changed = true; }
+        if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }
         return m_Enabled ? changed : false;
     }
 
@@ -113,26 +104,11 @@ struct BounceFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("shadow_height"))
+        if (value.contains("smoothness"))
         {
-            auto& val = value["shadow_height"];
+            auto& val = value["smoothness"];
             if (val.is_number()) 
-                m_shadow_height = val.get<imgui_json::number>();
-        }
-        if (value.contains("bounces"))
-        {
-            auto& val = value["bounces"];
-            if (val.is_number()) 
-                m_bounces = val.get<imgui_json::number>();
-        }
-        if (value.contains("shadowColor"))
-        {
-            auto& val = value["shadowColor"];
-            if (val.is_vec4())
-            {
-                ImVec4 val4 = val.get<imgui_json::vec4>();
-                m_shadowColor = ImPixel(val4.x, val4.y, val4.z, val4.w);
-            }
+                m_smoothness = val.get<imgui_json::number>();
         }
         return ret;
     }
@@ -141,9 +117,7 @@ struct BounceFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["shadow_height"] = imgui_json::number(m_shadow_height);
-        value["bounces"] = imgui_json::number(m_bounces);
-        value["shadowColor"] = imgui_json::vec4(ImVec4(m_shadowColor.r, m_shadowColor.g, m_shadowColor.b, m_shadowColor.a));
+        value["smoothness"] = imgui_json::number(m_smoothness);
     }
 
     void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
@@ -183,9 +157,7 @@ struct BounceFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    ImPixel m_shadowColor {0.0f, 0.0f, 0.0f, 0.6f};
-    float m_shadow_height {0.075};
-    float m_bounces {3.f};
-    ImGui::Bounce_vulkan * m_fusion   {nullptr};
+    float m_smoothness   {1.f};
+    ImGui::Radial_vulkan * m_fusion   {nullptr};
 };
 } // namespace BluePrint
