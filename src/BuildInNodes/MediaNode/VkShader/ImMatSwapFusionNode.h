@@ -2,16 +2,16 @@
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
-#include <ButterflyWave_vulkan.h>
+#include <Swap_vulkan.h>
 
 namespace BluePrint
 {
-struct ButterflyWaveFusionNode final : Node
+struct SwapFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(ButterflyWaveFusionNode, "ButterflyWave Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
-    ButterflyWaveFusionNode(BP& blueprint): Node(blueprint) { m_Name = "ButterflyWave Transform"; }
+    BP_NODE_WITH_NAME(SwapFusionNode, "Swap Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    SwapFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Swap Transform"; }
 
-    ~ButterflyWaveFusionNode()
+    ~SwapFusionNode()
     {
         if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
     }
@@ -44,7 +44,7 @@ struct ButterflyWaveFusionNode final : Node
             if (!m_fusion || m_device != gpu)
             {
                 if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
-                m_fusion = new ImGui::ButterflyWave_vulkan(gpu);
+                m_fusion = new ImGui::Swap_vulkan(gpu);
             }
             if (!m_fusion)
             {
@@ -52,7 +52,7 @@ struct ButterflyWaveFusionNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_amplitude, m_waves, m_colorSeparation);
+            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_reflection, m_perspective, m_depth);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -81,22 +81,22 @@ struct ButterflyWaveFusionNode final : Node
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        float _amplitude = m_amplitude;
-        float _waves = m_waves;
-        float _colorSeparation = m_colorSeparation;
+        float _reflection = m_reflection;
+        float _perspective = m_perspective;
+        float _depth = m_depth;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::SliderFloat("Amplitude##ButterflyWave", &_amplitude, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_amplitude##ButterflyWave")) { _amplitude = 1.f; }
-        ImGui::SliderFloat("Waves##ButterflyWave", &_waves, 1.0, 18.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_waves##ButterflyWave")) { _waves = 10.f; }
-        ImGui::SliderFloat("Separation##ButterflyWave", &_colorSeparation, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_colorSeparation##ButterflyWave")) { _colorSeparation = 0.3f; }
+        ImGui::SliderFloat("Reflection##Swap", &_reflection, 0.0, 1.f, "%.1f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_reflection##Swap")) { _reflection = 0.4f; }
+        ImGui::SliderFloat("Perspective##Swap", &_perspective, 0.0, 1.f, "%.1f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_perspective##Swap")) { _perspective = 0.2f; }
+        ImGui::SliderFloat("Depth##Swap", &_depth, 1.0, 10.f, "%.1f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_depth##Sqap")) { _depth = 3.0f; }
         ImGui::PopItemWidth();
-        if (_amplitude != m_amplitude) { m_amplitude = _amplitude; changed = true; }
-        if (_waves != m_waves) { m_waves = _waves; changed = true; }
-        if (_colorSeparation != m_colorSeparation) { m_colorSeparation = _colorSeparation; changed = true; }
+        if (_reflection != m_reflection) { m_reflection = _reflection; changed = true; }
+        if (_perspective != m_perspective) { m_perspective = _perspective; changed = true; }
+        if (_depth != m_depth) { m_depth = _depth; changed = true; }
         return m_Enabled ? changed : false;
     }
 
@@ -112,23 +112,23 @@ struct ButterflyWaveFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("amplitude"))
+        if (value.contains("reflection"))
         {
-            auto& val = value["amplitude"];
+            auto& val = value["reflection"];
             if (val.is_number()) 
-                m_amplitude = val.get<imgui_json::number>();
+                m_reflection = val.get<imgui_json::number>();
         }
-        if (value.contains("waves"))
+        if (value.contains("perspective"))
         {
-            auto& val = value["waves"];
+            auto& val = value["perspective"];
             if (val.is_number()) 
-                m_waves = val.get<imgui_json::number>();
+                m_perspective = val.get<imgui_json::number>();
         }
-        if (value.contains("colorSeparation"))
+        if (value.contains("depth"))
         {
-            auto& val = value["colorSeparation"];
+            auto& val = value["depth"];
             if (val.is_number()) 
-                m_colorSeparation = val.get<imgui_json::number>();
+                m_depth = val.get<imgui_json::number>();
         }
         return ret;
     }
@@ -137,9 +137,9 @@ struct ButterflyWaveFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["amplitude"] = imgui_json::number(m_amplitude);
-        value["waves"] = imgui_json::number(m_waves);
-        value["colorSeparation"] = imgui_json::number(m_colorSeparation);
+        value["reflection"] = imgui_json::number(m_reflection);
+        value["perspective"] = imgui_json::number(m_perspective);
+        value["depth"] = imgui_json::number(m_depth);
     }
 
     void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
@@ -179,9 +179,9 @@ struct ButterflyWaveFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    float m_amplitude   {1.f};
-    float m_waves       {10.f};
-    float m_colorSeparation {0.3f};
-    ImGui::ButterflyWave_vulkan * m_fusion   {nullptr};
+    float m_reflection  {0.4f};
+    float m_perspective {0.2f};
+    float m_depth       {3.f};
+    ImGui::Swap_vulkan * m_fusion   {nullptr};
 };
 } // namespace BluePrint
