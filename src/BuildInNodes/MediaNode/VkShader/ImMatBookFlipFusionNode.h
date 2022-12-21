@@ -13,7 +13,7 @@ struct BookFlipFusionNode final : Node
 
     ~BookFlipFusionNode()
     {
-        if (m_flip) { delete m_flip; m_flip = nullptr; }
+        if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
     }
 
     void Reset(Context& context) override
@@ -41,18 +41,18 @@ struct BookFlipFusionNode final : Node
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
             }
-            if (!m_flip || m_device != gpu)
+            if (!m_fusion || m_device != gpu)
             {
-                if (m_flip) { delete m_flip; m_flip = nullptr; }
-                m_flip = new ImGui::BookFlip_vulkan(gpu);
+                if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
+                m_fusion = new ImGui::BookFlip_vulkan(gpu);
             }
-            if (!m_flip)
+            if (!m_fusion)
             {
                 return {};
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_NodeTimeMs = m_flip->flip(mat_first, mat_second, im_RGB, progress);
+            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -135,6 +135,6 @@ struct BookFlipFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    ImGui::BookFlip_vulkan * m_flip   {nullptr};
+    ImGui::BookFlip_vulkan * m_fusion   {nullptr};
 };
 } // namespace BluePrint
