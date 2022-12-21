@@ -167,6 +167,7 @@ NodeRegistry::NodeRegistry()
         SliderFusionNode::GetStaticTypeInfo(),
         BookFlipFusionNode::GetStaticTypeInfo(),
         BounceFusionNode::GetStaticTypeInfo(),
+        BowTieFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
