@@ -181,6 +181,7 @@ NodeRegistry::NodeRegistry()
         LuminanceMeltFusionNode::GetStaticTypeInfo(),
         PerlinFusionNode::GetStaticTypeInfo(),
         DirectionalWarpFusionNode::GetStaticTypeInfo(),
+        MorphFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
