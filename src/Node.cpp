@@ -173,6 +173,7 @@ NodeRegistry::NodeRegistry()
         RadialFusionNode::GetStaticTypeInfo(),
         WindowSliceFusionNode::GetStaticTypeInfo(),
         PolkaDotsFusionNode::GetStaticTypeInfo(),
+        SimpleZoomFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
