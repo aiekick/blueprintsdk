@@ -184,6 +184,7 @@ NodeRegistry::NodeRegistry()
         MorphFusionNode::GetStaticTypeInfo(),
         ColourDistanceFusionNode::GetStaticTypeInfo(),
         CircleCropFusionNode::GetStaticTypeInfo(),
+        SwirlFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
