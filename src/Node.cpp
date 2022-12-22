@@ -177,6 +177,7 @@ NodeRegistry::NodeRegistry()
         WaterDropFusionNode::GetStaticTypeInfo(),
         PageCurlFusionNode::GetStaticTypeInfo(),
         GlitchMemoriesFusionNode::GetStaticTypeInfo(),
+        StereoViewerFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
