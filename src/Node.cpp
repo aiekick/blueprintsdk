@@ -191,6 +191,7 @@ NodeRegistry::NodeRegistry()
         ZoomInCirclesFusionNode::GetStaticTypeInfo(),
         MosaicFusionNode::GetStaticTypeInfo(),
         BurnOutFusionNode::GetStaticTypeInfo(),
+        CrosshatchFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
