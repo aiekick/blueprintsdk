@@ -190,6 +190,7 @@ NodeRegistry::NodeRegistry()
         GridFlipFusionNode::GetStaticTypeInfo(),
         ZoomInCirclesFusionNode::GetStaticTypeInfo(),
         MosaicFusionNode::GetStaticTypeInfo(),
+        BurnOutFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
