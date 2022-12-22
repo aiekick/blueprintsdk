@@ -178,6 +178,7 @@ NodeRegistry::NodeRegistry()
         PageCurlFusionNode::GetStaticTypeInfo(),
         GlitchMemoriesFusionNode::GetStaticTypeInfo(),
         StereoViewerFusionNode::GetStaticTypeInfo(),
+        LuminanceMeltFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
