@@ -176,6 +176,7 @@ NodeRegistry::NodeRegistry()
         SimpleZoomFusionNode::GetStaticTypeInfo(),
         WaterDropFusionNode::GetStaticTypeInfo(),
         PageCurlFusionNode::GetStaticTypeInfo(),
+        GlitchMemoriesFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
