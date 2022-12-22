@@ -180,6 +180,7 @@ NodeRegistry::NodeRegistry()
         StereoViewerFusionNode::GetStaticTypeInfo(),
         LuminanceMeltFusionNode::GetStaticTypeInfo(),
         PerlinFusionNode::GetStaticTypeInfo(),
+        DirectionalWarpFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
