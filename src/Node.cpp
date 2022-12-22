@@ -192,6 +192,7 @@ NodeRegistry::NodeRegistry()
         MosaicFusionNode::GetStaticTypeInfo(),
         BurnOutFusionNode::GetStaticTypeInfo(),
         CrosshatchFusionNode::GetStaticTypeInfo(),
+        CannabisLeafFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
