@@ -188,6 +188,7 @@ NodeRegistry::NodeRegistry()
         CrossZoomFusionNode::GetStaticTypeInfo(),
         DreamyFusionNode::GetStaticTypeInfo(),
         GridFlipFusionNode::GetStaticTypeInfo(),
+        ZoomInCirclesFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
