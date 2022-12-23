@@ -198,6 +198,7 @@ NodeRegistry::NodeRegistry()
         WindowBlindsFusionNode::GetStaticTypeInfo(),
         HexagonalizeFusionNode::GetStaticTypeInfo(),
         GlitchDisplaceFusionNode::GetStaticTypeInfo(),
+        DreamyZoomFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
