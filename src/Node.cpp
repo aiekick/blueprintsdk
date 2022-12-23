@@ -210,6 +210,7 @@ NodeRegistry::NodeRegistry()
         DoorwayFusionNode::GetStaticTypeInfo(),
         FlyeyeFusionNode::GetStaticTypeInfo(),
         HeartFusionNode::GetStaticTypeInfo(),
+        MultiplyBlendFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
