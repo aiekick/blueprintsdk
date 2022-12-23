@@ -215,6 +215,7 @@ NodeRegistry::NodeRegistry()
         PolarFusionNode::GetStaticTypeInfo(),
         RandomSquaresFusionNode::GetStaticTypeInfo(),
         RotateScaleFusionNode::GetStaticTypeInfo(),
+        SquaresWireFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
