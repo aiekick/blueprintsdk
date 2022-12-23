@@ -207,6 +207,7 @@ NodeRegistry::NodeRegistry()
         ColorPhaseFusionNode::GetStaticTypeInfo(),
         CrossWarpFusionNode::GetStaticTypeInfo(),
         CubeFusionNode::GetStaticTypeInfo(),
+        DoorwayFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
