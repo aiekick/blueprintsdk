@@ -2,16 +2,16 @@
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
-#include <WindowSlice_vulkan.h>
+#include <Hexagonalize_vulkan.h>
 
 namespace BluePrint
 {
-struct WindowSliceFusionNode final : Node
+struct HexagonalizeFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(WindowSliceFusionNode, "WindowSlice Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
-    WindowSliceFusionNode(BP& blueprint): Node(blueprint) { m_Name = "WindowSlice Transform"; }
+    BP_NODE_WITH_NAME(HexagonalizeFusionNode, "Hexagonalize Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    HexagonalizeFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Hexagonalize Transform"; }
 
-    ~WindowSliceFusionNode()
+    ~HexagonalizeFusionNode()
     {
         if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
     }
@@ -44,7 +44,7 @@ struct WindowSliceFusionNode final : Node
             if (!m_fusion || m_device != gpu)
             {
                 if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
-                m_fusion = new ImGui::WindowSlice_vulkan(gpu);
+                m_fusion = new ImGui::Hexagonalize_vulkan(gpu);
             }
             if (!m_fusion)
             {
@@ -52,7 +52,7 @@ struct WindowSliceFusionNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_smoothness, m_count);
+            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_horizontalHexagons, m_steps);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -81,18 +81,18 @@ struct WindowSliceFusionNode final : Node
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        float _smoothness = m_smoothness;
-        float _count = m_count;
+        float _horizontalHexagons = m_horizontalHexagons;
+        int _steps = m_steps;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
-        ImGui::SliderFloat("Smoothness##WindowSlice", &_smoothness, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##WindowSlice")) { _smoothness = 1.f; }
-        ImGui::SliderFloat("Count##WindowSlice", &_count, 1.0, 50.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_count##WindowSlice")) { _count = 10.f; }
+        ImGui::SliderFloat("X Hexagons##Hexagonalize", &_horizontalHexagons, 0.0, 50.f, "%.0f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_horizontalHexagons##Hexagonalize")) { _horizontalHexagons = 20.f; }
+        ImGui::SliderInt("Steps##Hexagonalize", &_steps, 1, 100, "%d", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_steps##Hexagonalize")) { _steps = 50; }
         ImGui::PopItemWidth();
-        if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }
-        if (_count != m_count) { m_count = _count; changed = true; }
+        if (_horizontalHexagons != m_horizontalHexagons) { m_horizontalHexagons = _horizontalHexagons; changed = true; }
+        if (_steps != m_steps) { m_steps = _steps; changed = true; }
         return m_Enabled ? changed : false;
     }
 
@@ -108,17 +108,17 @@ struct WindowSliceFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("smoothness"))
+        if (value.contains("horizontalHexagons"))
         {
-            auto& val = value["smoothness"];
+            auto& val = value["horizontalHexagons"];
             if (val.is_number()) 
-                m_smoothness = val.get<imgui_json::number>();
+                m_horizontalHexagons = val.get<imgui_json::number>();
         }
-        if (value.contains("count"))
+        if (value.contains("steps"))
         {
-            auto& val = value["count"];
+            auto& val = value["steps"];
             if (val.is_number()) 
-                m_count = val.get<imgui_json::number>();
+                m_steps = val.get<imgui_json::number>();
         }
         return ret;
     }
@@ -127,8 +127,8 @@ struct WindowSliceFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["smoothness"] = imgui_json::number(m_smoothness);
-        value["count"] = imgui_json::number(m_count);
+        value["horizontalHexagons"] = imgui_json::number(m_horizontalHexagons);
+        value["steps"] = imgui_json::number(m_steps);
     }
 
     void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
@@ -168,8 +168,8 @@ struct WindowSliceFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    float m_smoothness  {1.f};
-    float m_count       {10.f};
-    ImGui::WindowSlice_vulkan * m_fusion   {nullptr};
+    float m_horizontalHexagons  {20.f};
+    int m_steps         {50};
+    ImGui::Hexagonalize_vulkan * m_fusion   {nullptr};
 };
 } // namespace BluePrint
