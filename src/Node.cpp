@@ -200,6 +200,7 @@ NodeRegistry::NodeRegistry()
         GlitchDisplaceFusionNode::GetStaticTypeInfo(),
         DreamyZoomFusionNode::GetStaticTypeInfo(),
         DoomScreenFusionNode::GetStaticTypeInfo(),
+        RippleFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
