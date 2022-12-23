@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct ColourDistanceFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(ColourDistanceFusionNode, "ColourDistance Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BP_NODE_WITH_NAME(ColourDistanceFusionNode, "ColourDistance Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Color")
     ColourDistanceFusionNode(BP& blueprint): Node(blueprint) { m_Name = "ColourDistance Transform"; }
 
     ~ColourDistanceFusionNode()

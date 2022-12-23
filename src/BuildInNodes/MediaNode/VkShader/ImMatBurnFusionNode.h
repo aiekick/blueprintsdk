@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct BurnFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(BurnFusionNode, "Burn Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BP_NODE_WITH_NAME(BurnFusionNode, "Burn Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Color")
     BurnFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Burn Transform"; }
 
     ~BurnFusionNode()

@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct BookFlipFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(BookFlipFusionNode, "BookFlip Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BP_NODE_WITH_NAME(BookFlipFusionNode, "BookFlip Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Move")
     BookFlipFusionNode(BP& blueprint): Node(blueprint) { m_Name = "BookFlip Transform"; }
 
     ~BookFlipFusionNode()

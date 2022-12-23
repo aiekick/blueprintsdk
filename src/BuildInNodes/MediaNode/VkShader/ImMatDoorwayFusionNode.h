@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct DoorwayFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(DoorwayFusionNode, "Doorway Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BP_NODE_WITH_NAME(DoorwayFusionNode, "Doorway Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Move")
     DoorwayFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Doorway Transform"; }
 
     ~DoorwayFusionNode()

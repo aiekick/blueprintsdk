@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct RandomSquaresFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(RandomSquaresFusionNode, "RandomSquares Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BP_NODE_WITH_NAME(RandomSquaresFusionNode, "RandomSquares Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
     RandomSquaresFusionNode(BP& blueprint): Node(blueprint) { m_Name = "RandomSquares Transform"; }
 
     ~RandomSquaresFusionNode()

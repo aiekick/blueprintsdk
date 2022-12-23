@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct DreamyZoomFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(DreamyZoomFusionNode, "DreamyZoom Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BP_NODE_WITH_NAME(DreamyZoomFusionNode, "DreamyZoom Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
     DreamyZoomFusionNode(BP& blueprint): Node(blueprint) { m_Name = "DreamyZoom Transform"; }
 
     ~DreamyZoomFusionNode()

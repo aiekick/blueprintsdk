@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct HexagonalizeFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(HexagonalizeFusionNode, "Hexagonalize Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BP_NODE_WITH_NAME(HexagonalizeFusionNode, "Hexagonalize Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
     HexagonalizeFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Hexagonalize Transform"; }
 
     ~HexagonalizeFusionNode()

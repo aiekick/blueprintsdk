@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct MorphFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(MorphFusionNode, "Morph Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    BP_NODE_WITH_NAME(MorphFusionNode, "Morph Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Mix")
     MorphFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Morph Transform"; }
 
     ~MorphFusionNode()
