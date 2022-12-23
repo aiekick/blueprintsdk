@@ -197,6 +197,7 @@ NodeRegistry::NodeRegistry()
         KaleidoScopeFusionNode::GetStaticTypeInfo(),
         WindowBlindsFusionNode::GetStaticTypeInfo(),
         HexagonalizeFusionNode::GetStaticTypeInfo(),
+        GlitchDisplaceFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
