@@ -195,6 +195,7 @@ NodeRegistry::NodeRegistry()
         CannabisLeafFusionNode::GetStaticTypeInfo(),
         CrazyParametricFusionNode::GetStaticTypeInfo(),
         KaleidoScopeFusionNode::GetStaticTypeInfo(),
+        WindowBlindsFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
