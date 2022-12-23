@@ -212,6 +212,7 @@ NodeRegistry::NodeRegistry()
         HeartFusionNode::GetStaticTypeInfo(),
         MultiplyBlendFusionNode::GetStaticTypeInfo(),
         PixelizeFusionNode::GetStaticTypeInfo(),
+        PolarFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
