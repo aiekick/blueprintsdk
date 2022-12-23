@@ -203,6 +203,7 @@ NodeRegistry::NodeRegistry()
         RippleFusionNode::GetStaticTypeInfo(),
         PinwheelFusionNode::GetStaticTypeInfo(),
         BurnFusionNode::GetStaticTypeInfo(),
+        CircleBlurFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
