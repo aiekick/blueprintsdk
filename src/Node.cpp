@@ -205,6 +205,7 @@ NodeRegistry::NodeRegistry()
         BurnFusionNode::GetStaticTypeInfo(),
         CircleBlurFusionNode::GetStaticTypeInfo(),
         ColorPhaseFusionNode::GetStaticTypeInfo(),
+        CrossWarpFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
