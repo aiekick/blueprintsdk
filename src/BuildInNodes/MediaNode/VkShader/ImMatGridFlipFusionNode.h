@@ -103,7 +103,7 @@ struct GridFlipFusionNode final : Node
         ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_y##GridFlip")) { size_y = 4; }
         ImGui::PopItemWidth();
         ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("##BackColor", (float *)&_backColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        ImGui::ColorPicker4("BackColor##GridFlip", (float *)&_backColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
         ImGui::EndDisabled();
         if (_pause != m_pause) { m_pause = _pause; changed = true; }
         if (_dividerWidth != m_dividerWidth) { m_dividerWidth = _dividerWidth; changed = true; }

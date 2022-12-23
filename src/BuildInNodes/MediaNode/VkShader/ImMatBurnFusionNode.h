@@ -85,7 +85,7 @@ struct BurnFusionNode final : Node
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("##BackColor", (float *)&_backColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        ImGui::ColorPicker4("BackColor##Burn", (float *)&_backColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
         if (_backColor.r != m_backColor.r || _backColor.g != m_backColor.g || _backColor.b != m_backColor.b || _backColor.a != m_backColor.a) { 
             m_backColor = _backColor; changed = true; }
         return m_Enabled ? changed : false;

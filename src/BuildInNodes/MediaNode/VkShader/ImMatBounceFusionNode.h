@@ -93,7 +93,7 @@ struct BounceFusionNode final : Node
         ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_bounces##Bounce")) { _bounces = 3.f; }
         ImGui::PopItemWidth();
         ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("##ShadowColor", (float *)&_shadowColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        ImGui::ColorPicker4("ShadowColor##Bounce", (float *)&_shadowColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
         if (_shadow_height != m_shadow_height) { m_shadow_height = _shadow_height; changed = true; }
         if (_bounces != m_bounces) { m_bounces = _bounces; changed = true; }
         if (_shadowColor.r != m_shadowColor.r || _shadowColor.g != m_shadowColor.g || _shadowColor.b != m_shadowColor.b || _shadowColor.a != m_shadowColor.a) { 

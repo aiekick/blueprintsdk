@@ -90,7 +90,7 @@ struct BurnOutFusionNode final : Node
         ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##BurnOut")) { _smoothness = 0.03f; }
         ImGui::PopItemWidth();
         ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("##ShadowColor", (float *)&_shadowColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        ImGui::ColorPicker4("ShadowColor##BurnOut", (float *)&_shadowColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
         if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }
         if (_shadowColor.r != m_shadowColor.r || _shadowColor.g != m_shadowColor.g || _shadowColor.b != m_shadowColor.b || _shadowColor.a != m_shadowColor.a) { 
             m_shadowColor = _shadowColor; changed = true; }

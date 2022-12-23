@@ -99,7 +99,7 @@ struct ChromaKeyNode final : Node
         ImGui::SliderFloat("Alpha Scale##ChromaKey", &_alphaScale, 0.f, 100.f, "%.1f", flags);
         ImGui::PopItemWidth();
         ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("##ChromaKey", (float *)&_chromaColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        ImGui::ColorPicker4("KeyColor##ChromaKey", (float *)&_chromaColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
         if (_lumaMask != m_lumaMask) { m_lumaMask = _lumaMask; changed = true; }
         if (_alphaCutoffMin != m_alphaCutoffMin) { m_alphaCutoffMin = _alphaCutoffMin; changed = true; }
         if (_alphaScale != m_alphaScale) { m_alphaScale = _alphaScale; changed = true; }

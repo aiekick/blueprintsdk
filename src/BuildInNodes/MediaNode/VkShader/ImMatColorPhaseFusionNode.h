@@ -2,16 +2,16 @@
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
-#include <CircleCrop_vulkan.h>
+#include <ColorPhase_vulkan.h>
 
 namespace BluePrint
 {
-struct CircleCropFusionNode final : Node
+struct ColorPhaseFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(CircleCropFusionNode, "CircleCrop Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
-    CircleCropFusionNode(BP& blueprint): Node(blueprint) { m_Name = "CircleCrop Transform"; }
+    BP_NODE_WITH_NAME(ColorPhaseFusionNode, "ColorPhase Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video")
+    ColorPhaseFusionNode(BP& blueprint): Node(blueprint) { m_Name = "ColorPhase Transform"; }
 
-    ~CircleCropFusionNode()
+    ~ColorPhaseFusionNode()
     {
         if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
     }
@@ -44,7 +44,7 @@ struct CircleCropFusionNode final : Node
             if (!m_fusion || m_device != gpu)
             {
                 if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
-                m_fusion = new ImGui::CircleCrop_vulkan(gpu);
+                m_fusion = new ImGui::ColorPhase_vulkan(gpu);
             }
             if (!m_fusion)
             {
@@ -52,7 +52,7 @@ struct CircleCropFusionNode final : Node
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_backColor);
+            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_fromColor, m_toColor);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -81,13 +81,18 @@ struct CircleCropFusionNode final : Node
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        ImPixel _backColor = m_backColor;
+        ImPixel _fromColor = m_fromColor;
+        ImPixel _toColor = m_toColor;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("BackColor##CircleCrop", (float *)&_backColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
-        if (_backColor.r != m_backColor.r || _backColor.g != m_backColor.g || _backColor.b != m_backColor.b || _backColor.a != m_backColor.a) { 
-            m_backColor = _backColor; changed = true; }
+        ImGui::ColorPicker4("From##ColorPhase", (float *)&_fromColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        if (_fromColor.r != m_fromColor.r || _fromColor.g != m_fromColor.g || _fromColor.b != m_fromColor.b || _fromColor.a != m_fromColor.a) { 
+            m_fromColor = _fromColor; changed = true; }
+        ImGui::SetNextItemWidth(200);
+        ImGui::ColorPicker4("To##ColorPhase", (float *)&_toColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        if (_toColor.r != m_toColor.r || _toColor.g != m_toColor.g || _toColor.b != m_toColor.b || _toColor.a != m_toColor.a) { 
+            m_toColor = _toColor; changed = true; }
         return m_Enabled ? changed : false;
     }
 
@@ -103,13 +108,22 @@ struct CircleCropFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("backColor"))
+        if (value.contains("fromColor"))
         {
-            auto& val = value["backColor"];
+            auto& val = value["fromColor"];
             if (val.is_vec4())
             {
                 ImVec4 val4 = val.get<imgui_json::vec4>();
-                m_backColor = ImPixel(val4.x, val4.y, val4.z, val4.w);
+                m_fromColor = ImPixel(val4.x, val4.y, val4.z, val4.w);
+            }
+        }
+        if (value.contains("toColor"))
+        {
+            auto& val = value["toColor"];
+            if (val.is_vec4())
+            {
+                ImVec4 val4 = val.get<imgui_json::vec4>();
+                m_toColor = ImPixel(val4.x, val4.y, val4.z, val4.w);
             }
         }
         return ret;
@@ -119,7 +133,8 @@ struct CircleCropFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["backColor"] = imgui_json::vec4(ImVec4(m_backColor.r, m_backColor.g, m_backColor.b, m_backColor.a));
+        value["fromColor"] = imgui_json::vec4(ImVec4(m_fromColor.r, m_fromColor.g, m_fromColor.b, m_fromColor.a));
+        value["toColor"] = imgui_json::vec4(ImVec4(m_toColor.r, m_toColor.g, m_toColor.b, m_toColor.a));
     }
 
     void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
@@ -159,7 +174,8 @@ struct CircleCropFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    ImPixel m_backColor {0.0f, 0.0f, 0.0f, 1.0f};
-    ImGui::CircleCrop_vulkan * m_fusion   {nullptr};
+    ImPixel m_fromColor {0.0f, 0.2f, 0.4f, 0.0f};
+    ImPixel m_toColor   {0.6f, 0.8f, 1.0f, 1.0f};
+    ImGui::ColorPhase_vulkan * m_fusion   {nullptr};
 };
 } // namespace BluePrint
