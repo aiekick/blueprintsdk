@@ -202,6 +202,7 @@ NodeRegistry::NodeRegistry()
         DoomScreenFusionNode::GetStaticTypeInfo(),
         RippleFusionNode::GetStaticTypeInfo(),
         PinwheelFusionNode::GetStaticTypeInfo(),
+        BurnFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
