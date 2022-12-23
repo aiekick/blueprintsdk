@@ -199,6 +199,7 @@ NodeRegistry::NodeRegistry()
         HexagonalizeFusionNode::GetStaticTypeInfo(),
         GlitchDisplaceFusionNode::GetStaticTypeInfo(),
         DreamyZoomFusionNode::GetStaticTypeInfo(),
+        DoomScreenFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
