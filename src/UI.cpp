@@ -1502,7 +1502,7 @@ void BluePrintUI::DrawNodes()
         // | Title               iC  iD  iS    |         | | i Pin |               | Pin o | |
         // | +-----------[ Dummy ]-----------+ |         | | i Pin |               | Pin o | |
         // | +---------------+   +-----------+ |         | |   .   |               | Pin o | |
-        // | | i Pin         |   |   Out B o | |         | |   .   |    Tile       |   .   | |
+        // | | i Pin         |   |   Out B o | |         | |   .   |    Title      |   .   | |
         // | | i Pin <Value> |   |   Out A o | |         | |   .   |               |   .   | |
         // | | i Pin         |   |           | |         | | i Pin |               |   .   | |
         // | +---------------+   +-----------+ |         | | i Pin |               | Pin o | |
@@ -1636,6 +1636,14 @@ void BluePrintUI::DrawNodes()
                     m_CallBacks.BluePrintOnChanged(BP_CB_PARAM_CHANGED, m_Document->m_Name, m_UserHandle);
                 }
             }
+        }
+        else if (m_isChildWindow)
+        {
+            layout.SetColumnAlignment(0.f);
+            layout.NextColumn();
+            auto nodeSize  = ed::GetNodeSize(node->m_ID);
+            ImGui::Dummy(ImVec2(0, (nodeSize.y - 64 - 32) / 2));
+            node->DrawNodeLogo(ImGui::GetCurrentContext(), ImVec2(64, 64));
         }
         else
             layout.SetColumnAlignment(1.0f);
