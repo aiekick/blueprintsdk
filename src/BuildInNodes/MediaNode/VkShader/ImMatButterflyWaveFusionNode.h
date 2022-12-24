@@ -88,11 +88,11 @@ struct ButterflyWaveFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Amplitude##ButterflyWave", &_amplitude, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_amplitude##ButterflyWave")) { _amplitude = 1.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_amplitude##ButterflyWave")) { _amplitude = 1.f; changed = true; }
         ImGui::SliderFloat("Waves##ButterflyWave", &_waves, 1.0, 18.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_waves##ButterflyWave")) { _waves = 10.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_waves##ButterflyWave")) { _waves = 10.f; changed = true; }
         ImGui::SliderFloat("Separation##ButterflyWave", &_colorSeparation, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_colorSeparation##ButterflyWave")) { _colorSeparation = 0.3f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_colorSeparation##ButterflyWave")) { _colorSeparation = 0.3f; changed = true; }
         ImGui::PopItemWidth();
         if (_amplitude != m_amplitude) { m_amplitude = _amplitude; changed = true; }
         if (_waves != m_waves) { m_waves = _waves; changed = true; }

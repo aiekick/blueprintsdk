@@ -114,6 +114,7 @@ struct MatWarpPerspectiveNode final : Node
             _warp_tr = ImVec2(1, 1);
             _warp_br = ImVec2(1, 0);
             _warp_bl = ImVec2(0, 0);
+            changed = true;
         }
         ImGui::RadioButton("Nearest",   (int *)&_mode, IM_INTERPOLATE_NEAREST); ImGui::SameLine();
         ImGui::RadioButton("Bilinear",  (int *)&_mode, IM_INTERPOLATE_BILINEAR); ImGui::SameLine();

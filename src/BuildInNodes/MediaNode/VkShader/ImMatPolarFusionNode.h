@@ -86,7 +86,7 @@ struct PolarFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderInt("Segments##Polar", &_segments, 3, 20, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_segments##Polar")) { _segments = 5; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_segments##Polar")) { _segments = 5; changed = true; }
         ImGui::PopItemWidth();
         if (_segments != m_segments) { m_segments = _segments; changed = true; }
         return m_Enabled ? changed : false;

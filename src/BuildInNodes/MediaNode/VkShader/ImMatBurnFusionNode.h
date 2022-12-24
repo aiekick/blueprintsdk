@@ -82,12 +82,11 @@ struct BurnFusionNode final : Node
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
         ImPixel _backColor = m_backColor;
-        static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("BackColor##Burn", (float *)&_backColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
-        if (_backColor.r != m_backColor.r || _backColor.g != m_backColor.g || _backColor.b != m_backColor.b || _backColor.a != m_backColor.a) { 
-            m_backColor = _backColor; changed = true; }
+        if (ImGui::ColorEdit4("##BackColor##Burn", (float*)&_backColor, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar))
+        {
+            m_backColor = _backColor; changed = true;
+        } ImGui::SameLine(); ImGui::TextUnformatted("Burn Color");
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_fromcolor##CrazyParametric")) { m_backColor = {0.9f, 0.4f, 0.2f, 1.0f}; changed = true; }
         return m_Enabled ? changed : false;
     }
 

@@ -86,7 +86,7 @@ struct PinwheelFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Speed##Pinwheel", &_speed, 1.f, 10.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_speed##Pinwheel")) { _speed = 2.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_speed##Pinwheel")) { _speed = 2.f; changed = true; }
         ImGui::PopItemWidth();
         if (_speed != m_speed) { m_speed = _speed; changed = true; }
         return m_Enabled ? changed : false;

@@ -95,7 +95,7 @@ struct LaplacianNode final : Node
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled || m_StrengthIn.IsLinked());
         ImGui::SliderInt("Strength##Laplacian", &_Strength, 0, 20, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_stength##Laplacian")) { _Strength = 5; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_stength##Laplacian")) { _Strength = 5; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_strength##Laplacian", key, "strength##Laplacian", 0.f, 20.f, 5.f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();

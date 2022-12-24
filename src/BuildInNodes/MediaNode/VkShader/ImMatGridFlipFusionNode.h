@@ -92,26 +92,27 @@ struct GridFlipFusionNode final : Node
         ImGui::BeginDisabled(!m_Enabled);
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Pause##GridFlip", &_pause, 0.1, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_pause##GridFlip")) { _pause = 0.1f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_pause##GridFlip")) { _pause = 0.1f; changed = true; }
         ImGui::SliderFloat("Divider##GridFlip", &_dividerWidth, 0.f, 1.f, "%.2f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_divider##GridFlip")) { _dividerWidth = 0.05f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_divider##GridFlip")) { _dividerWidth = 0.05f; changed = true; }
         ImGui::SliderFloat("Randomness##GridFlip", &_randomness, 0.1, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_randomness##GridFlip")) { _randomness = 0.1f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_randomness##GridFlip")) { _randomness = 0.1f; changed = true; }
         ImGui::SliderInt("Size X##GridFlip", &size_x, 1, 10, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_x##GridFlip")) { size_x = 4; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_x##GridFlip")) { size_x = 4; changed = true; }
         ImGui::SliderInt("Size Y##GridFlip", &size_y, 1, 10, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_y##GridFlip")) { size_y = 4; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_y##GridFlip")) { size_y = 4; changed = true; }
         ImGui::PopItemWidth();
-        ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("BackColor##GridFlip", (float *)&_backColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        if (ImGui::ColorEdit4("BackColor##GridFlip", (float*)&_backColor, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar))
+        {
+            m_backColor = _backColor; changed = true;
+        } ImGui::SameLine(); ImGui::TextUnformatted("Back Color");
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_backcolor##GridFlip")) { m_backColor = {0.0f, 0.0f, 0.0f, 1.0f}; changed = true; }
         ImGui::EndDisabled();
         if (_pause != m_pause) { m_pause = _pause; changed = true; }
         if (_dividerWidth != m_dividerWidth) { m_dividerWidth = _dividerWidth; changed = true; }
         if (_randomness != m_randomness) { m_randomness = _randomness; changed = true; }
         if (size_x != m_size_x) { m_size_x = size_x; changed = true; }
         if (size_y != m_size_y) { m_size_y = size_y; changed = true; }
-        if (_backColor.r != m_backColor.r || _backColor.g != m_backColor.g || _backColor.b != m_backColor.b || _backColor.a != m_backColor.a) { 
-            m_backColor = _backColor; changed = true; }
         return m_Enabled ? changed : false;
     }
 

@@ -87,9 +87,9 @@ struct PixelizeFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Min Size##Pixelize", &_size, 0.0, 50.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Pixelize")) { _size = 20; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Pixelize")) { _size = 20; changed = true; }
         ImGui::SliderInt("Steps##Pixelize", &_steps, 1, 100, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_steps##Pixelize")) { _steps = 50; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_steps##Pixelize")) { _steps = 50; changed = true; }
         ImGui::PopItemWidth();
         if (_size != m_size) { m_size = _size; changed = true; }
         if (_steps != m_steps) { m_steps = _steps; changed = true; }

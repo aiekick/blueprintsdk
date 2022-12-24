@@ -87,9 +87,9 @@ struct HexagonalizeFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("X Hexagons##Hexagonalize", &_horizontalHexagons, 0.0, 50.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_horizontalHexagons##Hexagonalize")) { _horizontalHexagons = 20.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_horizontalHexagons##Hexagonalize")) { _horizontalHexagons = 20.f; changed = true; }
         ImGui::SliderInt("Steps##Hexagonalize", &_steps, 1, 100, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_steps##Hexagonalize")) { _steps = 50; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_steps##Hexagonalize")) { _steps = 50; changed = true; }
         ImGui::PopItemWidth();
         if (_horizontalHexagons != m_horizontalHexagons) { m_horizontalHexagons = _horizontalHexagons; changed = true; }
         if (_steps != m_steps) { m_steps = _steps; changed = true; }

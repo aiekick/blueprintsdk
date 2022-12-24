@@ -87,9 +87,9 @@ struct RandomSquaresFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Smoothness##RandomSquares", &_smoothness, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##RandomSquares")) { _smoothness = 0.5f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##RandomSquares")) { _smoothness = 0.5f; changed = true; }
         ImGui::SliderInt("Size##RandomSquares", &_size, 1, 50, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##RandomSquares")) { _size = 10; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##RandomSquares")) { _size = 10; changed = true; }
         ImGui::PopItemWidth();
         if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }
         if (_size != m_size) { m_size = _size; changed = true; }

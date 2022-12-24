@@ -83,16 +83,16 @@ struct ColorPhaseFusionNode final : Node
         bool changed = false;
         ImPixel _fromColor = m_fromColor;
         ImPixel _toColor = m_toColor;
-        static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(200, 8));
-        ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("From##ColorPhase", (float *)&_fromColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
-        if (_fromColor.r != m_fromColor.r || _fromColor.g != m_fromColor.g || _fromColor.b != m_fromColor.b || _fromColor.a != m_fromColor.a) { 
-            m_fromColor = _fromColor; changed = true; }
-        ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("To##ColorPhase", (float *)&_toColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
-        if (_toColor.r != m_toColor.r || _toColor.g != m_toColor.g || _toColor.b != m_toColor.b || _toColor.a != m_toColor.a) { 
-            m_toColor = _toColor; changed = true; }
+        if (ImGui::ColorEdit4("##FromColorPhase", (float*)&_fromColor, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar))
+        {
+            m_fromColor = _fromColor; changed = true;
+        } ImGui::SameLine(); ImGui::TextUnformatted("Color From");
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_fromcolor##CrazyParametric")) { m_fromColor = {0.0f, 0.2f, 0.4f, 0.0f}; changed = true; }
+        if (ImGui::ColorEdit4("##ToColorPhase", (float*)&_toColor, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar))
+        {
+            m_toColor = _toColor; changed = true;
+        } ImGui::SameLine(); ImGui::TextUnformatted("Color To");
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_tocolor##CrazyParametric")) { m_toColor = {0.6f, 0.8f, 1.0f, 1.0f}; changed = true; }
         return m_Enabled ? changed : false;
     }
 

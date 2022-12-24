@@ -101,17 +101,17 @@ struct MatCropNode final : Node
         ImGui::PushItemWidth(300);
         ImGui::BeginDisabled(!m_Enabled);
         ImGui::SliderFloat("x1##Crop", &_x1, 0.f, 1.f, "%.02f", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_x1##Crop")) { _x1 = 0.f; }
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_x1##Crop")) { _x1 = 0.f; changed = true; }
         ImGui::SliderFloat("y1##Crop", &_y1, 0.f, 1.f, "%.02f", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_y1##Crop")) { _y1 = 0.f; }
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_y1##Crop")) { _y1 = 0.f; changed = true; }
         ImGui::SliderFloat("x2##Crop", &_x2, _x1, 1.0f, "%.02f", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_x2##Crop")) { _x2 = 1.f; }
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_x2##Crop")) { _x2 = 1.f; changed = true; }
         ImGui::SliderFloat("y2##Crop", &_y2, _y1, 1.f, "%.02f", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_y2##Crop")) { _y2 = 1.f; }
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_y2##Crop")) { _y2 = 1.f; changed = true; }
         ImGui::SliderFloat("xd##Crop", &_xd, -1.f, 1.f, "%.02f", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_xd##Crop")) { _xd = 0.0f; }
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_xd##Crop")) { _xd = 0.0f; changed = true; }
         ImGui::SliderFloat("yd##Crop", &_yd, -1.f, 1.f, "%.02f", flags);
-        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_yd##Crop")) { _yd = 0.0f; }
+        ImGui::SameLine(320); if (ImGui::Button(ICON_RESET "##reset_yd##Crop")) { _yd = 0.0f; changed = true; }
         ImGui::PopItemWidth();
         if (_x1 != m_x1) { m_x1 = _x1; changed = true; }
         if (_y1 != m_y1) { m_y1 = _y1; changed = true; }

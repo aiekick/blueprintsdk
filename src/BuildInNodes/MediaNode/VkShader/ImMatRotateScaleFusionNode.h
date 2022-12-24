@@ -88,14 +88,15 @@ struct RotateScaleFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Rotations##RotateScale", &_rotations, 1.f, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_rotations##Ripple")) { _rotations = 1.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_rotations##Ripple")) { _rotations = 1.f; changed = true; }
         ImGui::SliderFloat("Scale##RotateScale", &_scale, 1.f, 20.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_scale##Ripple")) { _scale = 8.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_scale##Ripple")) { _scale = 8.f; changed = true; }
         ImGui::PopItemWidth();
-        ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("BackColor##RotateScale", (float *)&_backColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
-        if (_backColor.r != m_backColor.r || _backColor.g != m_backColor.g || _backColor.b != m_backColor.b || _backColor.a != m_backColor.a) { 
-            m_backColor = _backColor; changed = true; }
+        if (ImGui::ColorEdit4("BackColor##RotateScale", (float*)&_backColor, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar))
+        {
+            m_backColor = _backColor; changed = true;
+        } ImGui::SameLine(); ImGui::TextUnformatted("Back Color");
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_backcolor##RotateScale")) { m_backColor = {0.0f, 0.0f, 0.0f, 1.0f}; changed = true; }
         if (_rotations != m_rotations) { m_rotations = _rotations; changed = true; }
         if (_scale != m_scale) { m_scale = _scale; changed = true; }
         return m_Enabled ? changed : false;

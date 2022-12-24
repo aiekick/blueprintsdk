@@ -101,12 +101,12 @@ struct BoxBlurNode final : Node
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled || m_SizeIn.IsLinked());
         ImGui::SliderInt("Size##Box", &_Size, 1, 20, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Box")) { _Size = 3; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Box")) { _Size = 3; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_size##Box", key, "size##Box", 1.f, 20.f, 3.f);
         ImGui::EndDisabled();
         ImGui::BeginDisabled(!m_Enabled || m_IterationIn.IsLinked());
         ImGui::SliderInt("Iteration##Box", &_iteration, 1, 20, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_iteration##Box")) { _iteration = 1; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_iteration##Box")) { _iteration = 1; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_iteration##Box", key, "iteration##Box", 1.f, 20.f, 1.f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();

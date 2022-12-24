@@ -88,11 +88,11 @@ struct FlyeyeFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Size##Flyeye", &_size, 0.0, 1.f, "%.2f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Flyeye")) { _size = 0.04f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Flyeye")) { _size = 0.04f; changed = true; }
         ImGui::SliderFloat("Zoom##Flyeye", &_zoom, 0.0, 100.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_zoom##Flyeye")) { _zoom = 50.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_zoom##Flyeye")) { _zoom = 50.f; changed = true; }
         ImGui::SliderFloat("Separation##Flyeye", &_colorSeparation, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_colorSeparation##Flyeye")) { _colorSeparation = 0.3f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_colorSeparation##Flyeye")) { _colorSeparation = 0.3f; changed = true; }
         ImGui::PopItemWidth();
         if (_size != m_size) { m_size = _size; changed = true; }
         if (_zoom != m_zoom) { m_zoom = _zoom; changed = true; }

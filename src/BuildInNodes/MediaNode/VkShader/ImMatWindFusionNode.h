@@ -86,7 +86,7 @@ struct WindFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Size##Wind", &_size, 0.1, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Wind")) { _size = 0.2f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Wind")) { _size = 0.2f; changed = true; }
         ImGui::PopItemWidth();
         if (_size != m_size) { m_size = _size; changed = true; }
         return m_Enabled ? changed : false;

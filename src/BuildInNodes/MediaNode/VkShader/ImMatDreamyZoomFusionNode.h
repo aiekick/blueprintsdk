@@ -87,9 +87,9 @@ struct DreamyZoomFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Rotation##DreamyZoom", &_rotation, 0.f, 10.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_rotation##DreamyZoom")) { _rotation = 6.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_rotation##DreamyZoom")) { _rotation = 6.f; changed = true; }
         ImGui::SliderFloat("Scale##DreamyZoom", &_scale, 1.f, 10.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_scale##DreamyZoom")) { _scale = 1.2f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_scale##DreamyZoom")) { _scale = 1.2f; changed = true; }
         ImGui::PopItemWidth();
         if (_rotation != m_rotation) { m_rotation = _rotation; changed = true; }
         if (_scale != m_scale) { m_scale = _scale; changed = true; }

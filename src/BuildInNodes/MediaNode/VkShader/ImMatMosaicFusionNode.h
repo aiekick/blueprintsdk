@@ -88,9 +88,9 @@ struct MosaicFusionNode final : Node
         ImGui::BeginDisabled(!m_Enabled);
         ImGui::PushItemWidth(200);
         ImGui::SliderInt("Size X##Mosaic", &size_x, -5, 5, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_x##Mosaic")) { size_x = 2; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_x##Mosaic")) { size_x = 2; changed = true; }
         ImGui::SliderInt("Size Y##Mosaic", &size_y, -5, 5, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_y##Mosaic")) { size_y = -1; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size_y##Mosaic")) { size_y = -1; changed = true; }
         ImGui::PopItemWidth();
         ImGui::EndDisabled();
         if (size_x != m_size_x) { m_size_x = size_x; changed = true; }

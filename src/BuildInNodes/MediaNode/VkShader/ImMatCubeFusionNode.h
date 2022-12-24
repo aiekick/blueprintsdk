@@ -89,13 +89,13 @@ struct CubeFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Reflection##Cube", &_reflection, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_reflection##Cube")) { _reflection = 0.4f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_reflection##Cube")) { _reflection = 0.4f; changed = true; }
         ImGui::SliderFloat("Perspective##Cube", &_persp, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_persp##Cube")) { _persp = 0.9f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_persp##Cube")) { _persp = 0.9f; changed = true; }
         ImGui::SliderFloat("Unzoom##Cube", &_unzoom, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_unzoom##Cube")) { _unzoom = 0.3f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_unzoom##Cube")) { _unzoom = 0.3f; changed = true; }
         ImGui::SliderFloat("Floating##Cube", &_floating, 0.0, 10.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_floating##Cube")) { _floating = 3.0f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_floating##Cube")) { _floating = 3.0f; changed = true; }
         ImGui::PopItemWidth();
         if (_reflection != m_reflection) { m_reflection = _reflection; changed = true; }
         if (_persp != m_persp) { m_persp = _persp; changed = true; }

@@ -88,11 +88,11 @@ struct PerlinFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Scale##Perlin", &_scale, 0.0, 10.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_scale##Perlin")) { _scale = 4.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_scale##Perlin")) { _scale = 4.f; changed = true; }
         ImGui::SliderFloat("Smoothness##Perlin", &_smoothness, 0.0, 1.f, "%.2f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##Perlin")) { _smoothness = 0.01f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##Perlin")) { _smoothness = 0.01f; changed = true; }
         ImGui::SliderFloat("Seed##Perlin", &_seed, 0.0, 1000.f, "%.2f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_seed##Perlin")) { _seed = 12.9898f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_seed##Perlin")) { _seed = 12.9898f; changed = true; }
         ImGui::PopItemWidth();
         if (_scale != m_scale) { m_scale = _scale; changed = true; }
         if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }

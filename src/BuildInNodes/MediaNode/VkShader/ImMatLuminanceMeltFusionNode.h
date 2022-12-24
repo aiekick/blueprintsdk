@@ -88,7 +88,7 @@ struct LuminanceMeltFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Threshold##LuminanceMelt", &_threshold, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_threshold##LuminanceMelt")) { _threshold = 0.8f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_threshold##LuminanceMelt")) { _threshold = 0.8f; changed = true; }
         ImGui::RadioButton("Up", (int *)&_direction, 0); ImGui::SameLine();
         ImGui::RadioButton("Down", (int *)&_direction, 1);
         ImGui::RadioButton("Above", (int *)&_above, 0); ImGui::SameLine();

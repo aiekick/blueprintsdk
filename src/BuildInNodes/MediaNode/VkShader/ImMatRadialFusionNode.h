@@ -86,7 +86,7 @@ struct RadialFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Smoothness##Radial", &_smoothness, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##Radial")) { _smoothness = 1.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##Radial")) { _smoothness = 1.f; changed = true; }
         ImGui::PopItemWidth();
         if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }
         return m_Enabled ? changed : false;

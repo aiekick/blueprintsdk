@@ -87,9 +87,9 @@ struct WindowSliceFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Smoothness##WindowSlice", &_smoothness, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##WindowSlice")) { _smoothness = 1.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##WindowSlice")) { _smoothness = 1.f; changed = true; }
         ImGui::SliderFloat("Count##WindowSlice", &_count, 1.0, 50.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_count##WindowSlice")) { _count = 10.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_count##WindowSlice")) { _count = 10.f; changed = true; }
         ImGui::PopItemWidth();
         if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }
         if (_count != m_count) { m_count = _count; changed = true; }

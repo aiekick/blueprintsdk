@@ -86,7 +86,7 @@ struct PolkaDotsFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Dots##PolkaDots", &_dots, 1.0, 100.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_dots##PolkaDots")) { _dots = 20.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_dots##PolkaDots")) { _dots = 20.f; changed = true; }
         ImGui::PopItemWidth();
         if (_dots != m_dots) { m_dots = _dots; changed = true; }
         return m_Enabled ? changed : false;

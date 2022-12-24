@@ -100,17 +100,17 @@ struct DeBandNode final : Node
         ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled || m_ThresholdIn.IsLinked());
         ImGui::SliderFloat("Threshold##DeBand", &_threshold, 0, 0.05f, "%.3f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_threshold##DeBand")) { _threshold = 0.05f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_threshold##DeBand")) { _threshold = 0.05f; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_threshold##DeBand", key, "threshold##DeBand", 0.f, 0.05f, 0.01f);
         ImGui::EndDisabled();
         ImGui::BeginDisabled(!m_Enabled || m_RangeIn.IsLinked());
         ImGui::SliderInt("Range##DeBand", &_range, 0, 64, "%.d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_range##DeBand")) { _range = 16.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_range##DeBand")) { _range = 16.f; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_range##DeBand", key, "range##DeBand", 0.f, 64.f, 16.f);
         ImGui::EndDisabled();
         ImGui::BeginDisabled(!m_Enabled || m_DirectionIn.IsLinked());
         ImGui::SliderFloat("Direction##DeBand", &_direction, 0.f, 4.f, "%.2f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_direction##DeBand")) { _direction = 2.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_direction##DeBand")) { _direction = 2.f; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_direction##DeBand", key, "direction##DeBand", 0.f, 4.f, 2.f);
         ImGui::EndDisabled();
         ImGui::BeginDisabled(!m_Enabled);

@@ -97,17 +97,17 @@ struct BilateralNode final : Node
         ImGui::PushItemWidth(180);
         ImGui::BeginDisabled(!m_Enabled || m_SizeIn.IsLinked());
         ImGui::SliderInt("Kernel Size##Bilateral", &_ksize, 2, 20, "%d", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Bilateral")) { _ksize = 5; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_size##Bilateral")) { _ksize = 5; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_size##Bilateral", key, "size##Bilateral", 2.f, 20.f, 5.f);
         ImGui::EndDisabled();
         ImGui::BeginDisabled(!m_Enabled || m_SigmaSpatialIn.IsLinked());
         ImGui::SliderFloat("Sigma Spatial##Bilateral", &_sigma_spatial, 0.f, 100.f, "%.2f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_sigma_spatial##Bilateral")) { _sigma_spatial = 10.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_sigma_spatial##Bilateral")) { _sigma_spatial = 10.f; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_sigma_spatial##Bilateral", key, "sigma spatial##Bilateral", 0.f, 100.f, 10.f);
         ImGui::EndDisabled();
         ImGui::BeginDisabled(!m_Enabled || m_SigmaColorIn.IsLinked());
         ImGui::SliderFloat("Sigma Color##Bilateral", &_sigma_color, 0.f, 100.f, "%.2f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_sigma_color##Bilateral")) { _sigma_color = 10.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_sigma_color##Bilateral")) { _sigma_color = 10.f; changed = true; }
         if (key) ImGui::ImCurveEditKey("##add_curve_sigma_color##Bilateral", key, "sigma color##Bilateral", 0.f, 100.f, 10.f);
         ImGui::EndDisabled();
         ImGui::PopItemWidth();

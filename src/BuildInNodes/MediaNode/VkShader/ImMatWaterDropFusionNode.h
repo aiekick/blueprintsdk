@@ -87,9 +87,9 @@ struct WaterDropFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Speed##WaterDrop", &_speed, 1.f, 100.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_speed##WaterDrop")) { _speed = 30.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_speed##WaterDrop")) { _speed = 30.f; changed = true; }
         ImGui::SliderFloat("Amplitude##WaterDrop", &_amplitude, 1.f, 100.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_amplitude##WaterDrop")) { _amplitude = 30.f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_amplitude##WaterDrop")) { _amplitude = 30.f; changed = true; }
         ImGui::PopItemWidth();
         if (_speed != m_speed) { m_speed = _speed; changed = true; }
         if (_amplitude != m_amplitude) { m_amplitude = _amplitude; changed = true; }

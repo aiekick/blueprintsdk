@@ -87,13 +87,14 @@ struct BurnOutFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Smoothness##BurnOut", &_smoothness, 0.0, 1.0f, "%.2f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##BurnOut")) { _smoothness = 0.03f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_smoothness##BurnOut")) { _smoothness = 0.03f; changed = true; }
         ImGui::PopItemWidth();
-        ImGui::SetNextItemWidth(200);
-        ImGui::ColorPicker4("ShadowColor##BurnOut", (float *)&_shadowColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        if (ImGui::ColorEdit4("ShadowColor##BurnOut", (float*)&_shadowColor, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar))
+        {
+            m_shadowColor = _shadowColor; changed = true;
+        } ImGui::SameLine(); ImGui::TextUnformatted("Color From");
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_shadowColor##BurnOut")) { m_shadowColor = {0.0f, 0.0f, 0.0f, 1.0f}; changed = true; }
         if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }
-        if (_shadowColor.r != m_shadowColor.r || _shadowColor.g != m_shadowColor.g || _shadowColor.b != m_shadowColor.b || _shadowColor.a != m_shadowColor.a) { 
-            m_shadowColor = _shadowColor; changed = true; }
         return m_Enabled ? changed : false;
     }
 

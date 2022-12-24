@@ -86,7 +86,7 @@ struct ColourDistanceFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Power##Radial", &_power, 1.0, 10.f, "%.0f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_power##ColourDistance")) { _power = 5.0f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_power##ColourDistance")) { _power = 5.0f; changed = true; }
         ImGui::PopItemWidth();
         if (_power != m_power) { m_power = _power; changed = true; }
         return m_Enabled ? changed : false;

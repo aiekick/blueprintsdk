@@ -86,7 +86,7 @@ struct SqueezeFusionNode final : Node
         ImGui::Dummy(ImVec2(200, 8));
         ImGui::PushItemWidth(200);
         ImGui::SliderFloat("Separation##Squeeze", &_separation, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_separation##Squeeze")) { _separation = 0.04f; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_separation##Squeeze")) { _separation = 0.04f; changed = true; }
         ImGui::PopItemWidth();
         if (_separation != m_separation) { m_separation = _separation; changed = true; }
         return m_Enabled ? changed : false;
