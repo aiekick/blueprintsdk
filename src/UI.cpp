@@ -2819,8 +2819,9 @@ void BluePrintUI::CleanStateStorage()
     auto window = ImGui::GetCurrentWindowRead();
     if (window)
     {
+        auto current_window = (*GImGui).CurrentWindow;
         auto storage = ImGui::GetStateStorage();
-        if (storage)
+        if (storage && current_window)
         {
             storage->SetVoidPtr(ImGui::GetID("##node-context-menu-node"), nullptr);
             storage->SetVoidPtr(ImGui::GetID("##pin-context-menu-pin"), nullptr);
