@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct BurnOutFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(BurnOutFusionNode, "BurnOut Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Color")
+    BP_NODE_WITH_NAME(BurnOutFusionNode, "BurnOut Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
     BurnOutFusionNode(BP& blueprint): Node(blueprint) { m_Name = "BurnOut Transform"; }
 
     ~BurnOutFusionNode()
@@ -144,7 +144,7 @@ struct BurnOutFusionNode final : Node
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
 #if IMGUI_ICONS
-        ImGui::Button((std::string(u8"\ue3a5") + "##" + std::to_string(m_ID)).c_str(), size);
+        ImGui::Button((std::string(u8"\uf50A") + "##" + std::to_string(m_ID)).c_str(), size);
 #else
         ImGui::Button((std::string("F") + "##" + std::to_string(m_ID)).c_str(), size);
 #endif

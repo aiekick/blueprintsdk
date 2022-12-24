@@ -8,7 +8,7 @@ namespace BluePrint
 {
 struct LuminanceMeltFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(LuminanceMeltFusionNode, "LuminanceMelt Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Color")
+    BP_NODE_WITH_NAME(LuminanceMeltFusionNode, "LuminanceMelt Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Mix")
     LuminanceMeltFusionNode(BP& blueprint): Node(blueprint) { m_Name = "LuminanceMelt Transform"; }
 
     ~LuminanceMeltFusionNode()
@@ -151,7 +151,7 @@ struct LuminanceMeltFusionNode final : Node
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
 #if IMGUI_ICONS
-        ImGui::Button((std::string(u8"\ue3a5") + "##" + std::to_string(m_ID)).c_str(), size);
+        ImGui::Button((std::string(u8"\ue1b8") + "##" + std::to_string(m_ID)).c_str(), size);
 #else
         ImGui::Button((std::string("F") + "##" + std::to_string(m_ID)).c_str(), size);
 #endif

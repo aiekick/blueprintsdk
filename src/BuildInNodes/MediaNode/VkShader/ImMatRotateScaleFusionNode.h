@@ -155,7 +155,7 @@ struct RotateScaleFusionNode final : Node
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
 #if IMGUI_ICONS
-        ImGui::Button((std::string(u8"\ue3a5") + "##" + std::to_string(m_ID)).c_str(), size);
+        ImGui::Button((std::string(u8"\uf2dd") + "##" + std::to_string(m_ID)).c_str(), size);
 #else
         ImGui::Button((std::string("F") + "##" + std::to_string(m_ID)).c_str(), size);
 #endif
