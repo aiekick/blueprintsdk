@@ -92,7 +92,7 @@ struct BurnOutFusionNode final : Node
         if (ImGui::ColorEdit4("ShadowColor##BurnOut", (float*)&_shadowColor, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar))
         {
             m_shadowColor = _shadowColor; changed = true;
-        } ImGui::SameLine(); ImGui::TextUnformatted("Color From");
+        } ImGui::SameLine(); ImGui::TextUnformatted("Shadow Color");
         ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_shadowColor##BurnOut")) { m_shadowColor = {0.0f, 0.0f, 0.0f, 1.0f}; changed = true; }
         if (_smoothness != m_smoothness) { m_smoothness = _smoothness; changed = true; }
         return m_Enabled ? changed : false;
