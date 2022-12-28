@@ -9,7 +9,7 @@ namespace BluePrint
 struct GuidedNode final : Node
 {
     BP_NODE_WITH_NAME(GuidedNode, "Guided Filter", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Matting")
-    GuidedNode(BP& blueprint): Node(blueprint) { m_Name = "Guided Filter"; }
+    GuidedNode(BP* blueprint): Node(blueprint) { m_Name = "Guided Filter"; }
     ~GuidedNode()
     {
         if (m_filter) { delete m_filter; m_filter = nullptr; }

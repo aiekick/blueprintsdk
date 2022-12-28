@@ -376,7 +376,7 @@ struct IMGUI_API BP
 
 private:
     void ResetState();
-    Node * CreateDummyNode(const imgui_json::value& value, BP& blueprint);
+    Node * CreateDummyNode(const imgui_json::value& value, BP* blueprint);
 
     shared_ptr<NodeRegistry>        m_NodeRegistry;
     shared_ptr<PinExRegistry>       m_PinExRegistry;
@@ -396,7 +396,7 @@ private:
 # define VERSION_PATCH(v)   ((v&0x0000FF00)>>8)
 # define VERSION_BUILT(v)   (v&0x000000FF)
 # define MAJOR  1
-# define MINOR  13
+# define MINOR  14
 # define PATCH  1
 # define BUILT  1
 
@@ -415,7 +415,7 @@ private:
             node_type, \
             node_style, \
             node_catalog, \
-            [](::BluePrint::BP& blueprint) -> ::BluePrint::Node* { return new type(blueprint); } \
+            [](::BluePrint::BP* blueprint) -> ::BluePrint::Node* { return new type(blueprint); } \
         }; \
     } \
     \
@@ -436,7 +436,7 @@ private:
             node_type, \
             node_style, \
             node_catalog, \
-            [](::BluePrint::BP& blueprint) -> ::BluePrint::Node* { return new type(blueprint); } \
+            [](::BluePrint::BP* blueprint) -> ::BluePrint::Node* { return new type(blueprint); } \
         }; \
     } \
     \
@@ -466,7 +466,7 @@ private:
             node_type, \
             node_style, \
             node_catalog, \
-            [](::BluePrint::BP& blueprint) -> ::BluePrint::Node* { return new BluePrint::type(blueprint); } \
+            [](::BluePrint::BP* blueprint) -> ::BluePrint::Node* { return new BluePrint::type(blueprint); } \
         ); \
     } \
     \

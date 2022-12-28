@@ -11,7 +11,7 @@ namespace BluePrint
 struct MatWarpPerspectiveNode final : Node
 {
     BP_NODE_WITH_NAME(MatWarpPerspectiveNode, "Mat Warp Perspective", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Media")
-    MatWarpPerspectiveNode(BP& blueprint): Node(blueprint) {
+    MatWarpPerspectiveNode(BP* blueprint): Node(blueprint) {
         m_Name = "Mat Warp Perspective";
         m_matrix.create_type(3, 3, IM_DT_FLOAT32);
     }

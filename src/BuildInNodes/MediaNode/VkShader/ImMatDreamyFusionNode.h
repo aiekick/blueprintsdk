@@ -9,7 +9,7 @@ namespace BluePrint
 struct DreamyFusionNode final : Node
 {
     BP_NODE_WITH_NAME(DreamyFusionNode, "Dreamy Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
-    DreamyFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Dreamy Transform"; }
+    DreamyFusionNode(BP* blueprint): Node(blueprint) { m_Name = "Dreamy Transform"; }
 
     ~DreamyFusionNode()
     {

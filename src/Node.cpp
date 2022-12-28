@@ -244,10 +244,16 @@ NodeRegistry::NodeRegistry()
 
 NodeRegistry::~NodeRegistry()
 {
+    for (auto node : m_Nodes)
+    {
+        delete node;
+    }
+    m_Nodes.clear();
     for (auto obj : m_ExternalObject)
     {
         delete obj;
     }
+    m_ExternalObject.clear();
 }
 
 ID_TYPE NodeRegistry::RegisterNodeType(shared_ptr<NodeTypeInfo> info)
@@ -280,7 +286,7 @@ ID_TYPE NodeRegistry::RegisterNodeType(shared_ptr<NodeTypeInfo> info)
     return id;
 }
 
-ID_TYPE NodeRegistry::RegisterNodeType(std::string Path, BP& blueprint)
+ID_TYPE NodeRegistry::RegisterNodeType(std::string Path, BP* blueprint)
 {
     auto dlobject = new DLClass<NodeTypeInfo>(Path.c_str());
     if (!dlobject)
@@ -349,11 +355,13 @@ void NodeRegistry::RebuildTypes()
         if (!alread_in_list)
         {
             m_Catalogs.push_back(type->m_Catalog);
+            auto node = Create(type->m_ID, nullptr);
+            if (node) m_Nodes.push_back(node);
         }
     }
 }
 
-Node* NodeRegistry::Create(ID_TYPE typeId, BP& blueprint)
+Node* NodeRegistry::Create(ID_TYPE typeId, BP* blueprint)
 {
     for (auto& nodeInfo : m_Types)
     {
@@ -366,7 +374,7 @@ Node* NodeRegistry::Create(ID_TYPE typeId, BP& blueprint)
     return nullptr;
 }
 
-Node* NodeRegistry::Create(std::string typeName, BP& blueprint)
+Node* NodeRegistry::Create(std::string typeName, BP* blueprint)
 {
     for (auto& nodeInfo : m_Types)
     {
@@ -407,10 +415,10 @@ const NodeTypeInfo* NodeRegistry::GetTypeInfo(ID_TYPE typeId) const
 // -------[ Node ]-------
 // ----------------------
 
-Node::Node(BP& blueprint)
-    : m_ID(blueprint.MakeNodeID(this))
-    , m_Blueprint(&blueprint)
+Node::Node(BP* blueprint)
+    : m_Blueprint(blueprint)
 {
+    if (blueprint) m_ID = blueprint->MakeNodeID(this);
 }
 
 unique_ptr<Pin> Node::CreatePin(PinType pinType, std::string name)

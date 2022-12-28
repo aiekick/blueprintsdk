@@ -72,11 +72,15 @@ bool PinTypeFromString(string str, PinType& type)
 // ---------------------
 
 Pin::Pin(Node* node, PinType type, std::string name)
-    : m_ID(node ? node->m_Blueprint->MakePinID(this) : 0)
+    : m_ID(0)
     , m_Node(node)
     , m_Type(type)
     , m_Name(name)
 {
+    if (node && node->m_Blueprint)
+    {
+        m_ID = node->m_Blueprint->MakePinID(this);
+    }
 }
 
 Pin::~Pin()

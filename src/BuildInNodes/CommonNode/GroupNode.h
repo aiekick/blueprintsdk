@@ -11,7 +11,7 @@ namespace BluePrint
 struct GroupNode final : Node
 {
     BP_NODE(GroupNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Group, "System")
-    GroupNode(BP& blueprint): Node(blueprint) { m_Name = "Group"; }
+    GroupNode(BP* blueprint): Node(blueprint) { m_Name = "Group"; }
     ~GroupNode()
     {
         /*

@@ -17,7 +17,7 @@ struct ComparatorNode final : Node
 {
     BP_NODE(ComparatorNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Flow")
 
-    ComparatorNode(BP& blueprint): Node(blueprint) { m_Name = "Comparator"; }
+    ComparatorNode(BP* blueprint): Node(blueprint) { m_Name = "Comparator"; }
 
     int ComparePinValue(PinValue& a, PinValue& b)
     {

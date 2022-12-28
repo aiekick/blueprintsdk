@@ -108,7 +108,7 @@ Node* BP::CreateNode(ID_TYPE nodeTypeId)
     if (!m_NodeRegistry)
         return nullptr;
 
-    auto node = m_NodeRegistry->Create(nodeTypeId, *this);
+    auto node = m_NodeRegistry->Create(nodeTypeId, this);
     if (!node)
         return nullptr;
 
@@ -122,7 +122,7 @@ Node* BP::CreateNode(std::string nodeTypeName)
     if (!m_NodeRegistry)
         return nullptr;
 
-    auto node = m_NodeRegistry->Create(nodeTypeName, *this);
+    auto node = m_NodeRegistry->Create(nodeTypeName, this);
     if (!node)
         return nullptr;
 
@@ -476,7 +476,7 @@ uint32_t BP::StepCount() const
     return m_Context.StepCount();
 }
 
-Node * BP::CreateDummyNode(const imgui_json::value& value, BP& blueprint)
+Node * BP::CreateDummyNode(const imgui_json::value& value, BP* blueprint)
 {
     DummyNode * dummy = (BluePrint::DummyNode *)m_NodeRegistry->Create("DummyNode", blueprint);
     imgui_json::GetTo<imgui_json::number>(value, "id", dummy->m_ID);
@@ -513,17 +513,17 @@ int BP::Load(const imgui_json::value& value)
         if (!imgui_json::GetTo<imgui_json::number>(nodeValue, "type_id", typeId)) // required
             return BP_ERR_NODE_LOAD;
 
-        auto node = m_NodeRegistry->Create(typeId, *this);
+        auto node = m_NodeRegistry->Create(typeId, this);
         if (!node)
         {
             // Create a Dummy node to replace real node
-            node = CreateDummyNode(nodeValue, *this);
+            node = CreateDummyNode(nodeValue, this);
             node->Load(nodeValue);
         }
         else if ((ret = node->Load(nodeValue)) != BP_ERR_NONE)
         {
             // Create a Dummy node to replace real node
-            node = CreateDummyNode(nodeValue, *this);
+            node = CreateDummyNode(nodeValue, this);
             node->Load(nodeValue);
         }
 
@@ -556,7 +556,7 @@ int BP::Import(const imgui_json::value& value, ImVec2 pos)
     if (!imgui_json::GetTo<imgui_json::number>(groupValue, "type_id", typeId)) // required
         return BP_ERR_GROUP_LOAD;
 
-    GroupNode *group_node = (GroupNode *)m_NodeRegistry->Create(typeId, *this);
+    GroupNode *group_node = (GroupNode *)m_NodeRegistry->Create(typeId, this);
     if (!group_node)
         return BP_ERR_GROUP_LOAD;
 

@@ -6,7 +6,7 @@ struct SystemExitPointNode final : Node
 {
     BP_NODE(SystemExitPointNode, VERSION_BLUEPRINT, NodeType::ExitPoint, NodeStyle::Simple, "System")
 
-    SystemExitPointNode(BP& blueprint): Node(blueprint) { m_Name = "End"; }
+    SystemExitPointNode(BP* blueprint): Node(blueprint) { m_Name = "End"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {

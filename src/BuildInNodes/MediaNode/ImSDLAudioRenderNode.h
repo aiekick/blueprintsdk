@@ -49,7 +49,7 @@ namespace BluePrint
 struct SDLAudioRenderingNode final : Node
 {
     BP_NODE_WITH_NAME(SDLAudioRenderingNode, "Audio Render", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Media")
-    SDLAudioRenderingNode(BP& blueprint): Node(blueprint)
+    SDLAudioRenderingNode(BP* blueprint): Node(blueprint)
     {
         m_Name = "SDLAudioRender";
 #if !IMGUI_APPLICATION_PLATFORM_SDL2

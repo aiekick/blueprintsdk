@@ -8,7 +8,7 @@ struct CountNode final : Node
 {
     BP_NODE(CountNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Flow")
 
-    CountNode(BP& blueprint): Node(blueprint) { m_Name = "Count"; }
+    CountNode(BP* blueprint): Node(blueprint) { m_Name = "Count"; }
 
     void Reset(Context& context) override
     {

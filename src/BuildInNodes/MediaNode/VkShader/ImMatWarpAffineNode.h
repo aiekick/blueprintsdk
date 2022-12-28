@@ -11,7 +11,7 @@ namespace BluePrint
 struct MatWarpAffineNode final : Node
 {
     BP_NODE_WITH_NAME(MatWarpAffineNode, "Mat Warp Affine", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Media")
-    MatWarpAffineNode(BP& blueprint): Node(blueprint) {
+    MatWarpAffineNode(BP* blueprint): Node(blueprint) {
         m_Name = "Mat Warp Affine";
         m_matrix.create_type(3, 2, IM_DT_FLOAT32);
     }

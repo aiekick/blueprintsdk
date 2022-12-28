@@ -9,7 +9,7 @@ namespace BluePrint
 struct RotateScaleFusionNode final : Node
 {
     BP_NODE_WITH_NAME(RotateScaleFusionNode, "RotateScale Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Move")
-    RotateScaleFusionNode(BP& blueprint): Node(blueprint) { m_Name = "RotateScale Transform"; }
+    RotateScaleFusionNode(BP* blueprint): Node(blueprint) { m_Name = "RotateScale Transform"; }
 
     ~RotateScaleFusionNode()
     {

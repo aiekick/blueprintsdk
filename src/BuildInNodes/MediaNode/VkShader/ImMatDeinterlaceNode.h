@@ -8,7 +8,7 @@ namespace BluePrint
 struct DeinterlaceNode final : Node
 {
     BP_NODE_WITH_NAME(DeinterlaceNode, "Deinterlace", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Enhance")
-    DeinterlaceNode(BP& blueprint): Node(blueprint) { m_Name = "DeInterlace"; }
+    DeinterlaceNode(BP* blueprint): Node(blueprint) { m_Name = "DeInterlace"; }
     ~DeinterlaceNode()
     {
         if (m_filter) { delete m_filter; m_filter = nullptr; }

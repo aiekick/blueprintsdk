@@ -5,7 +5,7 @@ namespace BluePrint
 struct TimerNode final : Node
 {
     BP_NODE(TimerNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Flow")
-    TimerNode(BP& blueprint): Node(blueprint) { m_Name = "Timer"; }
+    TimerNode(BP* blueprint): Node(blueprint) { m_Name = "Timer"; }
     
     void Reset(Context& context) override
     {

@@ -9,7 +9,7 @@ namespace BluePrint
 struct HeartFusionNode final : Node
 {
     BP_NODE_WITH_NAME(HeartFusionNode, "Heart Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
-    HeartFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Heart Transform"; }
+    HeartFusionNode(BP* blueprint): Node(blueprint) { m_Name = "Heart Transform"; }
 
     ~HeartFusionNode()
     {

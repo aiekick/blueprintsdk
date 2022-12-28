@@ -6,7 +6,7 @@ struct MatExitPointNode final : Node
 {
     BP_NODE(MatExitPointNode, VERSION_BLUEPRINT, NodeType::ExitPoint, NodeStyle::Simple, "System")
 
-    MatExitPointNode(BP& blueprint): Node(blueprint) { m_Name = "End"; }
+    MatExitPointNode(BP* blueprint): Node(blueprint) { m_Name = "End"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {

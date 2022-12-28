@@ -6,7 +6,7 @@ struct FusionEntryPointNode final : Node
 {
     BP_NODE(FusionEntryPointNode, VERSION_BLUEPRINT, NodeType::EntryPoint, NodeStyle::Simple, "System")
 
-    FusionEntryPointNode(BP& blueprint): Node(blueprint) 
+    FusionEntryPointNode(BP* blueprint): Node(blueprint) 
     {
         m_Name = "Start"; 
         m_OutputPins.push_back(&m_Exit);

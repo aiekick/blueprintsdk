@@ -7,7 +7,7 @@ struct BranchNode final : Node
 {
     BP_NODE(BranchNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Flow")
 
-    BranchNode(BP& blueprint): Node(blueprint) { m_Name = "Branch"; }
+    BranchNode(BP* blueprint): Node(blueprint) { m_Name = "Branch"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {

@@ -11,7 +11,7 @@ namespace BluePrint
 struct ColorCurveNode final : Node
 {
     BP_NODE_WITH_NAME(ColorCurveNode, "Color Curve", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Color")
-    ColorCurveNode(BP& blueprint): Node(blueprint)
+    ColorCurveNode(BP* blueprint): Node(blueprint)
     {
         m_Name = "Color Curve";
         mMat_curve.create_type(1024, 1, 4, IM_DT_FLOAT32);

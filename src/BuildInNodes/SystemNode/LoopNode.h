@@ -6,7 +6,7 @@ struct LoopNode final : Node
 {
     BP_NODE(LoopNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Flow")
 
-    LoopNode(BP& blueprint): Node(blueprint) { m_Name = "Loop"; }
+    LoopNode(BP* blueprint): Node(blueprint) { m_Name = "Loop"; }
 
     void Reset(Context& context) override
     {

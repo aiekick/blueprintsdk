@@ -6,7 +6,7 @@ struct FilterEntryPointNode final : Node
 {
     BP_NODE(FilterEntryPointNode, VERSION_BLUEPRINT, NodeType::EntryPoint, NodeStyle::Simple, "System")
 
-    FilterEntryPointNode(BP& blueprint): Node(blueprint) {
+    FilterEntryPointNode(BP* blueprint): Node(blueprint) {
         m_Name = "Start"; 
         m_OutputPins.push_back(&m_Exit);
         m_OutputPins.push_back(&m_MatOut);

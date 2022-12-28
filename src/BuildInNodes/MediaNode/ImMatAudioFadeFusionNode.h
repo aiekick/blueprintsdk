@@ -7,7 +7,7 @@ namespace BluePrint
 struct AudioFadeNode final : Node
 {
     BP_NODE_WITH_NAME(AudioFadeNode, "Fade", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Audio")
-    AudioFadeNode(BP& blueprint): Node(blueprint) { m_Name = "Fade"; }
+    AudioFadeNode(BP* blueprint): Node(blueprint) { m_Name = "Fade"; }
 
     ~AudioFadeNode()
     {

@@ -7,7 +7,7 @@ struct ConstValueNode final : Node
 {
     BP_NODE(ConstValueNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Flow")
 
-    ConstValueNode(BP& blueprint): Node(blueprint) 
+    ConstValueNode(BP* blueprint): Node(blueprint) 
     {
         SetType(PinType::Any);
     }

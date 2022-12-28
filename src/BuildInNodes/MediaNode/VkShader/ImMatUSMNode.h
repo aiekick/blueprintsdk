@@ -8,7 +8,7 @@ namespace BluePrint
 struct USMNode final : Node
 {
     BP_NODE_WITH_NAME(USMNode, "USM Sharpen", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Enhance")
-    USMNode(BP& blueprint): Node(blueprint) { m_Name = "USM Sharpen"; }
+    USMNode(BP* blueprint): Node(blueprint) { m_Name = "USM Sharpen"; }
     ~USMNode()
     {
         if (m_filter) { delete m_filter; m_filter = nullptr; }

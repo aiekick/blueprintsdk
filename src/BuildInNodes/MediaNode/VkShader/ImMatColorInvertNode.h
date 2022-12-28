@@ -9,7 +9,7 @@ namespace BluePrint
 struct ColorInvertNode final : Node
 {
     BP_NODE_WITH_NAME(ColorInvertNode, "Color Invert", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Color")
-    ColorInvertNode(BP& blueprint): Node(blueprint) { m_Name = "Color Invert"; }
+    ColorInvertNode(BP* blueprint): Node(blueprint) { m_Name = "Color Invert"; }
 
     ~ColorInvertNode()
     {

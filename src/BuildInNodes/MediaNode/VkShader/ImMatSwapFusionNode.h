@@ -9,7 +9,7 @@ namespace BluePrint
 struct SwapFusionNode final : Node
 {
     BP_NODE_WITH_NAME(SwapFusionNode, "Swap Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Move")
-    SwapFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Swap Transform"; }
+    SwapFusionNode(BP* blueprint): Node(blueprint) { m_Name = "Swap Transform"; }
 
     ~SwapFusionNode()
     {

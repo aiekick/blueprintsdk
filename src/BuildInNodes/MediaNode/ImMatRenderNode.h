@@ -24,7 +24,7 @@ namespace BluePrint
 struct MatRenderNode final : Node
 {
     BP_NODE_WITH_NAME(MatRenderNode, "Media Render", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Media")
-    MatRenderNode(BP& blueprint): Node(blueprint) { m_Name = "Mat Render"; }
+    MatRenderNode(BP* blueprint): Node(blueprint) { m_Name = "Mat Render"; }
     ~MatRenderNode()
     {
         if (m_textureID) { ImGui::ImDestroyTexture(m_textureID); m_textureID = 0; }

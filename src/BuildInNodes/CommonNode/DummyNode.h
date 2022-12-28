@@ -5,7 +5,7 @@ namespace BluePrint
 struct DummyNode final : Node
 {
     BP_NODE(DummyNode, VERSION_BLUEPRINT, NodeType::Dummy, NodeStyle::Dummy, "Dummy")
-    DummyNode(BP& blueprint): Node(blueprint) { m_Name = "Dummy"; }
+    DummyNode(BP* blueprint): Node(blueprint) { m_Name = "Dummy"; }
     ~DummyNode()
     {
         for (auto pin : m_InputPins)  { delete pin; }

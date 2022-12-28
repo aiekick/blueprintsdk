@@ -9,7 +9,7 @@ namespace BluePrint
 struct CrazyParametricFusionNode final : Node
 {
     BP_NODE_WITH_NAME(CrazyParametricFusionNode, "CrazyParametric Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
-    CrazyParametricFusionNode(BP& blueprint): Node(blueprint) { m_Name = "CrazyParametric Transform"; }
+    CrazyParametricFusionNode(BP* blueprint): Node(blueprint) { m_Name = "CrazyParametric Transform"; }
 
     ~CrazyParametricFusionNode()
     {

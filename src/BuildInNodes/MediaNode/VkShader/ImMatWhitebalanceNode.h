@@ -9,7 +9,7 @@ namespace BluePrint
 struct WhiteBalanceNode final : Node
 {
     BP_NODE_WITH_NAME(WhiteBalanceNode, "White Balance", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Color")
-    WhiteBalanceNode(BP& blueprint): Node(blueprint) { m_Name = "White Balance"; }
+    WhiteBalanceNode(BP* blueprint): Node(blueprint) { m_Name = "White Balance"; }
 
     ~WhiteBalanceNode()
     {

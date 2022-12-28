@@ -11,7 +11,7 @@ struct MulNode final : Node
 {
     BP_NODE(MulNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Simple, "Arithmetic")
 
-    MulNode(BP& blueprint): Node(blueprint)
+    MulNode(BP* blueprint): Node(blueprint)
     {
         SetType(PinType::Any);
     }

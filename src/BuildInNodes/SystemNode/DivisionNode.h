@@ -11,7 +11,7 @@ struct DivNode final : Node
 {
     BP_NODE(DivNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Simple, "Arithmetic")
 
-    DivNode(BP& blueprint): Node(blueprint)
+    DivNode(BP* blueprint): Node(blueprint)
     {
         SetType(PinType::Any);
     }

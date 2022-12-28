@@ -250,7 +250,7 @@ void LinkContextMenu::Show(BluePrintUI& UI)
     if (!ImGui::IsPopupOpen("##link-context-menu"))
         return;
 
-    BP& blueprint = UI.m_Document->m_Blueprint;
+    BP* blueprint = &UI.m_Document->m_Blueprint;
     auto storage = ImGui::GetStateStorage();
     auto pin = reinterpret_cast<Pin*>(storage->GetVoidPtr(ImGui::GetID("##link-context-menu-pin")));
     if (ImGui::BeginPopup("##link-context-menu"))
@@ -536,7 +536,7 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
         LOGI("Load Extra Node %s", plugin_real_path.c_str());
         for (auto node_path : plugins)
         {
-            auto nodetypeid = nodeRegistry->RegisterNodeType(node_path, m_Document->m_Blueprint);
+            auto nodetypeid = nodeRegistry->RegisterNodeType(node_path, &m_Document->m_Blueprint);
             if (nodetypeid == 0)
             {
                 LOGE("Load Extra Node Failed %s", node_path.c_str());
@@ -3088,7 +3088,7 @@ bool BluePrintUI::Edit_Redo()
 bool BluePrintUI::Edit_Cut()
 {
     m_ClipBoard.clear();
-    auto selectedNodes = GetSelectedNodes(m_Document->m_Blueprint);
+    auto selectedNodes = GetSelectedNodes(&m_Document->m_Blueprint);
     ed::ClearSelection();
     for (auto node : selectedNodes)
     {
@@ -3104,7 +3104,7 @@ bool BluePrintUI::Edit_Cut()
 bool BluePrintUI::Edit_Copy()
 {
     m_ClipBoard.clear();
-    auto nodes = GetSelectedNodes(m_Document->m_Blueprint);
+    auto nodes = GetSelectedNodes(&m_Document->m_Blueprint);
     for (auto node : nodes)
     {
         auto clip = ClipNode(node);
@@ -3133,7 +3133,7 @@ bool BluePrintUI::Edit_Paste()
 
 bool BluePrintUI::Edit_Duplicate()
 {
-    auto nodes = GetSelectedNodes(m_Document->m_Blueprint);
+    auto nodes = GetSelectedNodes(&m_Document->m_Blueprint);
     ed::ClearSelection();
     for (auto node : nodes)
     {
@@ -3154,7 +3154,7 @@ bool BluePrintUI::Edit_Duplicate()
 
 bool BluePrintUI::Edit_Delete()
 {
-    auto selectedNodes = GetSelectedNodes(m_Document->m_Blueprint);
+    auto selectedNodes = GetSelectedNodes(&m_Document->m_Blueprint);
     ed::ClearSelection();
     for (auto node : selectedNodes)
     {
@@ -3167,7 +3167,7 @@ bool BluePrintUI::Edit_Delete()
 
 bool BluePrintUI::Edit_Unlink()
 {
-    auto selectedLinks = GetSelectedLinks(m_Document->m_Blueprint);
+    auto selectedLinks = GetSelectedLinks(&m_Document->m_Blueprint);
     ed::ClearSelection();
     for (auto selectedLink : selectedLinks)
     {
@@ -3402,7 +3402,7 @@ bool BluePrintUI::Blueprint_BreakPoint()
 {
     if (!m_Document)
         return false;
-    auto selectedNodes = GetSelectedNodes(m_Document->m_Blueprint);
+    auto selectedNodes = GetSelectedNodes(&m_Document->m_Blueprint);
     for (auto node : selectedNodes)
     {
         if (node->m_BreakPoint)
@@ -3444,8 +3444,8 @@ void BluePrintUI::UpdateActions()
     bool hasEntryPoint = (entryNode != nullptr);
     bool hasExitPoint = (exitNode != nullptr);
     bool isExecuting   = m_Document->m_Blueprint.CurrentNode() != nullptr;
-    bool hasSelectedNode   = GetSelectedNodes(m_Document->m_Blueprint).size() > 0;
-    bool hasSelectedLink   = GetSelectedLinks(m_Document->m_Blueprint).size() > 0;
+    bool hasSelectedNode   = GetSelectedNodes(&m_Document->m_Blueprint).size() > 0;
+    bool hasSelectedLink   = GetSelectedLinks(&m_Document->m_Blueprint).size() > 0;
     bool hasClipBoardNodes = m_ClipBoard.size() > 0;
     bool isThreadExecuting = m_Document->m_Blueprint.IsExecuting();
     bool isThreadPaused = m_Document->m_Blueprint.IsPaused();
@@ -3453,7 +3453,7 @@ void BluePrintUI::UpdateActions()
     bool hasExportedLink = false;
     if (hasSelectedLink)
     {
-        auto links = GetSelectedLinks(m_Document->m_Blueprint);
+        auto links = GetSelectedLinks(&m_Document->m_Blueprint);
         for (auto pin : links)
         {
             if (pin->IsLinkedExportedPin())
@@ -3464,7 +3464,7 @@ void BluePrintUI::UpdateActions()
         }
     }
 
-    auto select_nodes = GetSelectedNodes(m_Document->m_Blueprint);
+    auto select_nodes = GetSelectedNodes(&m_Document->m_Blueprint);
     for (auto node : select_nodes)
     {
         if (node->GetTypeInfo().m_Type == NodeType::EntryPoint)

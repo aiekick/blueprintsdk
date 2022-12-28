@@ -366,8 +366,9 @@ const vector<Node*> GetGroupedNodes(Node& node)
     return result;
 }
 
-const vector<Node*> GetSelectedNodes(BP& blueprint)
+const vector<Node*> GetSelectedNodes(BP* blueprint)
 {
+    if (!blueprint) return {};
     auto selectedObjects = ed::GetSelectedNodes(nullptr, 0);
 
     vector<ed::NodeId> nodeIds;
@@ -378,7 +379,7 @@ const vector<Node*> GetSelectedNodes(BP& blueprint)
     result.reserve(nodeIds.size());
     for (auto nodeId : nodeIds)
     {
-        auto node = blueprint.FindNode(static_cast<ID_TYPE>(nodeId.Get()));
+        auto node = blueprint->FindNode(static_cast<ID_TYPE>(nodeId.Get()));
         //IM_ASSERT(node != nullptr);
         if (node) result.push_back(node);
     }
@@ -386,8 +387,9 @@ const vector<Node*> GetSelectedNodes(BP& blueprint)
     return result;
 }
 
-const vector<Pin*> GetSelectedLinks(BP& blueprint)
+const vector<Pin*> GetSelectedLinks(BP* blueprint)
 {
+    if (!blueprint) return {};
     auto selectedObjects = ed::GetSelectedLinks(nullptr, 0);
 
     vector<ed::LinkId> linkIds;
@@ -398,7 +400,7 @@ const vector<Pin*> GetSelectedLinks(BP& blueprint)
     result.reserve(linkIds.size());
     for (auto linkId : linkIds)
     {
-        auto node = blueprint.FindPin(static_cast<ID_TYPE>(linkId.Get()));
+        auto node = blueprint->FindPin(static_cast<ID_TYPE>(linkId.Get()));
         //IM_ASSERT(node != nullptr);
         if (node)
             result.push_back(node);

@@ -31,7 +31,7 @@ namespace BluePrint
 struct AudioEqualizerNode final : Node
 {
     BP_NODE_WITH_NAME(AudioEqualizerNode, "Audio Equalizer", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Audio")
-    AudioEqualizerNode(BP& blueprint): Node(blueprint)
+    AudioEqualizerNode(BP* blueprint): Node(blueprint)
     {
         m_Name = "Audio Equalizer";
         memcpy(&m_bandCfg, &DEFAULT_BAND_CFG, sizeof(m_bandCfg));

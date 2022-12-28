@@ -9,7 +9,7 @@ namespace BluePrint
 struct StereoViewerFusionNode final : Node
 {
     BP_NODE_WITH_NAME(StereoViewerFusionNode, "StereoViewer Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Move")
-    StereoViewerFusionNode(BP& blueprint): Node(blueprint) { m_Name = "StereoViewer Transform"; }
+    StereoViewerFusionNode(BP* blueprint): Node(blueprint) { m_Name = "StereoViewer Transform"; }
 
     ~StereoViewerFusionNode()
     {

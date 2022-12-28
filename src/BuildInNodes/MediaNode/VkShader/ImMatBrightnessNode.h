@@ -9,7 +9,7 @@ namespace BluePrint
 struct BrightnessNode final : Node
 {
     BP_NODE_WITH_NAME(BrightnessNode, "Brightness", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Filter#Video#Color")
-    BrightnessNode(BP& blueprint): Node(blueprint) { m_Name = "Brightness"; }
+    BrightnessNode(BP* blueprint): Node(blueprint) { m_Name = "Brightness"; }
 
     ~BrightnessNode()
     {

@@ -17,7 +17,7 @@ namespace BluePrint
 struct MoveFusionNode final : Node
 {
     BP_NODE_WITH_NAME(MoveFusionNode, "Move Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Move")
-    MoveFusionNode(BP& blueprint): Node(blueprint) { m_Name = "Move Transform"; }
+    MoveFusionNode(BP* blueprint): Node(blueprint) { m_Name = "Move Transform"; }
 
     ~MoveFusionNode()
     {

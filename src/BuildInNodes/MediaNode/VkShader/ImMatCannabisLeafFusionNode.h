@@ -9,7 +9,7 @@ namespace BluePrint
 struct CannabisLeafFusionNode final : Node
 {
     BP_NODE_WITH_NAME(CannabisLeafFusionNode, "CannabisLeaf Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
-    CannabisLeafFusionNode(BP& blueprint): Node(blueprint) { m_Name = "CannabisLeaf Transform"; }
+    CannabisLeafFusionNode(BP* blueprint): Node(blueprint) { m_Name = "CannabisLeaf Transform"; }
 
     ~CannabisLeafFusionNode()
     {

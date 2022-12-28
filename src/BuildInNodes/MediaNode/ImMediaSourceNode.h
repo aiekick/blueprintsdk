@@ -215,7 +215,7 @@ struct MediaSourceNode final : Node
     };
 
     BP_NODE_WITH_NAME(MediaSourceNode, "Media Source", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Media")
-    MediaSourceNode(BP& blueprint): Node(blueprint)
+    MediaSourceNode(BP* blueprint): Node(blueprint)
     {
         m_Name = "Media Source";
         m_OutputPins.push_back(&m_Exit);

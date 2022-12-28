@@ -17,7 +17,7 @@ struct FileSelectNode final : Node
         FILESELECT_SUFFIX    = 1 << 2,
     };
     BP_NODE(FileSelectNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "System")
-    FileSelectNode(BP& blueprint): Node(blueprint) { m_Name = "FileSelect"; }
+    FileSelectNode(BP* blueprint): Node(blueprint) { m_Name = "FileSelect"; }
     
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {

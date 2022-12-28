@@ -34,7 +34,7 @@ struct PrintNode final : Node
 
     BP_NODE(PrintNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Debug")
 
-    PrintNode(BP& blueprint): Node(blueprint) { m_Name = "Print"; }
+    PrintNode(BP* blueprint): Node(blueprint) { m_Name = "Print"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {

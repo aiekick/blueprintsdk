@@ -6,7 +6,7 @@ struct SystemEntryPointNode final : Node
 {
     BP_NODE(SystemEntryPointNode, VERSION_BLUEPRINT, NodeType::EntryPoint, NodeStyle::Simple, "System")
 
-    SystemEntryPointNode(BP& blueprint): Node(blueprint) { m_Name = "Start"; }
+    SystemEntryPointNode(BP* blueprint): Node(blueprint) { m_Name = "Start"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {

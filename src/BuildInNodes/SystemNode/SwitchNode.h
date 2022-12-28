@@ -11,7 +11,7 @@ struct SwitchNode final : Node
 {
     BP_NODE(SwitchNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Simple, "Arithmetic")
 
-    SwitchNode(BP& blueprint) : Node(blueprint) { SetType(PinType::Any); }
+    SwitchNode(BP* blueprint) : Node(blueprint) { SetType(PinType::Any); }
 
     PinValue EvaluatePin(const Context& context, const Pin& pin, bool threading = false) const override
     {

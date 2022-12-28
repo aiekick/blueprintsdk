@@ -9,7 +9,7 @@ struct ToStringNode final : Node
 #define FORMAT_TYPE_UNSIGNED    2
     BP_NODE(ToStringNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Flow")
 
-    ToStringNode(BP& blueprint): Node(blueprint)
+    ToStringNode(BP* blueprint): Node(blueprint)
     {
         SetType(PinType::Any);
     }

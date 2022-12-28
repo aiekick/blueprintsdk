@@ -66,7 +66,7 @@ struct Pin;
 struct Context;
 struct NodeTypeInfo
 {
-    using Factory = Node*(*)(BP& blueprint);
+    using Factory = Node*(*)(BP* blueprint);
 
     NodeTypeInfo() = default;
     NodeTypeInfo(ID_TYPE id, std::string type_name, std::string name, VERSION_TYPE version, NodeType type, NodeStyle style, std::string catalog, Factory factory)
@@ -91,7 +91,7 @@ struct NodeTypeInfo
 
 struct IMGUI_API Node
 {
-    Node(BP& blueprint);
+    Node(BP* blueprint);
     virtual ~Node() = default;
 
     template <typename T>
@@ -283,10 +283,10 @@ struct IMGUI_API NodeRegistry
     NodeRegistry();
     ~NodeRegistry();
     ID_TYPE RegisterNodeType(shared_ptr<NodeTypeInfo> info);
-    ID_TYPE RegisterNodeType(std::string Path, BP& blueprint);
+    ID_TYPE RegisterNodeType(std::string Path, BP* blueprint);
     void UnregisterNodeType(std::string name);
-    Node* Create(ID_TYPE typeId, BP& blueprint);
-    Node* Create(std::string typeName, BP& blueprint);
+    Node* Create(ID_TYPE typeId, BP* blueprint);
+    Node* Create(std::string typeName, BP* blueprint);
     span<const NodeTypeInfo* const> GetTypes() const;
     span<const std::string> GetCatalogs() const;
     const NodeTypeInfo* GetTypeInfo(ID_TYPE typeId) const;
@@ -298,6 +298,7 @@ private:
     std::vector<NodeTypeInfo*>  m_Types;
     std::vector<std::string>    m_Catalogs;
     std::vector<DLClass<NodeTypeInfo>*> m_ExternalObject;
+    std::vector<Node *>         m_Nodes;
 };
 
 } // namespace BluePrint

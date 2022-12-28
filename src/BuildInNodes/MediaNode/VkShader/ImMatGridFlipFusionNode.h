@@ -9,7 +9,7 @@ namespace BluePrint
 struct GridFlipFusionNode final : Node
 {
     BP_NODE_WITH_NAME(GridFlipFusionNode, "GridFlip Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Shape")
-    GridFlipFusionNode(BP& blueprint): Node(blueprint) { m_Name = "GridFlip Transform"; }
+    GridFlipFusionNode(BP* blueprint): Node(blueprint) { m_Name = "GridFlip Transform"; }
 
     ~GridFlipFusionNode()
     {

@@ -20,7 +20,7 @@ struct DateTimeNode final : Node
         DATETIME_ZONE       = 1 << 10,
     };
     BP_NODE(DateTimeNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Flow")
-    DateTimeNode(BP& blueprint): Node(blueprint) { m_Name = "Date Time"; }
+    DateTimeNode(BP* blueprint): Node(blueprint) { m_Name = "Date Time"; }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {

@@ -11,7 +11,7 @@ struct AddNode final : Node
 {
     BP_NODE(AddNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Simple, "Arithmetic")
 
-    AddNode(BP& blueprint) : Node(blueprint) { SetType(PinType::Any); }
+    AddNode(BP* blueprint) : Node(blueprint) { SetType(PinType::Any); }
 
     PinValue EvaluatePin(const Context& context, const Pin& pin, bool threading = false) const override
     {

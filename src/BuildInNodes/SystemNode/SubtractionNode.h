@@ -11,7 +11,7 @@ struct SubNode final : Node
 {
     BP_NODE(SubNode, VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Simple, "Arithmetic")
 
-    SubNode(BP& blueprint): Node(blueprint)
+    SubNode(BP* blueprint): Node(blueprint)
     {
         SetType(PinType::Any);
     }
