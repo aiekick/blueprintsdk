@@ -177,7 +177,7 @@ struct HQDN3DNode final : Node
         value["chrom_tmp"] = imgui_json::number(m_chrom_tmp);
     }
 
-    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const override
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         float font_size = ImGui::GetFontSize();

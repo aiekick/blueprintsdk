@@ -355,6 +355,18 @@ void NodeRegistry::RebuildTypes()
         if (!alread_in_list)
         {
             m_Catalogs.push_back(type->m_Catalog);
+        }
+        bool alread_in_nodes = false;
+        for (auto node : m_Nodes)
+        {
+            if (node->GetTypeID() == type->m_ID)
+            {
+                alread_in_nodes = true;
+                break;
+            }
+        }
+        if (!alread_in_nodes)
+        {
             auto node = Create(type->m_ID, nullptr);
             if (node) m_Nodes.push_back(node);
         }
@@ -398,6 +410,13 @@ span<const std::string> NodeRegistry::GetCatalogs() const
 {
     const std::string *begin = m_Catalogs.data();
     const std::string *end   = m_Catalogs.data() + m_Catalogs.size();
+    return make_span(begin, end);
+}
+
+span<const Node * const> NodeRegistry::GetNodes() const
+{
+    const Node* const* begin = m_Nodes.data();
+    const Node* const* end   = m_Nodes.data() + m_Nodes.size();
     return make_span(begin, end);
 }
 
@@ -559,7 +578,7 @@ void Node::DrawMenuLayout(ImGuiContext * ctx)
 {
 }
 
-void Node::DrawNodeLogo(ImGuiContext * ctx, ImVec2 size)
+void Node::DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const
 {
     if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
     float font_size = ImGui::GetFontSize();

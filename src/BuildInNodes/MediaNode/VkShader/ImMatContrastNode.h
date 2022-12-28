@@ -132,7 +132,7 @@ struct ContrastNode final : Node
         value["contrast"] = imgui_json::number(m_contrast);
     }
 
-    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const override
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         float font_size = ImGui::GetFontSize();

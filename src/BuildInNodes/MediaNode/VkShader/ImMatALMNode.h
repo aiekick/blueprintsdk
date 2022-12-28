@@ -158,7 +158,7 @@ struct AlmNode final : Node
         value["gamma"] = imgui_json::number(m_gamma);
     }
 
-    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const override
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         float font_size = ImGui::GetFontSize();

@@ -122,7 +122,7 @@ struct BowTieFusionNode final : Node
         value["horizon"] = imgui_json::boolean(m_bHorizon);
     }
 
-    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const override
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         float font_size = ImGui::GetFontSize();

@@ -232,7 +232,7 @@ struct IMGUI_API Node
     virtual void DrawSettingLayout(ImGuiContext * ctx);
     virtual void DrawMenuLayout(ImGuiContext * ctx);
     virtual bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key = nullptr);
-    virtual void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size);
+    virtual void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const;
 
     ID_TYPE         m_ID                {0};
     string          m_Name              {""};
@@ -289,6 +289,7 @@ struct IMGUI_API NodeRegistry
     Node* Create(std::string typeName, BP* blueprint);
     span<const NodeTypeInfo* const> GetTypes() const;
     span<const std::string> GetCatalogs() const;
+    span<const Node * const> GetNodes() const;
     const NodeTypeInfo* GetTypeInfo(ID_TYPE typeId) const;
 
 private:

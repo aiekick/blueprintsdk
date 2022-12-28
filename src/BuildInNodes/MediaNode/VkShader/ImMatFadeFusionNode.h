@@ -131,7 +131,7 @@ struct FadeFusionNode final : Node
         value["black"] = imgui_json::boolean(m_bBlack);
     }
 
-    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const override
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         float font_size = ImGui::GetFontSize();

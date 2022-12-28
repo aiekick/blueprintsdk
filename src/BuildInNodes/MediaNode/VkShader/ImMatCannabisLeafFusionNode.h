@@ -98,7 +98,7 @@ struct CannabisLeafFusionNode final : Node
         value["mat_type"] = imgui_json::number(m_mat_data_type);
     }
 
-    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const override
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         float font_size = ImGui::GetFontSize();

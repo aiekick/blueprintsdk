@@ -136,7 +136,7 @@ struct BurnOutFusionNode final : Node
         value["shadowColor"] = imgui_json::vec4(ImVec4(m_shadowColor.r, m_shadowColor.g, m_shadowColor.b, m_shadowColor.a));
     }
 
-    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) override
+    void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const override
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         float font_size = ImGui::GetFontSize();
