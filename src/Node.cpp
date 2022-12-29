@@ -115,6 +115,7 @@ NodeRegistry::NodeRegistry()
         DateTimeNode::GetStaticTypeInfo(),
         ConstValueNode::GetStaticTypeInfo(),
         LoopNode::GetStaticTypeInfo(),
+        FloatCountNode::GetStaticTypeInfo(),
         CountNode::GetStaticTypeInfo(),
         ToStringNode::GetStaticTypeInfo(),
         TimerNode::GetStaticTypeInfo(),
