@@ -1643,7 +1643,7 @@ void BluePrintUI::DrawNodes()
             layout.NextColumn();
             auto nodeSize  = ed::GetNodeSize(node->m_ID);
             ImGui::Dummy(ImVec2(0, (nodeSize.y - 64 - 32) / 2));
-            node->DrawNodeLogo(ImGui::GetCurrentContext(), ImVec2(64, 64));
+            node->DrawNodeLogo(ImGui::GetCurrentContext(), ImVec2(112, 64));
         }
         else
             layout.SetColumnAlignment(1.0f);
