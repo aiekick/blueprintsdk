@@ -599,7 +599,8 @@ struct ColorCurveNode final : Node
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         float font_size = ImGui::GetFontSize();
-        ImGui::SetWindowFontScale((size.x - 16) / font_size);
+        float size_min = size.x > size.y ? size.y : size.x;
+        ImGui::SetWindowFontScale((size_min - 16) / font_size);
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));

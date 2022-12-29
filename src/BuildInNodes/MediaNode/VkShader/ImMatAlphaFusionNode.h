@@ -180,12 +180,22 @@ struct AlphaFusionNode final : Node
         value["mat_type"] = imgui_json::number(m_mat_data_type);
     }
 
+    void load_logo() const
+    {
+        int width = 0, height = 0, component = 0;
+        if (auto data = stbi_load_from_memory((stbi_uc const *)logo_data, logo_size, &width, &height, &component, 4))
+        {
+            m_logo = ImGui::ImCreateTexture(data, width, height);
+        }
+    }
+
     void DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const override
     {
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
-#if 1
+#if 0
         float font_size = ImGui::GetFontSize();
-        ImGui::SetWindowFontScale((size.x - 16) / font_size);
+        float size_min = size.x > size.y ? size.y : size.x;
+        ImGui::SetWindowFontScale((size_min - 16) / font_size);
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0, 0, 0, 0));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0, 0, 0, 0));
@@ -199,11 +209,7 @@ struct AlphaFusionNode final : Node
 #else
         if (!m_logo)
         {
-            int width = 0, height = 0, component = 0;
-            if (auto data = stbi_load_from_memory((stbi_uc const *)logo_data, logo_size, &width, &height, &component, 4))
-            {
-                m_logo = ImGui::ImCreateTexture(data, width, height);
-            }
+            load_logo();
         }
         if (m_logo)
         {
@@ -233,6 +239,6 @@ private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
     ImGui::AlphaBlending_vulkan * m_alpha   {nullptr};
-    ImTextureID  m_logo {nullptr};
+    mutable ImTextureID  m_logo {nullptr};
 };
 } // namespace BluePrint
