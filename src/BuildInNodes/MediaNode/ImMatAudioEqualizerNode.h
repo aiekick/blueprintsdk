@@ -59,8 +59,9 @@ struct AudioEqualizerNode final : Node
         }
     }
 
-    void OnStop(Context& context) override
+    void Reset(Context& context) override
     {
+        Node::Reset(context);
         m_mutex.lock();
         m_MatOut.SetValue(ImGui::ImMat());
         m_mutex.unlock();

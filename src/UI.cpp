@@ -1758,7 +1758,8 @@ void BluePrintUI::DrawInfoTooltip()
     auto pinTooltip = [](const char* label, const Pin* pin, bool showNode)
     {
         auto isDummy = pin->m_Node->GetStyle() == NodeStyle::Dummy;
-        ImGui::Text("%s %s", label, !pin->m_Name.empty() ? pin->m_Name.c_str() : "");
+        ImGui::Text("%s", label); ImGui::SameLine();
+        ImGui::Text("%s", !pin->m_Name.empty() ? pin->m_Name.c_str() : "");
         ImGui::Bullet(); ImGui::Text("         ID: %u", pin->m_ID);
         if (pin->m_Link)
         {
@@ -1776,20 +1777,24 @@ void BluePrintUI::DrawInfoTooltip()
         }
         if (pin->m_MappedPin)
         {
-            ImGui::Text("      Mapped: %u", pin->m_MappedPin);
+            ImGui::TextUnformatted("      "); ImGui::SameLine(); ImGui::TextUnformatted("Mapped:"); ImGui::SameLine();
+            ImGui::Text(" %u", pin->m_MappedPin);
         }
 
         if (showNode && pin->m_Node)
         {
             auto isDummy = pin->m_Node->GetStyle() == NodeStyle::Dummy;
             auto nodeName = !isDummy ? pin->m_Node->GetName() : ((DummyNode *)pin->m_Node)->m_name + "*load fail*";
-            ImGui::Bullet(); ImGui::Text("      Node: %" PRI_sv, FMT_sv(nodeName));
+            ImGui::Bullet(); ImGui::TextUnformatted("      "); ImGui::SameLine(); ImGui::TextUnformatted("Node:"); ImGui::SameLine();
+            ImGui::Text(" %" PRI_sv, FMT_sv(nodeName));
         }
-        ImGui::Bullet(); ImGui::Text("      Type: %s", PinTypeToString(pin->GetType()).c_str());
-        ImGui::Bullet(); ImGui::Text("Value Type: %s", PinTypeToString(pin->GetValueType()).c_str());
+        ImGui::Bullet(); ImGui::TextUnformatted("      Type:"); ImGui::SameLine();
+        ImGui::Text("%s", PinTypeToString(pin->GetType()).c_str());
+        ImGui::Bullet(); ImGui::TextUnformatted("Value Type:"); ImGui::SameLine();
+        ImGui::Text("%s", PinTypeToString(pin->GetValueType()).c_str());
         if (!isDummy && !pin->m_MappedPin && pin->GetValueType() == PinType::Mat)
         {
-            ImGui::TextUnformatted("=============ImMat===========");
+            ImGui::TextUnformatted("=============ImMat=============");
             pin->m_Node->m_mutex.lock();
             PinValue pinValue;
             if (!pin->IsInput())
@@ -1862,11 +1867,11 @@ void BluePrintUI::DrawInfoTooltip()
             {
                 ImGui::TextUnformatted("      *Empty*");
             }
-            ImGui::TextUnformatted("=============================");
+            ImGui::TextUnformatted("===============================");
         }
         if (!isDummy && !pin->m_MappedPin && pin->GetValueType() == PinType::Array)
         {
-            ImGui::TextUnformatted("=============Array===========");
+            ImGui::TextUnformatted("=============Array=============");
             pin->m_Node->m_mutex.lock();
             PinValue pinValue;
             if (!pin->IsInput())
@@ -1904,7 +1909,7 @@ void BluePrintUI::DrawInfoTooltip()
                 ImGui::TextUnformatted("      *Empty*");
                 ImGui::TextUnformatted("             ");
             }
-            ImGui::TextUnformatted("=============================");
+            ImGui::TextUnformatted("===============================");
         }
         string flags;
         if (pin->IsMappedPin())
@@ -2491,9 +2496,11 @@ void BluePrintUI::HandleCreateAction(uint32_t flag)
             ed::Suspend();
             ImGui::BeginTooltip();
             ImGui::TextUnformatted("Valid Link"); ImGui::SameLine();
-            ImGui::Text("%s%s",
-                canLinkResult.Reason().empty() ? "" : ": ",
-                canLinkResult.Reason().empty() ? "" : canLinkResult.Reason().c_str());
+            if (!canLinkResult.Reason().empty())
+            {
+                ImGui::TextUnformatted(": "); ImGui::SameLine();
+                ImGui::Text("%s", canLinkResult.Reason().c_str());
+            }
             ImGui::Separator();
             ImGui::TextUnformatted("From:");
             ImGui::Bullet(); ImGui::Text("%" PRI_pin, FMT_pin(startPin));
@@ -2535,7 +2542,7 @@ void BluePrintUI::HandleCreateAction(uint32_t flag)
             ed::Suspend();
             ImGui::BeginTooltip();
             ImGui::TextUnformatted("Invalid Link:"); ImGui::SameLine();
-            ImGui::Text(" %s", canLinkResult.Reason().c_str());
+            ImGui::Text("%s", canLinkResult.Reason().c_str());
             ImGui::EndTooltip();
             ed::Resume();
             linkBuilder->Reject();

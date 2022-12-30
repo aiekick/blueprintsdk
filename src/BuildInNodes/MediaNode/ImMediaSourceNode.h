@@ -711,10 +711,6 @@ struct MediaSourceNode final : Node
         Node::Reset(context);
     }
 
-    void OnStop(Context& context) override
-    {
-    }
-
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
     {
         if (entryPoint.m_ID == m_Reset.m_ID)

@@ -25,10 +25,6 @@ struct MatWarpPerspectiveNode final : Node
     {
         Node::Reset(context);
         if (m_transform) { delete m_transform; m_transform = nullptr; }
-    }
-
-    void OnStop(Context& context) override
-    {
         m_mutex.lock();
         m_MatOut.SetValue(ImGui::ImMat());
         m_mutex.unlock();

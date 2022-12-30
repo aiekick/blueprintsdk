@@ -22,10 +22,6 @@ struct MatCropNode final : Node
     {
         Node::Reset(context);
         if (m_filter) { delete m_filter; m_filter = nullptr; }
-    }
-
-    void OnStop(Context& context) override
-    {
         m_mutex.lock();
         m_MatOut.SetValue(ImGui::ImMat());
         m_mutex.unlock();

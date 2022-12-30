@@ -22,10 +22,6 @@ struct DoorFusionNode final : Node
     void Reset(Context& context) override
     {
         Node::Reset(context);
-    }
-
-    void OnStop(Context& context) override
-    {
         m_mutex.lock();
         m_MatOut.SetValue(ImGui::ImMat());
         m_mutex.unlock();

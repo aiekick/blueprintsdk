@@ -25,16 +25,12 @@ struct MatWarpAffineNode final : Node
     {
         Node::Reset(context);
         if (m_transform) { delete m_transform; m_transform = nullptr; }
-    }
-
-    void OnStop(Context& context) override
-    {
         m_mutex.lock();
         m_MatOut.SetValue(ImGui::ImMat());
         m_mutex.unlock();
     }
 
-    void calculate_matrix(int w, int h, float x_offset, float y_offset, float x_scale, float y_scale)
+    void calculate_matrix(int w, int h, int dw, int dh, float x_offset, float y_offset, float x_scale, float y_scale)
     {
         float _angle = m_angle / 180.f * M_PI;
         float _x_scale = 1.f / (x_scale + FLT_EPSILON);
@@ -43,10 +39,12 @@ struct MatWarpAffineNode final : Node
         float alpha_11 = std::cos(_angle) * _y_scale;
         float beta_01 = std::sin(_angle) * _x_scale;
         float beta_10 = std::sin(_angle) * _y_scale;
-        int center_x = w / 2 + x_offset * w;
-        int center_y = h / 2 + y_offset * h;
-        m_matrix.at<float>(0, 0) =  alpha_00; m_matrix.at<float>(1, 0) = beta_01;      m_matrix.at<float>(2, 0) = (1 - alpha_00) * center_x - beta_01 * center_y - x_offset * w;
-        m_matrix.at<float>(0, 1) = -beta_10;     m_matrix.at<float>(1, 1) = alpha_11;  m_matrix.at<float>(2, 1) = beta_10 * center_x + (1 - alpha_11) * center_y - y_offset * h;
+        float _x_offset = (dw - w) / 2;
+        float _y_offset = (dh - h) / 2;
+        int center_x = w / 2 + x_offset * w + _x_offset;
+        int center_y = h / 2 + y_offset * h + _y_offset;
+        m_matrix.at<float>(0, 0) =  alpha_00; m_matrix.at<float>(1, 0) = beta_01;      m_matrix.at<float>(2, 0) = (1 - alpha_00) * center_x - beta_01 * center_y - x_offset * w - _x_offset;
+        m_matrix.at<float>(0, 1) = -beta_10;     m_matrix.at<float>(1, 1) = alpha_11;  m_matrix.at<float>(2, 1) = beta_10 * center_x + (1 - alpha_11) * center_y - y_offset * h - _y_offset;
     }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
@@ -74,7 +72,7 @@ struct MatWarpAffineNode final : Node
                 }
             }
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            calculate_matrix(mat_in.w, mat_in.h, m_offset_x, m_offset_y, m_scale_x, m_scale_y);
+            calculate_matrix(mat_in.w, mat_in.h, mat_in.w, mat_in.h, m_offset_x, m_offset_y, m_scale_x, m_scale_y);
             float _l = m_crop_l, _t = m_crop_t, _r = m_crop_r, _b = m_crop_b;
             if (m_crop_r + m_crop_l > 1.f) { _l = 1.f - m_crop_r; _r = 1.f - m_crop_l; }
             if (m_crop_b + m_crop_t > 1.f) { _t = 1.f - m_crop_b; _b = 1.f - m_crop_t; }
