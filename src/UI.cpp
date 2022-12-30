@@ -1823,12 +1823,12 @@ void BluePrintUI::DrawInfoTooltip()
                 mat = pinValue.As<ImGui::ImMat>();
             if (!mat.empty())
             {
-                ImGui::Text("        Width:%d", mat.w);
-                ImGui::Text("       Height:%d", mat.h);
-                ImGui::Text("     Channels:%d", mat.c);
-                ImGui::Text("       Device:%s", mat.device == IM_DD_CPU ? "CPU" : 
-                                                mat.device == IM_DD_VULKAN ? "Vulkan" :
-                                                mat.device == IM_DD_VULKAN_IMAGE ? "Vulkan Image" : "Cuda");
+                ImGui::TextUnformatted("        Width:"); ImGui::SameLine(); ImGui::Text("%d", mat.w);
+                ImGui::TextUnformatted("       Height:"); ImGui::SameLine(); ImGui::Text("%d", mat.h);
+                ImGui::TextUnformatted("     Channels:"); ImGui::SameLine(); ImGui::Text("%d", mat.c);
+                ImGui::TextUnformatted("       Device:"); ImGui::SameLine(); ImGui::Text("%s", mat.device == IM_DD_CPU ? "CPU" : 
+                                                                                                mat.device == IM_DD_VULKAN ? "Vulkan" :
+                                                                                                mat.device == IM_DD_VULKAN_IMAGE ? "Vulkan Image" : "Cuda");
                 if (mat.device != 0)
                     ImGui::Text("          GPU:%d", mat.device_number);
                 ImGui::Text("    Data type:%s", mat.type == IM_DT_INT8 ? "Int8" :

@@ -39,12 +39,14 @@ struct MatWarpAffineNode final : Node
         float alpha_11 = std::cos(_angle) * _y_scale;
         float beta_01 = std::sin(_angle) * _x_scale;
         float beta_10 = std::sin(_angle) * _y_scale;
-        float _x_offset = (dw - w) / 2;
-        float _y_offset = (dh - h) / 2;
-        int center_x = w / 2 + x_offset * w + _x_offset;
-        int center_y = h / 2 + y_offset * h + _y_offset;
-        m_matrix.at<float>(0, 0) =  alpha_00; m_matrix.at<float>(1, 0) = beta_01;      m_matrix.at<float>(2, 0) = (1 - alpha_00) * center_x - beta_01 * center_y - x_offset * w - _x_offset;
-        m_matrix.at<float>(0, 1) = -beta_10;     m_matrix.at<float>(1, 1) = alpha_11;  m_matrix.at<float>(2, 1) = beta_10 * center_x + (1 - alpha_11) * center_y - y_offset * h - _y_offset;
+        float x_diff = dw - w;
+        float y_diff = dh - h;
+        float _x_offset = x_offset * (dw + w * x_scale) / 2 + x_diff / 2;
+        float _y_offset = y_offset * (dh + h * y_scale) / 2 + y_diff / 2;
+        int center_x = w / 2 + _x_offset;
+        int center_y = h / 2 + _y_offset;
+        m_matrix.at<float>(0, 0) =  alpha_00;    m_matrix.at<float>(1, 0) = beta_01;      m_matrix.at<float>(2, 0) = (1 - alpha_00) * center_x - beta_01 * center_y - _x_offset;
+        m_matrix.at<float>(0, 1) = -beta_10;     m_matrix.at<float>(1, 1) = alpha_11;     m_matrix.at<float>(2, 1) = beta_10 * center_x + (1 - alpha_11) * center_y - _y_offset;
     }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
@@ -72,7 +74,9 @@ struct MatWarpAffineNode final : Node
                 }
             }
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
-            calculate_matrix(mat_in.w, mat_in.h, mat_in.w, mat_in.h, m_offset_x, m_offset_y, m_scale_x, m_scale_y);
+            im_RGB.w = mat_in.w * m_scale;
+            im_RGB.h = mat_in.h * m_scale;
+            calculate_matrix(mat_in.w, mat_in.h, im_RGB.w, im_RGB.h, m_offset_x, m_offset_y, m_scale_x, m_scale_y);
             float _l = m_crop_l, _t = m_crop_t, _r = m_crop_r, _b = m_crop_b;
             if (m_crop_r + m_crop_l > 1.f) { _l = 1.f - m_crop_r; _r = 1.f - m_crop_l; }
             if (m_crop_b + m_crop_t > 1.f) { _t = 1.f - m_crop_b; _b = 1.f - m_crop_t; }
@@ -96,6 +100,7 @@ struct MatWarpAffineNode final : Node
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
+        float _scale = m_scale;
         float _angle = m_angle;
         float _scale_x = m_scale_x;
         float _scale_y = m_scale_y;
@@ -107,9 +112,11 @@ struct MatWarpAffineNode final : Node
         float _crop_b = m_crop_b;
         ImInterpolateMode _mode = m_interpolation_mode;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
-        ImGui::Dummy(ImVec2(240, 8));
-        ImGui::PushItemWidth(240);
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
         ImGui::BeginDisabled(!m_Enabled);
+        ImGui::SliderFloat("scale", &_scale, 0.f, 4.f, "%.1f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_scale##WarpAffine")) { _scale = 0.f; changed = true; }
         ImGui::SliderFloat("angle", &_angle, -360.f, 360.f, "%.2f", flags);
         ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_angle##WarpAffine")) { _angle = 0.f; changed = true; }
         ImGui::SliderFloat("scale x", &_scale_x, 0.1f, 8.f, "%.2f", flags);
@@ -136,6 +143,7 @@ struct MatWarpAffineNode final : Node
 
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
+        if (_scale != m_scale) { m_scale = _scale; changed = true; }
         if (_angle != m_angle) { m_angle = _angle; changed = true; }
         if (_scale_x != m_scale_x) { m_scale_x = _scale_x; changed = true; }
         if (_scale_y != m_scale_y) { m_scale_y = _scale_y; changed = true; }
@@ -173,6 +181,12 @@ struct MatWarpAffineNode final : Node
             auto& val = value["mat_type"];
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
+        }
+        if (value.contains("scale"))
+        {
+            auto& val = value["scale"];
+            if (val.is_number()) 
+                m_scale = val.get<imgui_json::number>();
         }
         if (value.contains("angle"))
         {
@@ -241,6 +255,7 @@ struct MatWarpAffineNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
+        value["scale"] = imgui_json::number(m_scale);
         value["angle"] = imgui_json::number(m_angle);
         value["scale_x"] = imgui_json::number(m_scale_x);
         value["scale_y"] = imgui_json::number(m_scale_y);
@@ -288,6 +303,7 @@ private:
     ImGui::warpAffine_vulkan * m_transform {nullptr};
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     ImInterpolateMode m_interpolation_mode {IM_INTERPOLATE_NEAREST};
+    float m_scale       {1.0};
     float m_angle       {0.0};
     float m_scale_x     {1.0};
     float m_scale_y     {1.0};
