@@ -51,29 +51,29 @@ string NodeStyleToString(NodeStyle style)
 {
     switch (style)
     {
-        default:                    return "UnKnown";
-        case NodeStyle::Dummy:      return "Dummy";
-        case NodeStyle::Default:    return "Default";
-        case NodeStyle::Simple:     return "Simple";
-        case NodeStyle::Comment:    return "Comment";
-        case NodeStyle::Group:      return "Group";
-        case NodeStyle::Custom:     return "Custom";
+        default:                    return "UnKnown Style";
+        case NodeStyle::Dummy:      return "Dummy Style";
+        case NodeStyle::Default:    return "Default Style";
+        case NodeStyle::Simple:     return "Simple Style";
+        case NodeStyle::Comment:    return "Comment Style";
+        case NodeStyle::Group:      return "Group Style";
+        case NodeStyle::Custom:     return "Custom Style";
     }
 }
 
 bool NodeStyleFromString(string str, NodeStyle& style)
 {
-    if (str.compare("Dummy") == 0)
+    if (str.compare("Dummy Style") == 0)
         style = NodeStyle::Dummy;
-    else if (str.compare("Default") == 0)
+    else if (str.compare("Default Style") == 0)
         style = NodeStyle::Default;
-    else if (str.compare("Simple") == 0)
+    else if (str.compare("Simple Style") == 0)
         style = NodeStyle::Simple;
-    else if (str.compare("Comment") == 0)
+    else if (str.compare("Comment Style") == 0)
         style = NodeStyle::Comment;
-    else if (str.compare("Group") == 0)
+    else if (str.compare("Group Style") == 0)
         style = NodeStyle::Group;
-    else if (str.compare("Custom") == 0)
+    else if (str.compare("Custom Style") == 0)
         style = NodeStyle::Custom;
     else
         return false;

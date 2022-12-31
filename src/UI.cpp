@@ -1757,6 +1757,7 @@ void BluePrintUI::DrawInfoTooltip()
     
     auto pinTooltip = [](const char* label, const Pin* pin, bool showNode)
     {
+        ImGui::PushStyleColor(ImGuiCol_Separator, ImVec4(1,1,1,1));
         auto isDummy = pin->m_Node->GetStyle() == NodeStyle::Dummy;
         ImGui::Text("%s", label); ImGui::SameLine();
         ImGui::Text("%s", !pin->m_Name.empty() ? pin->m_Name.c_str() : "");
@@ -1794,7 +1795,8 @@ void BluePrintUI::DrawInfoTooltip()
         ImGui::Text("%s", PinTypeToString(pin->GetValueType()).c_str());
         if (!isDummy && !pin->m_MappedPin && pin->GetValueType() == PinType::Mat)
         {
-            ImGui::TextUnformatted("=============ImMat=============");
+            ImGui::Separator();
+            ImGui::Bullet(); ImGui::TextUnformatted("Mat Info");
             pin->m_Node->m_mutex.lock();
             PinValue pinValue;
             if (!pin->IsInput())
@@ -1830,15 +1832,17 @@ void BluePrintUI::DrawInfoTooltip()
                                                                                                 mat.device == IM_DD_VULKAN ? "Vulkan" :
                                                                                                 mat.device == IM_DD_VULKAN_IMAGE ? "Vulkan Image" : "Cuda");
                 if (mat.device != 0)
-                    ImGui::Text("          GPU:%d", mat.device_number);
-                ImGui::Text("    Data type:%s", mat.type == IM_DT_INT8 ? "Int8" :
+                {
+                    ImGui::TextUnformatted("          GPU:"); ImGui::SameLine(); ImGui::Text("%d", mat.device_number);
+                }
+                ImGui::TextUnformatted("    Data type:"); ImGui::SameLine(); ImGui::Text("%s", mat.type == IM_DT_INT8 ? "Int8" :
                                                 mat.type == IM_DT_INT16 ? "Int16" :
                                                 mat.type == IM_DT_INT32 ? "Int32" :
                                                 mat.type == IM_DT_INT64 ? "Int64" :
                                                 mat.type == IM_DT_FLOAT16 ? "Float 16" : 
                                                 mat.type == IM_DT_FLOAT32 ? "Float" :
                                                 mat.type == IM_DT_FLOAT64 ? "Double" : "Unknown");
-                ImGui::Text("       Format:%s", mat.flags & IM_MAT_FLAGS_AUDIO_FRAME ? "Audio" :
+                ImGui::TextUnformatted("       Format:"); ImGui::SameLine(); ImGui::Text("%s", mat.flags & IM_MAT_FLAGS_AUDIO_FRAME ? "Audio" :
                                                 mat.color_format == IM_CF_GRAY ? "Gray/Mono" :
                                                 mat.color_format == IM_CF_BGR ? "BGR" :
                                                 mat.color_format == IM_CF_ABGR ? "ABGR" :
@@ -1854,24 +1858,25 @@ void BluePrintUI::DrawInfoTooltip()
                                                 mat.color_format == IM_CF_P010LE ? "P010LE" :"Unknown");
                 if (mat.flags & IM_MAT_FLAGS_VIDEO_FRAME)
                 {
-                    ImGui::Text("   Frame Type:%s", mat.flags & IM_MAT_FLAGS_VIDEO_FRAME_I ? "I" : 
+                    ImGui::TextUnformatted("   Frame Type:"); ImGui::SameLine(); ImGui::Text("%s", mat.flags & IM_MAT_FLAGS_VIDEO_FRAME_I ? "I" : 
                                                     mat.flags & IM_MAT_FLAGS_VIDEO_FRAME_P ? "P" : 
                                                     mat.flags & IM_MAT_FLAGS_VIDEO_FRAME_B ? "B" : "Unknown");
-                    ImGui::Text("    Frame HDR:%s", mat.flags & IM_MAT_FLAGS_VIDEO_HDR_PQ ? "PQ" : 
+                    ImGui::TextUnformatted("    Frame HDR:"); ImGui::SameLine(); ImGui::Text("%s", mat.flags & IM_MAT_FLAGS_VIDEO_HDR_PQ ? "PQ" : 
                                                     mat.flags & IM_MAT_FLAGS_VIDEO_HDR_HLG ? "HLG" : "SDR");
-                    ImGui::Text("   Interlaced:%s", mat.flags & IM_MAT_FLAGS_VIDEO_INTERLACED ? "Interlaced" : "no");
+                    ImGui::TextUnformatted("   Interlaced:"); ImGui::SameLine(); ImGui::Text("%s", mat.flags & IM_MAT_FLAGS_VIDEO_INTERLACED ? "Interlaced" : "no");
                 }
-                ImGui::Text("    TimeStamp:%.6f", mat.time_stamp);
+                ImGui::TextUnformatted("    TimeStamp:"); ImGui::SameLine(); ImGui::Text("%.6f", mat.time_stamp);
             }
             else
             {
                 ImGui::TextUnformatted("      *Empty*");
             }
-            ImGui::TextUnformatted("===============================");
+            ImGui::Separator();
         }
         if (!isDummy && !pin->m_MappedPin && pin->GetValueType() == PinType::Array)
         {
-            ImGui::TextUnformatted("=============Array=============");
+            ImGui::Separator();
+            ImGui::Bullet(); ImGui::TextUnformatted("Array Info");
             pin->m_Node->m_mutex.lock();
             PinValue pinValue;
             if (!pin->IsInput())
@@ -1901,36 +1906,43 @@ void BluePrintUI::DrawInfoTooltip()
             if (array.size() > 0)
             {
                 auto type = array[0].type();
-                ImGui::Text("        Element Size:%zu", array.size());
-                ImGui::Text("        Element Type:%s", edd::Serialization::ToString(type).c_str());
+                ImGui::TextUnformatted("        Element Size:"); ImGui::SameLine(); ImGui::Text("%zu", array.size());
+                ImGui::TextUnformatted("        Element Type:"); ImGui::SameLine(); ImGui::Text("%s", edd::Serialization::ToString(type).c_str());
             }
             else
             {
                 ImGui::TextUnformatted("      *Empty*");
                 ImGui::TextUnformatted("             ");
             }
-            ImGui::TextUnformatted("===============================");
+            ImGui::Separator();
         }
-        string flags;
+        std::vector<std::string> flags;
         if (pin->IsMappedPin())
-            flags += "mapped, ";
+            flags.push_back("mapped");
         if (pin->m_Flags & PIN_FLAG_EXPORTED)
-            flags += "exported, ";
+            flags.push_back("exported");
         if (pin->m_Flags & PIN_FLAG_PUBLICIZED)
-            flags += "publicized, ";
+            flags.push_back("publicized");
         if (pin->IsLinked())
-            flags += "linked, ";
+            flags.push_back("linked");
         if (pin->IsInput())
-            flags += "input, ";
+            flags.push_back("input");
         if (pin->IsOutput())
-            flags += "output, ";
+            flags.push_back("output");
         if (pin->IsProvider())
-            flags += "provider, ";
+            flags.push_back("provider");
         if (pin->IsReceiver())
-            flags += "receiver, ";
-        if (!flags.empty())
-            flags = flags.substr(0, flags.size() - 2);
-        ImGui::Bullet(); ImGui::Text("   Flags: %s", flags.c_str());
+            flags.push_back("receiver");
+        ImGui::Bullet();
+        ImGui::TextUnformatted("   Flags:"); ImGui::SameLine(); 
+        for (auto flag : flags)
+        {
+            ImGui::Text("%s", flag.c_str());
+            ImGui::SameLine();
+        }
+        ImGui::TextUnformatted("");
+
+        ImGui::PopStyleColor();
     };
 
     ImGui::SetNextWindowBgAlpha(0.75f);
@@ -1984,34 +1996,42 @@ void BluePrintUI::DrawInfoTooltip()
                 pinTooltip("Pin:", hoveredPin, false);
                 ImGui::Separator();
             }
-            ImGui::Text("Node: %" PRI_sv, FMT_sv(nodeName));
-            ImGui::Bullet(); ImGui::Text(" Node ID: %u", hoveredNode->m_ID);
-            ImGui::Bullet(); ImGui::Text(" Type ID: 0x%08" PRIX32, nodeTypeInfo.m_ID);
-            ImGui::Bullet(); ImGui::Text("TypeName: %" PRI_sv, FMT_sv(nodeTypeName));
-            ImGui::Bullet(); ImGui::Text(" Version: %" PRI_sv, FMT_sv(NodeVersionToString(nodeVersion)));
-            ImGui::Bullet(); ImGui::Text("    Type: %s", NodeTypeToString(nodeType).c_str());
-            ImGui::Bullet(); ImGui::Text("   Style: %s", NodeStyleToString(nodeStyle).c_str());
-            ImGui::Bullet(); ImGui::Text(" Catalog: %s", nodeCatalog.c_str());
-            ImGui::Bullet(); ImGui::Text("   Z-Pos: %.1f", ed::GetNodeZPosition(hoveredNode->m_ID));
+            ImGui::TextUnformatted("Node:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(nodeName));
+            ImGui::Bullet(); ImGui::TextUnformatted(" Node ID:"); ImGui::SameLine(); ImGui::Text("%u", hoveredNode->m_ID);
+            ImGui::Bullet(); ImGui::TextUnformatted(" Type ID:"); ImGui::SameLine(); ImGui::Text("0x%08" PRIX32, nodeTypeInfo.m_ID);
+            ImGui::Bullet(); ImGui::TextUnformatted("TypeName:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(nodeTypeName));
+            ImGui::Bullet(); ImGui::TextUnformatted(" Version:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(NodeVersionToString(nodeVersion)));
+            ImGui::Bullet(); ImGui::TextUnformatted("    Type:"); ImGui::SameLine(); ImGui::Text("%s", NodeTypeToString(nodeType).c_str());
+            ImGui::Bullet(); ImGui::TextUnformatted("   Style:"); ImGui::SameLine(); ImGui::Text("%s", NodeStyleToString(nodeStyle).c_str());
+            
+            ImGui::Bullet(); ImGui::TextUnformatted(" Catalog:"); ImGui::SameLine();
+            auto catalogs = BluePrint::GetCatalogInfo(nodeCatalog);
+            for (auto catalog : catalogs)
+            {
+                ImGui::Text("%s", catalog.c_str()); ImGui::SameLine();
+            }
+            ImGui::TextUnformatted("");
+            
+            ImGui::Bullet(); ImGui::TextUnformatted("   Z-Pos:"); ImGui::SameLine(); ImGui::Text("%.1f", ed::GetNodeZPosition(hoveredNode->m_ID));
             if (hoveredNode->m_GroupID != 0)
             {
-                ImGui::Bullet(); ImGui::Text(" Grouped: 0x%08" PRIX32, hoveredNode->m_GroupID);
+                ImGui::Bullet(); ImGui::TextUnformatted(" Grouped:"); ImGui::SameLine(); ImGui::Text("0x%08" PRIX32, hoveredNode->m_GroupID);
             }
             else
             {
-                ImGui::Bullet(); ImGui::Text(" Non-Grouped");
+                ImGui::Bullet(); ImGui::TextUnformatted(" Non-Grouped");
             }
             //if (m_Document->m_Blueprint.IsExecuting())
             {
                 ImGui::Separator();
-                ImGui::Bullet(); ImGui::Text("     Hits: %s", std::to_string(hoveredNode->m_Hits).c_str());
+                ImGui::Bullet(); ImGui::TextUnformatted("     Hits:"); ImGui::SameLine(); ImGui::Text("%s", std::to_string(hoveredNode->m_Hits).c_str());
                 std::ostringstream oss;
                 oss << std::setprecision(hoveredNode->m_Tick > 1000 ? 6 : 3) << (hoveredNode->m_Tick > 1000000 ? hoveredNode->m_Tick / 1000000.0 :
                                         hoveredNode->m_Tick > 1000 ? hoveredNode->m_Tick / 1000.0 :
                                         hoveredNode->m_Tick);
-                std::string tick_text = oss.str() + (hoveredNode->m_Tick > 1000000 ? "s" : hoveredNode->m_Tick > 1000 ? "ms" : "us");
-                ImGui::Bullet(); ImGui::Text("    Ticks: %s", tick_text.c_str());
-                ImGui::Bullet(); ImGui::Text("Node Time: %.3fms", hoveredNode->m_NodeTimeMs);
+                std::string consuming_text = oss.str() + (hoveredNode->m_Tick > 1000000 ? "s" : hoveredNode->m_Tick > 1000 ? "ms" : "us");
+                ImGui::Bullet(); ImGui::TextUnformatted("Consuming:"); ImGui::SameLine(); ImGui::Text("%s", consuming_text.c_str());
+                ImGui::Bullet(); ImGui::TextUnformatted("Node Time:"); ImGui::SameLine(); ImGui::Text("%.3fms", hoveredNode->m_NodeTimeMs);
             }
             ImGui::EndTooltip();
         }
