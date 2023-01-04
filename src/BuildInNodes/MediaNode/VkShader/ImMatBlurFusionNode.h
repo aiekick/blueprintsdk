@@ -43,6 +43,10 @@ struct BlurFusionNode final : Node
                 if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
                 m_fusion = new ImGui::LinearBlur_vulkan(gpu);
             }
+            if (!m_fusion)
+            {
+                return {};
+            }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
             m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, percentage, m_intensity, m_passes);
