@@ -2,21 +2,18 @@
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
-#include <Box.h>
-#include <AlphaBlending_vulkan.h>
-#include <Brightness_vulkan.h>
+#include <LinearBlur_vulkan.h>
 
 namespace BluePrint
 {
 struct BlurFusionNode final : Node
 {
-    BP_NODE_WITH_NAME(BlurFusionNode, "Blur Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Mix")
-    BlurFusionNode(BP* blueprint): Node(blueprint) { m_Name = "Blur Transform"; }
+    BP_NODE_WITH_NAME(BlurFusionNode, "LinearBlur Transform", VERSION_BLUEPRINT, NodeType::Internal, NodeStyle::Default, "Fusion#Video#Mix")
+    BlurFusionNode(BP* blueprint): Node(blueprint) { m_Name = "LinearBlur Transform"; }
 
     ~BlurFusionNode()
     {
-        if (m_blur) { delete m_blur; m_blur = nullptr; }
-        if (m_alpha) { delete m_alpha; m_alpha = nullptr; }
+        if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
         if (m_logo) { ImGui::ImDestroyTexture(m_logo); m_logo = nullptr; }
     }
 
@@ -33,7 +30,6 @@ struct BlurFusionNode final : Node
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
         auto percentage = context.GetPinValue<float>(m_Blur);
-        float alpha = 1.0f - percentage;
         if (!mat_first.empty() && !mat_second.empty())
         {
             int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
@@ -42,36 +38,14 @@ struct BlurFusionNode final : Node
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
             }
-            if (!m_blur || m_device != gpu)
+            if (!m_fusion || m_device != gpu)
             {
-                if (m_blur) { delete m_blur; m_blur = nullptr; }
-                m_blur = new ImGui::BoxBlur_vulkan(gpu);
-            }
-            if (!m_alpha || m_device != gpu)
-            {
-                if (m_alpha) { delete m_alpha; m_alpha = nullptr; }
-                m_alpha = new ImGui::AlphaBlending_vulkan(gpu);
-            }
-            if (!m_blur || !m_alpha)
-            {
-                return {};
+                if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
+                m_fusion = new ImGui::LinearBlur_vulkan(gpu);
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            ImGui::VkMat im_First_Blur; im_First_Blur.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            ImGui::VkMat im_Second_Blur; im_Second_Blur.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_second.type : m_mat_data_type;
-
-            int size_first = percentage * 50 + 1;
-            int size_second = (1.0 - percentage) * 50 + 1;
-            
-            double node_time = 0;
-            m_blur->SetParam(size_first, size_first);
-            node_time += m_blur->filter(mat_first, im_First_Blur);
-            m_blur->SetParam(size_second, size_second);
-            node_time += m_blur->filter(mat_second, im_Second_Blur);
-            node_time += m_alpha->blend(im_First_Blur, im_Second_Blur, im_RGB, alpha);
-            m_NodeTimeMs = node_time;
-
+            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, percentage, m_intensity, m_passes);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -93,8 +67,27 @@ struct BlurFusionNode final : Node
         ImGui::RadioButton("Float32", (int *)&m_mat_data_type, (int)IM_DT_FLOAT32);
     }
 
-    bool CustomLayout() const override { return false; }
+    bool CustomLayout() const override { return true; }
     bool Skippable() const override { return true; }
+
+    bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key) override
+    {
+        ImGui::SetCurrentContext(ctx);
+        bool changed = false;
+        float _intensity = m_intensity;
+        int _passes = m_passes;
+        static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
+        ImGui::Dummy(ImVec2(200, 8));
+        ImGui::PushItemWidth(200);
+        ImGui::SliderFloat("Intensity##LinearBlur", &_intensity, 0.0, 1.f, "%.1f", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_intensity##LinearBlur")) { _intensity = 0.1f; changed = true; }
+        ImGui::SliderInt("Passes##LinearBlur", &_passes, 1, 10, "%d", flags);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_passes##LinearBlur")) { _passes = 6; changed = true; }
+        ImGui::PopItemWidth();
+        if (_intensity != m_intensity) { m_intensity = _intensity; changed = true; }
+        if (_passes != m_passes) { m_passes = _passes; changed = true; }
+        return m_Enabled ? changed : false;
+    }
 
     int Load(const imgui_json::value& value) override
     {
@@ -108,6 +101,18 @@ struct BlurFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
+        if (value.contains("intensity"))
+        {
+            auto& val = value["intensity"];
+            if (val.is_number()) 
+                m_intensity = val.get<imgui_json::number>();
+        }
+        if (value.contains("passes"))
+        {
+            auto& val = value["passes"];
+            if (val.is_number()) 
+                m_passes = val.get<imgui_json::number>();
+        }
         return ret;
     }
 
@@ -115,6 +120,8 @@ struct BlurFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
+        value["intensity"] = imgui_json::number(m_intensity);
+        value["passes"] = imgui_json::number(m_passes);
     }
 
     void load_logo() const
@@ -165,8 +172,9 @@ struct BlurFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    ImGui::BoxBlur_vulkan * m_blur   {nullptr};
-    ImGui::AlphaBlending_vulkan * m_alpha   {nullptr};
+    float m_intensity {0.1};
+    int m_passes {6};
+    ImGui::LinearBlur_vulkan * m_fusion {nullptr};
     mutable ImTextureID  m_logo {nullptr};
     mutable int m_logo_index {0};
 
