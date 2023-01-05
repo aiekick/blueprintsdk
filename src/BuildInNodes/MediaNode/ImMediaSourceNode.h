@@ -540,15 +540,15 @@ struct MediaSourceNode final : Node
         }
 #else
         // ffmpeg swscale
-        if (!m_img_convert_ctx)
+        if (!stream->m_img_convert_ctx)
         {
             AVPixelFormat format =  mat_V.color_format == IM_CF_YUV420 ? (video_depth > 8 ? AV_PIX_FMT_YUV420P10 : AV_PIX_FMT_YUV420P) :
                                     mat_V.color_format == IM_CF_YUV422 ? (video_depth > 8 ? AV_PIX_FMT_YUV422P10 : AV_PIX_FMT_YUV422P) :
                                     mat_V.color_format == IM_CF_YUV444 ? (video_depth > 8 ? AV_PIX_FMT_YUV444P10 : AV_PIX_FMT_YUV444P) :
                                     mat_V.color_format == IM_CF_NV12 ? (video_depth > 8 ? AV_PIX_FMT_P010LE : AV_PIX_FMT_NV12) :
                                     AV_PIX_FMT_YUV420P;
-            m_img_convert_ctx = sws_getCachedContext(
-                                m_img_convert_ctx,
+            stream->m_img_convert_ctx = sws_getCachedContext(
+                                stream->m_img_convert_ctx,
                                 mat_V.w,
                                 mat_V.h,
                                 format,
@@ -558,7 +558,7 @@ struct MediaSourceNode final : Node
                                 SWS_BICUBIC,
                                 NULL, NULL, NULL);
         }
-        if (m_img_convert_ctx)
+        if (stream->m_img_convert_ctx)
         {
             ImGui::ImMat MatY = mat_V.channel(0);
             ImGui::ImMat MatU = mat_V.channel(1);
@@ -572,7 +572,7 @@ struct MediaSourceNode final : Node
             uint8_t *dst_data[] = { (uint8_t *)im_RGB.data };
             int dst_linesize[] = { mat_V.w * 4 }; // how many for 16 bits?
             sws_scale(
-                m_img_convert_ctx,
+                stream->m_img_convert_ctx,
                 src_data,
                 src_linesize,
                 0, mat_V.h,

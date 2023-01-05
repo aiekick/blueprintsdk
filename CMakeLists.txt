@@ -173,7 +173,7 @@ if(hasParent)
     set(IMGUI_BLUEPRINT_INCLUDE_DIRS ${IMGUI_BP_SDK_INC_DIRS} PARENT_SCOPE )
 endif()
 
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten" AND IMGUI_BUILD_EXAMPLE)
+if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten" AND IMGUI_BUILD_EXAMPLE AND IMGUI_APPS)
 # build sdk test
 add_executable(
     test_blueprint
