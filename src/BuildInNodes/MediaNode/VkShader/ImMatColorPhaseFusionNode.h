@@ -84,12 +84,12 @@ struct ColorPhaseFusionNode final : Node
         {
             m_fromColor = _fromColor; changed = true;
         } ImGui::SameLine(); ImGui::TextUnformatted("Color From");
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_fromcolor##CrazyParametric")) { m_fromColor = {0.0f, 0.2f, 0.4f, 0.0f}; changed = true; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_fromcolor##FromColorPhase")) { m_fromColor = {0.0f, 0.2f, 0.4f, 0.0f}; changed = true; }
         if (ImGui::ColorEdit4("##ToColorPhase", (float*)&_toColor, ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_AlphaBar))
         {
             m_toColor = _toColor; changed = true;
         } ImGui::SameLine(); ImGui::TextUnformatted("Color To");
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_tocolor##CrazyParametric")) { m_toColor = {0.6f, 0.8f, 1.0f, 1.0f}; changed = true; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_tocolor##FromColorPhase")) { m_toColor = {0.6f, 0.8f, 1.0f, 1.0f}; changed = true; }
         return m_Enabled ? changed : false;
     }
 
