@@ -88,7 +88,7 @@ struct CubeFusionNode final : Node
         ImGui::SliderFloat("Reflection##Cube", &_reflection, 0.0, 1.f, "%.1f", flags);
         ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_reflection##Cube")) { _reflection = 0.4f; changed = true; }
         ImGui::SliderFloat("Perspective##Cube", &_persp, 0.0, 1.f, "%.1f", flags);
-        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_persp##Cube")) { _persp = 0.9f; changed = true; }
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_persp##Cube")) { _persp = 0.7f; changed = true; }
         ImGui::SliderFloat("Unzoom##Cube", &_unzoom, 0.0, 1.f, "%.1f", flags);
         ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_unzoom##Cube")) { _unzoom = 0.3f; changed = true; }
         ImGui::SliderFloat("Floating##Cube", &_floating, 0.0, 10.f, "%.1f", flags);
@@ -198,7 +198,7 @@ struct CubeFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    float m_persp       {0.9f};
+    float m_persp       {0.7f};
     float m_unzoom      {0.3f};
     float m_reflection  {0.4f};
     float m_floating    {3.0f};
