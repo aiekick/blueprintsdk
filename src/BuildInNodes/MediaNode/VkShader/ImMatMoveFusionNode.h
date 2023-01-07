@@ -2,15 +2,7 @@
 #include <imgui_json.h>
 #include <imgui_extra_widget.h>
 #include <ImVulkanShader.h>
-#include <CopyTo_vulkan.h>
-
-typedef enum Move_Type : int32_t
-{
-    MOVE_RIGHT = 0,
-    MOVE_LEFT,
-    MOVE_BOTTOM,
-    MOVE_TOP,
-} Move_Type;
+#include <Move_vulkan.h>
 
 namespace BluePrint
 {
@@ -21,7 +13,7 @@ struct MoveFusionNode final : Node
 
     ~MoveFusionNode()
     {
-        if (m_copy) { delete m_copy; m_copy = nullptr; }
+        if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
         if (m_logo) { ImGui::ImDestroyTexture(m_logo); m_logo = nullptr; }
     }
 
@@ -39,50 +31,27 @@ struct MoveFusionNode final : Node
         int x2 = 0, y2 = 0;
         auto mat_first = context.GetPinValue<ImGui::ImMat>(m_MatInFirst);
         auto mat_second = context.GetPinValue<ImGui::ImMat>(m_MatInSecond);
-        float percentage = context.GetPinValue<float>(m_Pos);
+        float progress = context.GetPinValue<float>(m_Pos);
         if (!mat_first.empty() && !mat_second.empty())
         {
             int gpu = mat_first.device == IM_DD_VULKAN ? mat_first.device_number : ImGui::get_default_gpu_index();
-            switch (m_move_type)
-            {
-                case MOVE_RIGHT :
-                    x1 = - percentage * mat_first.w;
-                    x2 = (1.0 - percentage) * mat_first.w;
-                break;
-                case MOVE_LEFT:
-                    x1 = percentage * mat_first.w;
-                    x2 = - (1.0 - percentage) * mat_first.w;
-                break;
-                case MOVE_BOTTOM:
-                    y1 = - percentage * mat_first.h;
-                    y2 = (1.0 - percentage) * mat_first.h;
-                break;
-                case MOVE_TOP:
-                    y1 = percentage * mat_first.h;
-                    y2 = - (1.0 - percentage) * mat_first.h;
-                break;
-                default: break;
-            }
             if (!m_Enabled)
             {
                 m_MatOut.SetValue(mat_first);
                 return m_Exit;
             }
-            if (!m_copy || m_device != gpu)
+            if (!m_fusion || m_device != gpu)
             {
-                if (m_copy) { delete m_copy; m_copy = nullptr; }
-                m_copy = new ImGui::CopyTo_vulkan(gpu);
+                if (m_fusion) { delete m_fusion; m_fusion = nullptr; }
+                m_fusion = new ImGui::Move_vulkan(gpu);
             }
-            if (!m_copy)
+            if (!m_fusion)
             {
                 return {};
             }
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
-            double node_time = 0;
-            node_time += m_copy->copyTo(mat_first, im_RGB, x1, y1);
-            node_time += m_copy->copyTo(mat_second, im_RGB, x2, y2);
-            m_NodeTimeMs = node_time;
+            m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_direction.x, m_direction.y);
             im_RGB.time_stamp = mat_first.time_stamp;
             im_RGB.rate = mat_first.rate;
             im_RGB.flags = mat_first.flags;
@@ -111,16 +80,14 @@ struct MoveFusionNode final : Node
     {
         ImGui::SetCurrentContext(ctx);
         bool changed = false;
-        int type = m_move_type;
+        ImVec2 _direction = m_direction;
         static ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         ImGui::Dummy(ImVec2(100, 8));
         ImGui::PushItemWidth(100);
         ImGui::BeginDisabled(!m_Enabled);
-        ImGui::RadioButton("Right In", &type, MOVE_RIGHT);
-        ImGui::RadioButton("Left In", &type, MOVE_LEFT);
-        ImGui::RadioButton("Bottom In", &type, MOVE_BOTTOM);
-        ImGui::RadioButton("Top In", &type,MOVE_TOP);
-        if (type != m_move_type) { m_move_type = type; changed = true; }
+        ImGui::SliderFloat2("Direction##Move", (float *)&_direction, -1.0, 1.0, "%.1f", 0);
+        ImGui::SameLine(320);  if (ImGui::Button(ICON_RESET "##reset_direction##Move")) { _direction = {1, 0}; changed = true; }
+        if (_direction.x != m_direction.x || _direction.y != m_direction.y) { m_direction = _direction; changed = true; }
         ImGui::EndDisabled();
         ImGui::PopItemWidth();
         return changed;
@@ -138,11 +105,11 @@ struct MoveFusionNode final : Node
             if (val.is_number()) 
                 m_mat_data_type = (ImDataType)val.get<imgui_json::number>();
         }
-        if (value.contains("move_type"))
-        { 
-            auto& val = value["move_type"];
-            if (val.is_number())
-                m_move_type = (Move_Type)val.get<imgui_json::number>();
+        if (value.contains("direction"))
+        {
+            auto& val = value["direction"];
+            if (val.is_vec2()) 
+                m_direction = val.get<imgui_json::vec2>();
         }
         return ret;
     }
@@ -151,7 +118,7 @@ struct MoveFusionNode final : Node
     {
         Node::Save(value, MapID);
         value["mat_type"] = imgui_json::number(m_mat_data_type);
-        value["move_type"] = imgui_json::number(m_move_type);
+        value["direction"] = imgui_json::vec2(m_direction);
     }
 
     void load_logo() const
@@ -202,8 +169,8 @@ struct MoveFusionNode final : Node
 private:
     ImDataType m_mat_data_type {IM_DT_UNDEFINED};
     int m_device        {-1};
-    int m_move_type   {MOVE_RIGHT};
-    ImGui::CopyTo_vulkan * m_copy   {nullptr};
+    ImVec2 m_direction   {1, 0};
+    ImGui::Move_vulkan * m_fusion   {nullptr};
     mutable ImTextureID  m_logo {nullptr};
     mutable int m_logo_index {0};
 

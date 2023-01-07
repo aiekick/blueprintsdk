@@ -220,6 +220,7 @@ NodeRegistry::NodeRegistry()
         SqueezeFusionNode::GetStaticTypeInfo(),
         WindFusionNode::GetStaticTypeInfo(),
         WipeFusionNode::GetStaticTypeInfo(),
+        RollsFusionNode::GetStaticTypeInfo(),
         // Media node
         MatCropNode::GetStaticTypeInfo(),
         MatWarpPerspectiveNode::GetStaticTypeInfo(),
