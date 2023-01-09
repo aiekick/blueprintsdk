@@ -100,7 +100,7 @@ struct AlphaFusionNode final : Node
         if (ctx) ImGui::SetCurrentContext(ctx); // External Node must set context
         // if show icon then we using u8"\ue3a5"
         if (!m_logo) m_logo = Node::LoadNodeLogo((void *)logo_data, logo_size);
-        Node::DrawNodeLogo(m_logo, size, m_logo_index, logo_cols, logo_rows);
+        Node::DrawNodeLogo(m_logo, m_logo_index, logo_cols, logo_rows, size);
     }
 
     span<Pin*> GetInputPins() override { return m_InputPins; }

@@ -608,7 +608,7 @@ ImTextureID Node::LoadNodeLogo(void * data, int size) const
     return logo;
 }
 
-void Node::DrawNodeLogo(ImTextureID logo, ImVec2 size, int& index, int cols, int rows) const
+void Node::DrawNodeLogo(ImTextureID logo, int& index, int cols, int rows, ImVec2 size) const
 {
     if (!logo)
         return;
