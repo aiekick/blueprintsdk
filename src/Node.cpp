@@ -595,6 +595,31 @@ void Node::DrawNodeLogo(ImGuiContext * ctx, ImVec2 size) const
     ImGui::SetWindowFontScale(1.0);
 }
 
+ImTextureID Node::LoadNodeLogo(void * data, int size) const
+{
+    ImTextureID logo = nullptr;
+    if (!data || !size)
+        return logo;
+    int width = 0, height = 0, component = 0;
+    if (auto _data = stbi_load_from_memory((stbi_uc const *)data, size, &width, &height, &component, 4))
+    {
+        logo = ImGui::ImCreateTexture(_data, width, height);
+    }
+    return logo;
+}
+
+void Node::DrawNodeLogo(ImTextureID logo, ImVec2 size, int& index, int cols, int rows) const
+{
+    if (!logo)
+        return;
+    int col = (index / 4) % cols;
+    int row = (index / 4) / cols;
+    float start_x = (float)col / (float)cols;
+    float start_y = (float)row / (float)rows;
+    ImGui::Image(logo, size, ImVec2(start_x, start_y),  ImVec2(start_x + 1.f / (float)cols, start_y + 1.f / (float)rows));
+    index++; if (index >= cols * rows * 4) index = 0;
+}
+
 bool Node::DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key)
 {
     return false;
