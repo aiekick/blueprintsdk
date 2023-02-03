@@ -85,9 +85,6 @@ struct MatWarpAffineNode final : Node
                                     _r * mat_in.w,
                                     _b * mat_in.h);
             m_NodeTimeMs = m_transform->filter(mat_in, im_RGB, m_matrix, m_interpolation_mode, ImPixel(0, 0, 0, 0), crop);
-            im_RGB.time_stamp = mat_in.time_stamp;
-            im_RGB.rate = mat_in.rate;
-            im_RGB.flags = mat_in.flags;
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;

@@ -51,9 +51,6 @@ struct ChromaKeyNode final : Node
             m_NodeTimeMs = m_filter->filter(mat_in, im_RGB, m_lumaMask, m_chromaColor,
                                 m_alphaCutoffMin, m_alphaScale, m_alphaExponent,
                                 m_alpha_only ? CHROMAKEY_OUTPUT_ALPHA_RGBA : CHROMAKEY_OUTPUT_NORMAL);
-            im_RGB.time_stamp = mat_in.time_stamp;
-            im_RGB.rate = mat_in.rate;
-            im_RGB.flags = mat_in.flags;
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;

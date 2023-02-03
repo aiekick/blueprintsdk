@@ -49,9 +49,6 @@ struct LaplacianNode final : Node
             m_filter->SetParam(m_Strength);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             m_NodeTimeMs = m_filter->filter(mat_in, im_RGB);
-            im_RGB.time_stamp = mat_in.time_stamp;
-            im_RGB.rate = mat_in.rate;
-            im_RGB.flags = mat_in.flags;
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;

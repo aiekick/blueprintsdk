@@ -50,9 +50,6 @@ struct WindowSliceFusionNode final : Node
             m_device = gpu;
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_first.type : m_mat_data_type;
             m_NodeTimeMs = m_fusion->transition(mat_first, mat_second, im_RGB, progress, m_smoothness, m_count);
-            im_RGB.time_stamp = mat_first.time_stamp;
-            im_RGB.rate = mat_first.rate;
-            im_RGB.flags = mat_first.flags;
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;
@@ -140,7 +137,7 @@ struct WindowSliceFusionNode final : Node
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     Pin* GetAutoLinkInputFlowPin() override { return &m_Enter; }
     Pin* GetAutoLinkOutputFlowPin() override { return &m_Exit; }
-    vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatInFirst, &m_MatInSecond}; }
+    vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatInFirst, &m_MatInSecond, &m_Pos}; }
     vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOut}; }
 
     FlowPin   m_Enter       = { this, "Enter" };

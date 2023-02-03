@@ -269,6 +269,7 @@ struct AudioEqualizerNode final : Node
                 {
                     throw std::runtime_error("FAILED to convert audio 'AVFrame' to 'ImMat'!");
                 }
+                outMat.copy_attribute(inMat);
                 m_MatOut.SetValue(outMat);
             }
         }

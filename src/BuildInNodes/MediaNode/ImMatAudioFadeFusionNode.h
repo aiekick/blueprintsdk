@@ -36,6 +36,7 @@ struct AudioFadeNode final : Node
             ImGui::ImMat im_mat;
             im_mat = mat_first * fade + mat_second * (1 - fade);
             im_mat.clip(-1.f, 1.f);
+            im_mat.copy_attribute(mat_first);
             m_MatOut.SetValue(im_mat);
         }
         return m_Exit;
@@ -100,7 +101,7 @@ struct AudioFadeNode final : Node
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     Pin* GetAutoLinkInputFlowPin() override { return &m_Enter; }
     Pin* GetAutoLinkOutputFlowPin() override { return &m_Exit; }
-    vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatInFirst, &m_MatInSecond}; }
+    vector<Pin*> GetAutoLinkInputDataPin() override { return {&m_MatInFirst, &m_MatInSecond, &m_FadeIn}; }
     vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOut}; }
 
     FlowPin   m_Enter       = { this, "Enter" };

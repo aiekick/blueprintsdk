@@ -38,6 +38,7 @@ struct AudioGainNode final : Node
             ImGui::ImMat im_mat;
             im_mat = mat_in * m_gain;
             im_mat.clip(-1.f, 1.f);
+            im_mat.copy_attribute(mat_in);
             m_MatOut.SetValue(im_mat);
         }
         return m_Exit;

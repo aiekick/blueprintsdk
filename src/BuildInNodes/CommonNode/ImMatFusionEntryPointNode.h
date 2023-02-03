@@ -12,6 +12,7 @@ struct FusionEntryPointNode final : Node
         m_OutputPins.push_back(&m_Exit);
         m_OutputPins.push_back(&m_MatOutFirst);
         m_OutputPins.push_back(&m_MatOutSecond);
+        m_OutputPins.push_back(&m_FusionPos);
     }
 
     FlowPin Execute(Context& context, FlowPin& entryPoint, bool threading = false) override
@@ -142,16 +143,14 @@ struct FusionEntryPointNode final : Node
 
     span<Pin*> GetOutputPins() override { return m_OutputPins; }
     Pin* GetAutoLinkOutputFlowPin() override { return &m_Exit; }
-    vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOutFirst, &m_MatOutSecond}; }
+    vector<Pin*> GetAutoLinkOutputDataPin() override { return {&m_MatOutFirst, &m_MatOutSecond, &m_FusionPos}; }
     FlowPin* GetOutputFlowPin() override { return &m_Exit; }
 
     FlowPin m_Exit = { this, "Start" };
     MatPin  m_MatOutFirst = { this, "Out First" };
     MatPin  m_MatOutSecond = { this, "Out Second" };
-    //Int64Pin m_FusionDuration = { this, "Fusion Duration" };
-    //Int64Pin m_FusionTimeStamp = { this, "Time Stamp" };
+    FloatPin m_FusionPos = { this, "Pos" };
 
-    //Pin* m_OutputPins[5] = { &m_Exit, &m_MatOutFirst, &m_MatOutSecond, &m_FusionDuration, &m_FusionTimeStamp };
     std::vector<Pin *> m_OutputPins;
 };
 } // namespace BluePrint

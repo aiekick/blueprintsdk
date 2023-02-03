@@ -54,9 +54,6 @@ struct Lut3DNode final : Node
             bool is_sdr_709 =(m_lut_mode == HDRHLG_SDR709) || (m_lut_mode == HDRPQ_SDR709);
             ImGui::VkMat im_RGB; im_RGB.type = m_mat_data_type == IM_DT_UNDEFINED ? mat_in.type : m_mat_data_type;
             m_NodeTimeMs = m_filter->filter(mat_in, im_RGB);
-            im_RGB.time_stamp = mat_in.time_stamp;
-            im_RGB.rate = mat_in.rate;
-            im_RGB.flags = mat_in.flags;
             im_RGB.color_space = (is_hdr_pq || is_hdr_hlg) ? IM_CS_BT2020 : 
                                 is_sdr_709 ? IM_CS_BT709 : IM_CS_SRGB; // 601?
             if (is_hdr_pq) im_RGB.flags |= IM_MAT_FLAGS_VIDEO_HDR_PQ;

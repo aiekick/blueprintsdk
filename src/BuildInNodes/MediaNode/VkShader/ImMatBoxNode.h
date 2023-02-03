@@ -56,9 +56,6 @@ struct BoxBlurNode final : Node
                 node_time += m_filter->filter(im_RGB, im_RGB);
             }
             m_NodeTimeMs = node_time;
-            im_RGB.time_stamp = mat_in.time_stamp;
-            im_RGB.rate = mat_in.rate;
-            im_RGB.flags = mat_in.flags;
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;

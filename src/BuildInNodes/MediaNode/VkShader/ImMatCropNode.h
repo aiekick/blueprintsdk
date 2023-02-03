@@ -57,9 +57,6 @@ struct MatCropNode final : Node
             im_RGB.w = mat_in.w;
             im_RGB.h = mat_in.h;
             m_NodeTimeMs = m_filter->cropto(mat_in, im_RGB, m_x1 * im_RGB.w, m_y1 * im_RGB.h, (m_x2 - m_x1) * im_RGB.w, (m_y2 - m_y1) * im_RGB.h, m_xd * im_RGB.w, m_yd * im_RGB.h);
-            im_RGB.time_stamp = mat_in.time_stamp;
-            im_RGB.rate = mat_in.rate;
-            im_RGB.flags = mat_in.flags;
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;
