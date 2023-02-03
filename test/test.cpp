@@ -88,6 +88,11 @@ void Application_Finalize(void** handle)
     delete UI;
 }
 
+void Application_DropFromSystem(std::vector<std::string>& drops)
+{
+
+}
+
 bool Application_Frame(void * handle, bool app_will_quit)
 {
     BluePrint::BluePrintUI * UI = (BluePrint::BluePrintUI *)handle;
