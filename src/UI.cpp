@@ -3369,8 +3369,10 @@ bool BluePrintUI::Blueprint_RunFusion(ImGui::ImMat& input_first, ImGui::ImMat& i
     
     FusionEntryPointNode * entryNode = (FusionEntryPointNode *)entry_node;
     MatExitPointNode * exitNode = (MatExitPointNode *)exit_node;
+    float progress = (float)current / (float)duration;
     entryNode->m_MatOutFirst.SetValue(input_first);
     entryNode->m_MatOutSecond.SetValue(input_second);
+    entryNode->m_FusionPos.SetValue(progress);
     //entryNode->m_FusionDuration.SetValue(duration);
     //entryNode->m_FusionTimeStamp.SetValue(current);
     auto result = m_Document->m_Blueprint.Run(*entryNode);
