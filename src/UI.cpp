@@ -862,7 +862,7 @@ void BluePrintUI::CreateNewFilterDocument()
 
     auto view_size = ed::GetViewSize();
     if (view_size.x == 0 || view_size.y == 0)
-        view_size = ImVec2(400, 200);
+        view_size = ImVec2(600, 200);
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(32 + 64, 32));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
@@ -879,7 +879,7 @@ void BluePrintUI::CreateNewFusionDocument()
 
     auto view_size = ed::GetViewSize();
     if (view_size.x == 0 || view_size.y == 0)
-        view_size = ImVec2(400, 200);
+        view_size = ImVec2(600, 200);
 
     auto exitPointNode = blueprint->CreateNode<BluePrint::MatExitPointNode>();
                             ed::SetNodePosition(exitPointNode->m_ID, view_size - ImVec2(32 + 64, 32));
