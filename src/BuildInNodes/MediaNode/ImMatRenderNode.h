@@ -65,7 +65,7 @@ struct MatRenderNode final : Node
             ImGui::ImVulkanVkMatToImMat(mat, cpu_mat);
             ImGui::ImGenerateOrUpdateTexture(m_textureID, cpu_mat.w, cpu_mat.h, cpu_mat.c, (const unsigned char *)cpu_mat.data);
 #else
-            ImGui::ImGenerateOrUpdateTexture(m_textureID, mat.w, mat.h, mat.c, mat.buffer_offset(), (const unsigned char *)mat.buffer());
+            ImGui::ImGenerateOrUpdateTexture(m_textureID, mat.w, mat.h, mat.c, (const unsigned char *)&mat, true);
 #endif
         }
     }
