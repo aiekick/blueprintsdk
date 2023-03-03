@@ -322,7 +322,7 @@ public:
     Action m_File_SaveAs     = { "Save As...",      ICON_SAVEAS_BLUEPRINT, [this] { File_SaveAs();      } };
     Action m_File_Save       = { "Save",            ICON_SAVE_BLUEPRINT,   [this] { File_Save();        } };
     Action m_File_Close      = { "Close",           ICON_FAD_CLOSE,        [this] { File_Close();       } };
-    Action m_File_Exit       = { "Exit",            ICON_MD_EXIT_TO_APP,   [this] { File_Exit();        } };
+    Action m_File_Exit       = { "Exit",            ICON_FA_POWER_OFF,     [this] { File_Exit();        } };
 
     Action m_Edit_Undo       = { "Undo",            ICON_MD_UNDO,          [this] { Edit_Undo();      } };
     Action m_Edit_Redo       = { "Redo",            ICON_MD_REDO,          [this] { Edit_Redo();      } };

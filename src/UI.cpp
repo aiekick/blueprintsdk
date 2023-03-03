@@ -3719,7 +3719,11 @@ void BluePrintUI::ShowToolbar(bool* show)
             }
         };
 
-        ImGui::Dummy(ImVec2(20, 0));
+        ImGui::Dummy(ImVec2(8, 0));
+        ImGui::SameLine();
+        toolbarAction(m_File_Exit); ImGui::ShowTooltipOnHover("%s", m_File_Exit.GetName().c_str());
+        ImGui::SameLine();
+        ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
         ImGui::SameLine();
         toolbarAction(m_File_Open); ImGui::ShowTooltipOnHover("%s", m_File_Open.GetName().c_str());
         ImGui::SameLine();
