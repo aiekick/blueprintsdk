@@ -746,7 +746,7 @@ struct MediaSourceNode final : Node
         // Draw Setting
         Node::DrawSettingLayout(ctx);
         ImGui::Separator();
-        ImVec2 minSize = ImVec2(0, 0);
+        ImVec2 minSize = ImVec2(400, 300);
 		ImVec2 maxSize = ImVec2(FLT_MAX, FLT_MAX);
         auto& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)

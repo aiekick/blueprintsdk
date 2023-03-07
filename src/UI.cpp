@@ -1353,7 +1353,7 @@ void BluePrintUI::DrawNodes()
                             ImColor(ImVec4(0, 0, 0, 0)));
                     ed::EndPin();
 
-                    m_DebugOverlay->DrawInputPin(this, *pin);
+                    //if (m_DebugOverlay) m_DebugOverlay->DrawInputPin(this, *pin);
                     PinMin += ImVec2(0, iconSize.y + 4);
                     //ImGui::Debug_DrawItemRect();
                 }
@@ -1428,7 +1428,7 @@ void BluePrintUI::DrawNodes()
                             ImColor(PinTypeToColor(this, pin->GetValueType())),
                             ImColor(ImVec4(0, 0, 0, 0)));
                     ed::EndPin();
-                    if (m_DebugOverlay) m_DebugOverlay->DrawOutputPin(this, *pin);
+                    //if (m_DebugOverlay) m_DebugOverlay->DrawOutputPin(this, *pin);
                     PinMin += ImVec2(0, iconSize.y + 4);
                     //ImGui::Debug_DrawItemRect();
                 }
@@ -1606,7 +1606,7 @@ void BluePrintUI::DrawNodes()
             
             ed::EndPin();
             // [Debug Overlay] Show value of the pin if node is currently executed
-            if (m_DebugOverlay) m_DebugOverlay->DrawInputPin(this, *pin);
+            //if (m_DebugOverlay) m_DebugOverlay->DrawInputPin(this, *pin);
             layout.NextRow();
         }
         if (CheckNodeStyle(node, NodeStyle::Simple))
@@ -1683,7 +1683,7 @@ void BluePrintUI::DrawNodes()
                 PinTypeToColor(this, pin->GetValueType()));
             ed::EndPin();
             // [Debug Overlay] Show value of the pin if node is currently executed
-            if (m_DebugOverlay) m_DebugOverlay->DrawOutputPin(this, *pin);
+            //if (m_DebugOverlay) m_DebugOverlay->DrawOutputPin(this, *pin);
             layout.NextRow();
         }
         layout.End();

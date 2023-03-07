@@ -223,6 +223,8 @@ struct MatRenderNode final : Node
         ImGui::Separator();
 
         // open file dialog
+        ImVec2 minSize = ImVec2(400, 300);
+		ImVec2 maxSize = ImVec2(FLT_MAX, FLT_MAX);
         auto& io = ImGui::GetIO();
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
             io.ConfigViewportsNoDecoration = true;
@@ -245,7 +247,7 @@ struct MatRenderNode final : Node
                                                     m_filters.c_str(), 
                                                     file_name.empty() ? "." : file_name,
                                                     1, this, vflags);
-        if (ImGuiFileDialog::Instance()->Display("##RenderChooseFileDlgKey"))
+        if (ImGuiFileDialog::Instance()->Display("##RenderChooseFileDlgKey", ImGuiWindowFlags_NoCollapse, minSize, maxSize))
         {
 	        // action if OK
             if (ImGuiFileDialog::Instance()->IsOk() == true)

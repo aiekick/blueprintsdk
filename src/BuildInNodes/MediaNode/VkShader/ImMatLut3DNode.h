@@ -94,6 +94,8 @@ struct Lut3DNode final : Node
             m_setting_changed = true;
         }
         // open from file
+        ImVec2 minSize = ImVec2(400, 300);
+		ImVec2 maxSize = ImVec2(FLT_MAX, FLT_MAX);
         if (m_lut_mode == NO_DEFAULT) ImGui::BeginDisabled(false);  else ImGui::BeginDisabled(true);
         static string filters = ".cube";
         ImGuiFileDialogFlags vflags = ImGuiFileDialogFlags_ShowBookmark | ImGuiFileDialogFlags_CaseInsensitiveExtention | ImGuiFileDialogFlags_Modal;
@@ -103,7 +105,7 @@ struct Lut3DNode final : Node
                                                     filters.c_str(), 
                                                     m_path.empty() ? "." : m_path,
                                                     1, this, vflags);
-        if (ImGuiFileDialog::Instance()->Display("##NodeChooseLutFileDlgKey"))
+        if (ImGuiFileDialog::Instance()->Display("##NodeChooseLutFileDlgKey", ImGuiWindowFlags_NoCollapse, minSize, maxSize))
         {
 	        // action if OK
             if (ImGuiFileDialog::Instance()->IsOk() == true)

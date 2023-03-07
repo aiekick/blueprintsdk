@@ -193,6 +193,7 @@ void DebugOverlay::DrawOutputPin(BluePrintUI* ui, const Pin& pin)
     if (!m_Enable || nullptr == m_CurrentNode)
         return;
 
+    auto current_pos = ImGui::GetCursorScreenPos();
     // Draw to layer over nodes
     m_Splitter.SetCurrentChannel(m_DrawList, 1);
 
@@ -228,6 +229,8 @@ void DebugOverlay::DrawOutputPin(BluePrintUI* ui, const Pin& pin)
 
     // Switch back to normal layer
     m_Splitter.SetCurrentChannel(m_DrawList, 0);
+
+    ImGui::SetCursorScreenPos(current_pos);
 }
 
 void DebugOverlay::OnDone(Context& context)
