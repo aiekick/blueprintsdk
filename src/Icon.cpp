@@ -1,5 +1,4 @@
 #include <Icon.h>
-#define IMGUI_DEFINE_MATH_OPERATORS
 #include <imgui_internal.h>
 
 static void bezier_arc(ImVec2 center, ImVec2 start, ImVec2 end, ImVec2& c1, ImVec2 & c2)

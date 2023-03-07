@@ -16,9 +16,6 @@
 #include <span.hpp>
 #include <imgui.h>
 #include <imgui_helper.h>
-#undef IMGUI_DEFINE_MATH_OPERATORS
-#define IMGUI_DEFINE_MATH_OPERATORS
-#include <imgui_internal.h>
 
 #define BP_ERR_NONE          0
 #define BP_ERR_GENERAL      -1
@@ -397,7 +394,7 @@ private:
 # define VERSION_BUILT(v)   (v&0x000000FF)
 # define MAJOR  1
 # define MINOR  14
-# define PATCH  5
+# define PATCH  7
 # define BUILT  1
 
 // Please Set CMakeList.txt IMGUI_BP_SDK_VERSION_STRING also
