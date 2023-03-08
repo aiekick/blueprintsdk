@@ -28,8 +28,9 @@ elseif(CMAKE_OSX_ARCHITECTURES MATCHES "x86" OR CMAKE_SYSTEM_PROCESSOR MATCHES "
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /arch:AVX2 /arch:AVX /arch:FMA /arch:SSE /arch:SSE2 /arch:SSSE3 /arch:SSE4.1 /arch:SSE4.2")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /arch:AVX2 /arch:AVX /arch:FMA /arch:SSE /arch:SSE2 /arch:SSSE3 /arch:SSE4.1 /arch:SSE4.2")
     elseif (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -msse4.1 -mssse3 -msse2 -msse -mrelaxed-simd")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2 -msse4.1 -mssse3 -msse2 -msse -mrelaxed-simd")
+        ### we disable wasm simd support because safari isn't support it yet
+        #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.2 -msse4.1 -mssse3 -msse2 -msse -mrelaxed-simd")
+        #set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse4.2 -msse4.1 -mssse3 -msse2 -msse -mrelaxed-simd")
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx2 -mavx")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mavx2 -mavx")
@@ -57,7 +58,11 @@ if(PKG_CONFIG_FOUND)
 endif(PKG_CONFIG_FOUND)
 else()
 set(IMGUI_BP_SDK_STATIC ON CACHE BOOL "Enable Static Build by Force" FORCE)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2  -s USE_GLFW=3 -s USE_WEBGPU=1 -s WASM=1 -s TOTAL_MEMORY=256MB -s DISABLE_EXCEPTION_CATCHING=1 -s NO_EXIT_RUNTIME=0 -s ASSERTIONS=1 -Wno-unused-command-line-argument")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2  -s USE_GLFW=3 -s USE_WEBGPU=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 -s EXIT_RUNTIME=1 -s ASSERTIONS=1 -Wno-unused-command-line-argument")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -s USE_SDL=2  -s USE_GLFW=3 -s USE_WEBGPU=1 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 -s EXIT_RUNTIME=1 -s ASSERTIONS=1 -Wno-unused-command-line-argument")
+#set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-pthreads-mem-growth -pthread -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-pthreads-mem-growth -pthread -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4")
 endif()
 
 set(IMGUI_BP_SDK_SRC
@@ -173,7 +178,7 @@ if(hasParent)
     set(IMGUI_BLUEPRINT_INCLUDE_DIRS ${IMGUI_BP_SDK_INC_DIRS} PARENT_SCOPE )
 endif()
 
-if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten" AND IMGUI_BUILD_EXAMPLE AND IMGUI_APPS)
+if (IMGUI_BUILD_EXAMPLE AND IMGUI_APPS)
 # build sdk test
 add_executable(
     test_blueprint
@@ -185,4 +190,18 @@ target_link_libraries(
     BluePrintSDK
     ${IMGUI_LIBRARYS}
 )
+if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+    set(IMGUI_SHELL_FILE ${PROJECT_SOURCE_DIR}/test/shell_minimal.html)
+    set(IMGUI_WEB_DIR ${PROJECT_BINARY_DIR}/web/)
+    set_target_properties(
+        test_blueprint
+        PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY ${IMGUI_WEB_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${IMGUI_WEB_DIR}
+        OUTPUT_NAME "index"
+        PREFIX ""
+        SUFFIX ".html"
+        #LINK_FLAGS "--shell-file ${IMGUI_SHELL_FILE}"
+    )
+endif()
 endif()
