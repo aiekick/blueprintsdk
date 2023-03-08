@@ -191,16 +191,17 @@ target_link_libraries(
     ${IMGUI_LIBRARYS}
 )
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set(IMGUI_SHELL_FILE ${PROJECT_SOURCE_DIR}/test/shell_minimal.html)
-    set(IMGUI_WEB_DIR ${PROJECT_BINARY_DIR}/web/)
+    set(WEB_DIR ${PROJECT_BINARY_DIR}/web/)
+    set(SHARED_FILE ${CMAKE_CURRENT_SOURCE_DIR}/test/Blueprints_datetime.json)
     set_target_properties(
         test_blueprint
         PROPERTIES
-        LIBRARY_OUTPUT_DIRECTORY ${IMGUI_WEB_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${IMGUI_WEB_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${WEB_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${WEB_DIR}
         OUTPUT_NAME "index"
         PREFIX ""
         SUFFIX ".html"
+        LINK_FLAGS "--preload-file ${SHARED_FILE}@tmp/test.json"
         #LINK_FLAGS "--shell-file ${IMGUI_SHELL_FILE}"
     )
 endif()
