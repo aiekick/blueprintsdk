@@ -574,8 +574,9 @@ void BluePrintUI::Initialize(const char * bp_file, const char * plugin_path)
     }
     if (bp_file)
     {
-        if (m_Document->Load(bp_file) != BP_ERR_NONE)
-            CreateNewDocument();
+        m_Document->Load(bp_file);
+        //if (m_Document->Load(bp_file) != BP_ERR_NONE)
+        //    CreateNewDocument();
     }
 
     if (bp_file) m_Document->SetPath(bp_file);
@@ -845,10 +846,10 @@ void BluePrintUI::CreateNewDocument()
 {
     auto blueprint = &m_Document->m_Blueprint;
     auto entryPointNode = blueprint->CreateNode<BluePrint::SystemEntryPointNode>();
-                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(32, 32));
+                            ed::SetNodePosition(entryPointNode->m_ID, ImVec2(64, 64));
 
     auto exitPointNode = blueprint->CreateNode<BluePrint::SystemExitPointNode>();
-                            ed::SetNodePosition(exitPointNode->m_ID, ImVec2(128, 128));
+                            ed::SetNodePosition(exitPointNode->m_ID, ImVec2(256, 256));
     entryPointNode->m_Exit.LinkTo(exitPointNode->m_Enter);
     CommitLinksToEditor();
     blueprint->SetOpen(true);

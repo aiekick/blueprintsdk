@@ -1,0 +1,4377 @@
+{
+    "document":
+    {
+        "blueprint":
+        {
+            "nodes":
+            [
+                {
+                    "break_point": false,
+                    "catalog": "Debug",
+                    "enabled": true,
+                    "id": 1461460469,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460470,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463853
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 16,
+                            "id": 1461460472,
+                            "link": 1461463749,
+                            "map": 0,
+                            "name": "String",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "layout": true,
+                    "name": "Print",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 0,
+                            "id": 1461460471,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        }
+                    ],
+                    "style": "Default Style",
+                    "text_color": 4278255360,
+                    "tube_digital": true,
+                    "type": "Internal",
+                    "type_id": 1371545421,
+                    "type_name": "PrintNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460628,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461460629,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460696,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463647,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460630,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460697,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463997,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460631,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460698,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460633
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460632,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460633,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460714,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460631,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460634,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460715,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463659,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460635,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460716,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460681
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460636,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460637,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460717,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460683,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460638,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460718,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463675,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460639,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460719,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460677
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460640,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460641,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460726,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460667,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460642,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460727,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463723,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460643,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460728,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460661
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460644,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460645,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460723,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460671,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460646,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460724,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463707,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460647,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460725,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460665
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460648,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460649,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460720,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460679,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460650,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460721,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463691,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460651,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460722,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460669
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460652,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461460653,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460711,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463977,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460654,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460712,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463981,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460655,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460713,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460673
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460656,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460657,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460729,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460663,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460658,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460730,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463739,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460659,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460731,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460674
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460660,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460661,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460705,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460643,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460662,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460706,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464025,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460663,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460707,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460657
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460664,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460665,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460702,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460647,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460666,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460703,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464021,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460667,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460704,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460641
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460668,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460669,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460699,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460651,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460670,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460700,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464013,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460671,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460701,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460645
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460672,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460673,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460732,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460655,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 16,
+                            "id": 1461460674,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460733,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460659,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461460675,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460734,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463751
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460676,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460677,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460708,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460639,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460678,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460709,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464009,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460679,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460710,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460649
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Arithmetic",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463009,
+                    "id": 1461460680,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460681,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460693,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460635,
+                            "map": 0,
+                            "name": "A",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460682,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460694,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464005,
+                            "map": 0,
+                            "name": "B",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "⊕",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460683,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461460695,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460637
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Result",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Internal",
+                    "type_id": 553357610,
+                    "type_name": "AddNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "Int32",
+                    "enabled": true,
+                    "floatdecimal": 3,
+                    "formattype": 0,
+                    "group_id": 1461462955,
+                    "id": 1461460750,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461460751,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463793
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460753,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463918,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463916,
+                            "map": 0,
+                            "name": "Value",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "name": "Int32 To String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460752,
+                            "link": 1461460756,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460754,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463802
+                                }
+                            ],
+                            "map": 0,
+                            "name": "String",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 4007310293,
+                    "type_name": "ToStringNode",
+                    "version": "1.14.7.1",
+                    "zerocount": 0
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "Int32",
+                    "enabled": true,
+                    "floatdecimal": 3,
+                    "formattype": 0,
+                    "group_id": 1461462955,
+                    "id": 1461460755,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460756,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460752
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460758,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463927,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463925,
+                            "map": 0,
+                            "name": "Value",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "name": "Int32 To String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460757,
+                            "link": 1461460761,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460759,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463811
+                                }
+                            ],
+                            "map": 0,
+                            "name": "String",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 4007310293,
+                    "type_name": "ToStringNode",
+                    "version": "1.14.7.1",
+                    "zerocount": 2
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "Int32",
+                    "enabled": true,
+                    "floatdecimal": 3,
+                    "formattype": 0,
+                    "group_id": 1461462955,
+                    "id": 1461460760,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460761,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460757
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460763,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463936,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463934,
+                            "map": 0,
+                            "name": "Value",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "name": "Int32 To String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460762,
+                            "link": 1461460766,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460764,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463820
+                                }
+                            ],
+                            "map": 0,
+                            "name": "String",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 4007310293,
+                    "type_name": "ToStringNode",
+                    "version": "1.14.7.1",
+                    "zerocount": 2
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "Int32",
+                    "enabled": true,
+                    "floatdecimal": 3,
+                    "formattype": 0,
+                    "group_id": 1461462955,
+                    "id": 1461460765,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460766,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460762
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460768,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463945,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463943,
+                            "map": 0,
+                            "name": "Value",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "name": "Int32 To String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460767,
+                            "link": 1461460771,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460769,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463829
+                                }
+                            ],
+                            "map": 0,
+                            "name": "String",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 4007310293,
+                    "type_name": "ToStringNode",
+                    "version": "1.14.7.1",
+                    "zerocount": 2
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "Int32",
+                    "enabled": true,
+                    "floatdecimal": 3,
+                    "formattype": 0,
+                    "group_id": 1461462955,
+                    "id": 1461460770,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460771,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460767
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460773,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463954,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463952,
+                            "map": 0,
+                            "name": "Value",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "name": "Int32 To String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460772,
+                            "link": 1461460776,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460774,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463838
+                                }
+                            ],
+                            "map": 0,
+                            "name": "String",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 4007310293,
+                    "type_name": "ToStringNode",
+                    "version": "1.14.7.1",
+                    "zerocount": 2
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "Int32",
+                    "enabled": true,
+                    "floatdecimal": 3,
+                    "formattype": 0,
+                    "group_id": 1461462955,
+                    "id": 1461460775,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460776,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460772
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460778,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463963,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463961,
+                            "map": 0,
+                            "name": "Value",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "name": "Int32 To String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460777,
+                            "link": 1461460781,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460779,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463847
+                                }
+                            ],
+                            "map": 0,
+                            "name": "String",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 4007310293,
+                    "type_name": "ToStringNode",
+                    "version": "1.14.7.1",
+                    "zerocount": 2
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "Int32",
+                    "enabled": true,
+                    "floatdecimal": 3,
+                    "formattype": 0,
+                    "group_id": 1461462955,
+                    "id": 1461460780,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461460781,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460777
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460783,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463972,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463970,
+                            "map": 0,
+                            "name": "Value",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "name": "Int32 To String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461460782,
+                            "link": 1461463854,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461460784,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463856
+                                }
+                            ],
+                            "map": 0,
+                            "name": "String",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 4007310293,
+                    "type_name": "ToStringNode",
+                    "version": "1.14.7.1",
+                    "zerocount": 3
+                },
+                {
+                    "break_point": false,
+                    "catalog": "System",
+                    "enabled": true,
+                    "id": 1461462923,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 21,
+                            "id": 1461463904,
+                            "link": 1461463905,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464032
+                                }
+                            ],
+                            "map": 1461463883,
+                            "name": "Enter$Timer$TimerNode$Bridge$In",
+                            "type": "Flow"
+                        }
+                    ],
+                    "input_shadow_pins":
+                    [
+                        {
+                            "flags": 25,
+                            "id": 1461463905,
+                            "link": 1461463883,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463904
+                                }
+                            ],
+                            "map": 1461463883,
+                            "name": "Enter$Timer$TimerNode$Shadow$In",
+                            "type": "Flow"
+                        }
+                    ],
+                    "name": "Source Group",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 22,
+                            "id": 1461463906,
+                            "link": 1461464034,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463907
+                                }
+                            ],
+                            "map": 1461463885,
+                            "name": "Exit$Timer$TimerNode$Bridge$Out",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463908,
+                            "link": 1461463792,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463909
+                                }
+                            ],
+                            "map": 1461463889,
+                            "name": "Exit$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463911,
+                            "link": 1461463912,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463914
+                                }
+                            ],
+                            "map": 1461463891,
+                            "name": "Year$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463920,
+                            "link": 1461463921,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463923
+                                }
+                            ],
+                            "map": 1461463892,
+                            "name": "Month$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463929,
+                            "link": 1461463930,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463932
+                                }
+                            ],
+                            "map": 1461463894,
+                            "name": "Day of Month$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463938,
+                            "link": 1461463939,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463941
+                                }
+                            ],
+                            "map": 1461463896,
+                            "name": "Hour$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463947,
+                            "link": 1461463948,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463950
+                                }
+                            ],
+                            "map": 1461463897,
+                            "name": "Minute$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463956,
+                            "link": 1461463957,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463959
+                                }
+                            ],
+                            "map": 1461463898,
+                            "name": "Second$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463965,
+                            "link": 1461463966,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463968
+                                }
+                            ],
+                            "map": 1461463899,
+                            "name": "Millisecone$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463973,
+                            "link": 1461463974,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463975
+                                }
+                            ],
+                            "map": 1461463901,
+                            "name": "Time Zone$Date Time$DateTimeNode$Bridge$Out",
+                            "type": "String"
+                        }
+                    ],
+                    "output_shadow_pins":
+                    [
+                        {
+                            "flags": 26,
+                            "id": 1461463907,
+                            "link": 1461463906,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463885
+                                }
+                            ],
+                            "map": 1461463885,
+                            "name": "Exit$Timer$TimerNode$Shadow$Out",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463909,
+                            "link": 1461463908,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463889
+                                }
+                            ],
+                            "map": 1461463889,
+                            "name": "Exit$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463912,
+                            "link": 1461463891,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463911
+                                }
+                            ],
+                            "map": 1461463891,
+                            "name": "Year$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463921,
+                            "link": 1461463892,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463920
+                                }
+                            ],
+                            "map": 1461463892,
+                            "name": "Month$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463930,
+                            "link": 1461463894,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463929
+                                }
+                            ],
+                            "map": 1461463894,
+                            "name": "Day of Month$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463939,
+                            "link": 1461463896,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463938
+                                }
+                            ],
+                            "map": 1461463896,
+                            "name": "Hour$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463948,
+                            "link": 1461463897,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463947
+                                }
+                            ],
+                            "map": 1461463897,
+                            "name": "Minute$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463957,
+                            "link": 1461463898,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463956
+                                }
+                            ],
+                            "map": 1461463898,
+                            "name": "Second$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463966,
+                            "link": 1461463899,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463965
+                                }
+                            ],
+                            "map": 1461463899,
+                            "name": "Millisecone$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "Int32"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463974,
+                            "link": 1461463901,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463973
+                                }
+                            ],
+                            "map": 1461463901,
+                            "name": "Time Zone$Date Time$DateTimeNode$Shadow$Out",
+                            "type": "String"
+                        }
+                    ],
+                    "style": "Group Style",
+                    "type": "Internal",
+                    "type_id": 2437545767,
+                    "type_name": "GroupNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "System",
+                    "enabled": true,
+                    "id": 1461462955,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 21,
+                            "id": 1461463792,
+                            "link": 1461463793,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463579
+                                },
+                                {
+                                    "link_id": 1461463908
+                                }
+                            ],
+                            "map": 1461460751,
+                            "name": "Enter$Int32 To String$ToStringNode$Bridge$In",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463914,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463915,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463911,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463916
+                                }
+                            ],
+                            "map": 1461460753,
+                            "name": "Value$Int32 To String$ToStringNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463923,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463924,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463920,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463925
+                                }
+                            ],
+                            "map": 1461460758,
+                            "name": "Value$Int32 To String$ToStringNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463932,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463933,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463929,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463934
+                                }
+                            ],
+                            "map": 1461460763,
+                            "name": "Value$Int32 To String$ToStringNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463941,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463942,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463938,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463943
+                                }
+                            ],
+                            "map": 1461460768,
+                            "name": "Value$Int32 To String$ToStringNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463950,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463951,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463947,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463952
+                                }
+                            ],
+                            "map": 1461460773,
+                            "name": "Value$Int32 To String$ToStringNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463959,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463960,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463956,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463961
+                                }
+                            ],
+                            "map": 1461460778,
+                            "name": "Value$Int32 To String$ToStringNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463968,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463969,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463965,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463970
+                                }
+                            ],
+                            "map": 1461460783,
+                            "name": "Value$Int32 To String$ToStringNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "input_shadow_pins":
+                    [
+                        {
+                            "flags": 25,
+                            "id": 1461463793,
+                            "link": 1461460751,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463792
+                                }
+                            ],
+                            "map": 1461460751,
+                            "name": "Enter$Int32 To String$ToStringNode$Shadow$In",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463916,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463917,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463914,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460753
+                                }
+                            ],
+                            "map": 1461460753,
+                            "name": "Value$Int32 To String$ToStringNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463925,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463926,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463923,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460758
+                                }
+                            ],
+                            "map": 1461460758,
+                            "name": "Value$Int32 To String$ToStringNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463934,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463935,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463932,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460763
+                                }
+                            ],
+                            "map": 1461460763,
+                            "name": "Value$Int32 To String$ToStringNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463943,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463944,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463941,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460768
+                                }
+                            ],
+                            "map": 1461460768,
+                            "name": "Value$Int32 To String$ToStringNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463952,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463953,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463950,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460773
+                                }
+                            ],
+                            "map": 1461460773,
+                            "name": "Value$Int32 To String$ToStringNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463961,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463962,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463959,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460778
+                                }
+                            ],
+                            "map": 1461460778,
+                            "name": "Value$Int32 To String$ToStringNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463970,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463971,
+                                "map": 0,
+                                "type": "Int32",
+                                "value": 0
+                            },
+                            "link": 1461463968,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460783
+                                }
+                            ],
+                            "map": 1461460783,
+                            "name": "Value$Int32 To String$ToStringNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "Int32"
+                        }
+                    ],
+                    "name": "String Group",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 22,
+                            "id": 1461463801,
+                            "link": 1461463802,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463645
+                                }
+                            ],
+                            "map": 1461460754,
+                            "name": "String$Int32 To String$ToStringNode$Bridge$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463810,
+                            "link": 1461463811,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463657
+                                }
+                            ],
+                            "map": 1461460759,
+                            "name": "String$Int32 To String$ToStringNode$Bridge$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463819,
+                            "link": 1461463820,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463673
+                                }
+                            ],
+                            "map": 1461460764,
+                            "name": "String$Int32 To String$ToStringNode$Bridge$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463828,
+                            "link": 1461463829,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463689
+                                }
+                            ],
+                            "map": 1461460769,
+                            "name": "String$Int32 To String$ToStringNode$Bridge$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463837,
+                            "link": 1461463838,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463705
+                                }
+                            ],
+                            "map": 1461460774,
+                            "name": "String$Int32 To String$ToStringNode$Bridge$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463846,
+                            "link": 1461463847,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463721
+                                }
+                            ],
+                            "map": 1461460779,
+                            "name": "String$Int32 To String$ToStringNode$Bridge$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463853,
+                            "link": 1461460470,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463854
+                                }
+                            ],
+                            "map": 1461460782,
+                            "name": "Exit$Int32 To String$ToStringNode$Bridge$Out",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463855,
+                            "link": 1461463856,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463737
+                                }
+                            ],
+                            "map": 1461460784,
+                            "name": "String$Int32 To String$ToStringNode$Bridge$Out",
+                            "type": "String"
+                        }
+                    ],
+                    "output_shadow_pins":
+                    [
+                        {
+                            "flags": 26,
+                            "id": 1461463802,
+                            "link": 1461460754,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463801
+                                }
+                            ],
+                            "map": 1461460754,
+                            "name": "String$Int32 To String$ToStringNode$Shadow$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463811,
+                            "link": 1461460759,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463810
+                                }
+                            ],
+                            "map": 1461460759,
+                            "name": "String$Int32 To String$ToStringNode$Shadow$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463820,
+                            "link": 1461460764,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463819
+                                }
+                            ],
+                            "map": 1461460764,
+                            "name": "String$Int32 To String$ToStringNode$Shadow$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463829,
+                            "link": 1461460769,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463828
+                                }
+                            ],
+                            "map": 1461460769,
+                            "name": "String$Int32 To String$ToStringNode$Shadow$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463838,
+                            "link": 1461460774,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463837
+                                }
+                            ],
+                            "map": 1461460774,
+                            "name": "String$Int32 To String$ToStringNode$Shadow$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463847,
+                            "link": 1461460779,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463846
+                                }
+                            ],
+                            "map": 1461460779,
+                            "name": "String$Int32 To String$ToStringNode$Shadow$Out",
+                            "type": "String"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463854,
+                            "link": 1461463853,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460782
+                                }
+                            ],
+                            "map": 1461460782,
+                            "name": "Exit$Int32 To String$ToStringNode$Shadow$Out",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461463856,
+                            "link": 1461460784,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463855
+                                }
+                            ],
+                            "map": 1461460784,
+                            "name": "String$Int32 To String$ToStringNode$Shadow$Out",
+                            "type": "String"
+                        }
+                    ],
+                    "style": "Group Style",
+                    "type": "Internal",
+                    "type_id": 2437545767,
+                    "type_name": "GroupNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "System",
+                    "enabled": true,
+                    "id": 1461463009,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 21,
+                            "id": 1461463645,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463646,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463801,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463647
+                                }
+                            ],
+                            "map": 1461460629,
+                            "name": "A$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463995,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463996,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463999,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463997
+                                }
+                            ],
+                            "map": 1461460630,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463657,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463658,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463810,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463659
+                                }
+                            ],
+                            "map": 1461460634,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463673,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463674,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463819,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463675
+                                }
+                            ],
+                            "map": 1461460638,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463721,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463722,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463846,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463723
+                                }
+                            ],
+                            "map": 1461460642,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463705,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463706,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463837,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463707
+                                }
+                            ],
+                            "map": 1461460646,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463689,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463690,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463828,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463691
+                                }
+                            ],
+                            "map": 1461460650,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463975,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463976,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463973,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463977
+                                }
+                            ],
+                            "map": 1461460653,
+                            "name": "A$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463979,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463980,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464027,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463981
+                                }
+                            ],
+                            "map": 1461460654,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461463737,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463738,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463855,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463739
+                                }
+                            ],
+                            "map": 1461460658,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461464023,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464024,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464015,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464025
+                                }
+                            ],
+                            "map": 1461460662,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461464019,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464020,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464015,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464021
+                                }
+                            ],
+                            "map": 1461460666,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461464011,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464012,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464015,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464013
+                                }
+                            ],
+                            "map": 1461460670,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461464007,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464008,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464027,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464009
+                                }
+                            ],
+                            "map": 1461460678,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 21,
+                            "id": 1461464003,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464004,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463999,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464005
+                                }
+                            ],
+                            "map": 1461460682,
+                            "name": "B$⊕$AddNode$Bridge$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "input_shadow_pins":
+                    [
+                        {
+                            "flags": 25,
+                            "id": 1461463647,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463648,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463645,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460629
+                                }
+                            ],
+                            "map": 1461460629,
+                            "name": "A$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463659,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463660,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463657,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460634
+                                }
+                            ],
+                            "map": 1461460634,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463675,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463676,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463673,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460638
+                                }
+                            ],
+                            "map": 1461460638,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463691,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463692,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463689,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460650
+                                }
+                            ],
+                            "map": 1461460650,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463707,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463708,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463705,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460646
+                                }
+                            ],
+                            "map": 1461460646,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463723,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463724,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463721,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460642
+                                }
+                            ],
+                            "map": 1461460642,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463739,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463740,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463737,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460658
+                                }
+                            ],
+                            "map": 1461460658,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463977,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463978,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463975,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460653
+                                }
+                            ],
+                            "map": 1461460653,
+                            "name": "A$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463981,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463982,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463979,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460654
+                                }
+                            ],
+                            "map": 1461460654,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461463997,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463998,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463995,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460630
+                                }
+                            ],
+                            "map": 1461460630,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461464005,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464006,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464003,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460682
+                                }
+                            ],
+                            "map": 1461460682,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461464009,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464010,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464007,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460678
+                                }
+                            ],
+                            "map": 1461460678,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461464013,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464014,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464011,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460670
+                                }
+                            ],
+                            "map": 1461460670,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461464021,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464022,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464019,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460666
+                                }
+                            ],
+                            "map": 1461460666,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 25,
+                            "id": 1461464025,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464026,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464023,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460662
+                                }
+                            ],
+                            "map": 1461460662,
+                            "name": "B$⊕$AddNode$Shadow$In",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "name": "Concat Group",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 22,
+                            "id": 1461463749,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463750,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463751,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461460472
+                                }
+                            ],
+                            "map": 1461460675,
+                            "name": "Result$⊕$AddNode$Bridge$Out",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "output_shadow_pins":
+                    [
+                        {
+                            "flags": 26,
+                            "id": 1461463751,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463752,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461460675,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463749
+                                }
+                            ],
+                            "map": 1461460675,
+                            "name": "Result$⊕$AddNode$Shadow$Out",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Group Style",
+                    "type": "Internal",
+                    "type_id": 2437545767,
+                    "type_name": "GroupNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "System",
+                    "enabled": true,
+                    "id": 1461463230,
+                    "name": "Const Group",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 22,
+                            "id": 1461464027,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464028,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464029,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463979
+                                },
+                                {
+                                    "link_id": 1461464007
+                                }
+                            ],
+                            "map": 1461463858,
+                            "name": "$Const String$ConstValueNode$Bridge$Out",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461463999,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464000,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464001,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463995
+                                },
+                                {
+                                    "link_id": 1461464003
+                                }
+                            ],
+                            "map": 1461463865,
+                            "name": "$Const String$ConstValueNode$Bridge$Out",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 22,
+                            "id": 1461464015,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464016,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461464017,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464011
+                                },
+                                {
+                                    "link_id": 1461464019
+                                },
+                                {
+                                    "link_id": 1461464023
+                                }
+                            ],
+                            "map": 1461463868,
+                            "name": "$Const String$ConstValueNode$Bridge$Out",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "output_shadow_pins":
+                    [
+                        {
+                            "flags": 26,
+                            "id": 1461464001,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464002,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463865,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463999
+                                }
+                            ],
+                            "map": 1461463865,
+                            "name": "$Const String$ConstValueNode$Shadow$Out",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461464017,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464018,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463868,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464015
+                                }
+                            ],
+                            "map": 1461463868,
+                            "name": "$Const String$ConstValueNode$Shadow$Out",
+                            "type": "Any",
+                            "vtype": "String"
+                        },
+                        {
+                            "flags": 26,
+                            "id": 1461464029,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461464030,
+                                "map": 0,
+                                "type": "String",
+                                "value": ""
+                            },
+                            "link": 1461463858,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464027
+                                }
+                            ],
+                            "map": 1461463858,
+                            "name": "$Const String$ConstValueNode$Shadow$Out",
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Group Style",
+                    "type": "Internal",
+                    "type_id": 2437545767,
+                    "type_name": "GroupNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463230,
+                    "id": 1461463857,
+                    "name": "Const String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461463858,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463859,
+                                "map": 0,
+                                "type": "String",
+                                "value": " "
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464029
+                                }
+                            ],
+                            "map": 0,
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 3396816797,
+                    "type_name": "ConstValueNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463230,
+                    "id": 1461463864,
+                    "name": "Const String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461463865,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463866,
+                                "map": 0,
+                                "type": "String",
+                                "value": "-"
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464001
+                                }
+                            ],
+                            "map": 0,
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 3396816797,
+                    "type_name": "ConstValueNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "datatype": "String",
+                    "enabled": true,
+                    "group_id": 1461463230,
+                    "id": 1461463867,
+                    "name": "Const String",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461463868,
+                            "inner":
+                            {
+                                "flags": 0,
+                                "id": 1461463869,
+                                "map": 0,
+                                "type": "String",
+                                "value": ":"
+                            },
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461464017
+                                }
+                            ],
+                            "map": 0,
+                            "type": "Any",
+                            "vtype": "String"
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 3396816797,
+                    "type_name": "ConstValueNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "count": -1,
+                    "enabled": true,
+                    "group_id": 1461462923,
+                    "id": 1461463882,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461463883,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463905
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 0,
+                            "id": 1461463884,
+                            "map": 0,
+                            "name": "Reset",
+                            "type": "Flow"
+                        }
+                    ],
+                    "interval": 33,
+                    "name": "Timer",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461463885,
+                            "link": 1461463907,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 16,
+                            "id": 1461463886,
+                            "link": 1461463888,
+                            "map": 0,
+                            "name": "Event",
+                            "type": "Flow"
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 2336781940,
+                    "type_name": "TimerNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "Flow",
+                    "enabled": true,
+                    "group_id": 1461462923,
+                    "id": 1461463887,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461463888,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463886
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Enter",
+                            "type": "Flow"
+                        }
+                    ],
+                    "name": "Date Time",
+                    "out_flags": 1515,
+                    "output_pins":
+                    [
+                        {
+                            "flags": 48,
+                            "id": 1461463889,
+                            "link": 1461463909,
+                            "map": 0,
+                            "name": "Exit",
+                            "type": "Flow"
+                        },
+                        {
+                            "flags": 0,
+                            "id": 1461463890,
+                            "map": 0,
+                            "name": "Time Stamp",
+                            "type": "Int64",
+                            "value": 0
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461463891,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463912
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Year",
+                            "type": "Int32",
+                            "value": 0
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461463892,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463921
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Month",
+                            "type": "Int32",
+                            "value": 0
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461463894,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463930
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Day of Month",
+                            "type": "Int32",
+                            "value": 0
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461463896,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463939
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Hour",
+                            "type": "Int32",
+                            "value": 0
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461463897,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463948
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Minute",
+                            "type": "Int32",
+                            "value": 0
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461463898,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463957
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Second",
+                            "type": "Int32",
+                            "value": 0
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461463899,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463966
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Millisecone",
+                            "type": "Int32",
+                            "value": 0
+                        },
+                        {
+                            "flags": 48,
+                            "id": 1461463901,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463974
+                                }
+                            ],
+                            "map": 0,
+                            "name": "Time Zone",
+                            "type": "String",
+                            "value": ""
+                        }
+                    ],
+                    "style": "Default Style",
+                    "type": "Internal",
+                    "type_id": 719354430,
+                    "type_name": "DateTimeNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "System",
+                    "enabled": true,
+                    "id": 1461464031,
+                    "name": "Start",
+                    "output_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461464032,
+                            "link": 1461463904,
+                            "map": 0,
+                            "name": "Start",
+                            "type": "Flow"
+                        }
+                    ],
+                    "style": "Simple Style",
+                    "type": "Entry",
+                    "type_id": 4165776841,
+                    "type_name": "SystemEntryPointNode",
+                    "version": "1.14.7.1"
+                },
+                {
+                    "break_point": false,
+                    "catalog": "System",
+                    "enabled": true,
+                    "id": 1461464033,
+                    "input_pins":
+                    [
+                        {
+                            "flags": 16,
+                            "id": 1461464034,
+                            "link_from":
+                            [
+                                {
+                                    "link_id": 1461463906
+                                }
+                            ],
+                            "map": 0,
+                            "name": "End",
+                            "type": "Flow"
+                        }
+                    ],
+                    "name": "End",
+                    "style": "Simple Style",
+                    "type": "Exit",
+                    "type_id": 1040637333,
+                    "type_name": "SystemExitPointNode",
+                    "version": "1.14.7.1"
+                }
+            ],
+            "state":
+            {
+                "generator_state": 1461464035
+            }
+        },
+        "nodes":
+        {
+            "node:1461460469":
+            {
+                "location":
+                {
+                    "x": 724,
+                    "y": -126
+                },
+                "size":
+                {
+                    "x": 750,
+                    "y": 88
+                }
+            },
+            "node:1461460628":
+            {
+                "location":
+                {
+                    "x": 1349,
+                    "y": 100
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460632":
+            {
+                "location":
+                {
+                    "x": 1352,
+                    "y": 188
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460636":
+            {
+                "location":
+                {
+                    "x": 1352,
+                    "y": 276
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460640":
+            {
+                "location":
+                {
+                    "x": 1352,
+                    "y": 548
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460644":
+            {
+                "location":
+                {
+                    "x": 1352,
+                    "y": 460
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460648":
+            {
+                "location":
+                {
+                    "x": 1349,
+                    "y": 372
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460652":
+            {
+                "location":
+                {
+                    "x": 1348,
+                    "y": 756
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460656":
+            {
+                "location":
+                {
+                    "x": 1349,
+                    "y": 660
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460660":
+            {
+                "location":
+                {
+                    "x": 1506,
+                    "y": 604
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460664":
+            {
+                "location":
+                {
+                    "x": 1509,
+                    "y": 508
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460668":
+            {
+                "location":
+                {
+                    "x": 1506,
+                    "y": 420
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460672":
+            {
+                "location":
+                {
+                    "x": 1501,
+                    "y": 700
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460676":
+            {
+                "location":
+                {
+                    "x": 1509,
+                    "y": 332
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460680":
+            {
+                "location":
+                {
+                    "x": 1509,
+                    "y": 244
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 68
+                }
+            },
+            "node:1461460750":
+            {
+                "location":
+                {
+                    "x": 376,
+                    "y": 122
+                },
+                "size":
+                {
+                    "x": 273,
+                    "y": 88
+                }
+            },
+            "node:1461460755":
+            {
+                "location":
+                {
+                    "x": 376,
+                    "y": 234
+                },
+                "size":
+                {
+                    "x": 273,
+                    "y": 88
+                }
+            },
+            "node:1461460760":
+            {
+                "location":
+                {
+                    "x": 376,
+                    "y": 346
+                },
+                "size":
+                {
+                    "x": 273,
+                    "y": 88
+                }
+            },
+            "node:1461460765":
+            {
+                "location":
+                {
+                    "x": 376,
+                    "y": 458
+                },
+                "size":
+                {
+                    "x": 273,
+                    "y": 88
+                }
+            },
+            "node:1461460770":
+            {
+                "location":
+                {
+                    "x": 376,
+                    "y": 570
+                },
+                "size":
+                {
+                    "x": 273,
+                    "y": 88
+                }
+            },
+            "node:1461460775":
+            {
+                "location":
+                {
+                    "x": 376,
+                    "y": 682
+                },
+                "size":
+                {
+                    "x": 273,
+                    "y": 88
+                }
+            },
+            "node:1461460780":
+            {
+                "location":
+                {
+                    "x": 376,
+                    "y": 786
+                },
+                "size":
+                {
+                    "x": 273,
+                    "y": 88
+                }
+            },
+            "node:1461462923":
+            {
+                "group_size":
+                {
+                    "x": 435,
+                    "y": 756
+                },
+                "location":
+                {
+                    "x": -272,
+                    "y": 16
+                },
+                "size":
+                {
+                    "x": 451,
+                    "y": 794
+                }
+            },
+            "node:1461462955":
+            {
+                "group_size":
+                {
+                    "x": 444,
+                    "y": 832
+                },
+                "location":
+                {
+                    "x": 308,
+                    "y": 36
+                },
+                "size":
+                {
+                    "x": 460,
+                    "y": 870
+                }
+            },
+            "node:1461463009":
+            {
+                "group_size":
+                {
+                    "x": 451,
+                    "y": 772
+                },
+                "location":
+                {
+                    "x": 1209,
+                    "y": 24
+                },
+                "size":
+                {
+                    "x": 467,
+                    "y": 810
+                }
+            },
+            "node:1461463230":
+            {
+                "group_size":
+                {
+                    "x": 359,
+                    "y": 312
+                },
+                "location":
+                {
+                    "x": 801,
+                    "y": 418
+                },
+                "size":
+                {
+                    "x": 375,
+                    "y": 350
+                }
+            },
+            "node:1461463857":
+            {
+                "location":
+                {
+                    "x": 879,
+                    "y": 508
+                },
+                "size":
+                {
+                    "x": 208,
+                    "y": 64
+                }
+            },
+            "node:1461463864":
+            {
+                "location":
+                {
+                    "x": 880,
+                    "y": 588
+                },
+                "size":
+                {
+                    "x": 208,
+                    "y": 64
+                }
+            },
+            "node:1461463867":
+            {
+                "location":
+                {
+                    "x": 880,
+                    "y": 668
+                },
+                "size":
+                {
+                    "x": 208,
+                    "y": 64
+                }
+            },
+            "node:1461463882":
+            {
+                "location":
+                {
+                    "x": -150,
+                    "y": 154
+                },
+                "size":
+                {
+                    "x": 204,
+                    "y": 88
+                }
+            },
+            "node:1461463887":
+            {
+                "location":
+                {
+                    "x": -121,
+                    "y": 338
+                },
+                "size":
+                {
+                    "x": 231,
+                    "y": 280
+                }
+            },
+            "node:1461464031":
+            {
+                "location":
+                {
+                    "x": -435,
+                    "y": -88
+                },
+                "size":
+                {
+                    "x": 110,
+                    "y": 44
+                }
+            },
+            "node:1461464033":
+            {
+                "location":
+                {
+                    "x": 216,
+                    "y": -104
+                },
+                "size":
+                {
+                    "x": 108,
+                    "y": 44
+                }
+            }
+        },
+        "selection":
+        [
+            "node:1461463009"
+        ]
+    },
+    "view":
+    {
+        "scroll":
+        {
+            "x": -473.01904296875,
+            "y": -278.22271728515625
+        },
+        "theme": "Default",
+        "visible_rect":
+        {
+            "max":
+            {
+                "x": 1781.55029296875,
+                "y": 1097.9434814453125
+            },
+            "min":
+            {
+                "x": -540.550048828125,
+                "y": -317.94342041015625
+            }
+        },
+        "zoom": 0.875069856643676758
+    }
+}
