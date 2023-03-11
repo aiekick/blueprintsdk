@@ -1958,9 +1958,8 @@ void BluePrintUI::DrawInfoTooltip()
         auto nodeCatalog = !isDummy ? hoveredNode->GetCatalog() : ((DummyNode *)hoveredNode)->m_catalog;
         auto nodeVersion = hoveredNode->GetVersion();
         ed::Suspend();
-        if (hoveredNode->m_IconHovered >= 0)
+        if (hoveredNode->m_IconHovered >= 0 && ImGui::BeginTooltip())
         {
-            ImGui::BeginTooltip();
             switch (hoveredNode->m_IconHovered)
             {
                 case 0: ImGui::TextUnformatted("Node Clone"); break;
@@ -1972,9 +1971,8 @@ void BluePrintUI::DrawInfoTooltip()
             }
             ImGui::EndTooltip();
         }
-        else if (m_isShowInfoTooltips)
+        else if (m_isShowInfoTooltips && ImGui::BeginTooltip())
         {
-            ImGui::BeginTooltip();
             if (hoveredPin)
             {
                 if (ImGui::IsMouseDoubleClicked(0))
@@ -2062,14 +2060,16 @@ void BluePrintUI::DrawInfoTooltip()
                     endPin = firstPin;
                 }
                 ed::Suspend();
-                ImGui::BeginTooltip();
-                ImGui::Text("Link ID: 0x%08" PRIX32, startPin->m_ID);
-                ImGui::Text("Type: %s", PinTypeToString(startPin->GetValueType()).c_str());
-                ImGui::Separator();
-                pinTooltip("Start Pin:", startPin, true);
-                ImGui::Separator();
-                pinTooltip("End Pin:", endPin, true);
-                ImGui::EndTooltip();
+                if (ImGui::BeginTooltip())
+                {
+                    ImGui::Text("Link ID: 0x%08" PRIX32, startPin->m_ID);
+                    ImGui::Text("Type: %s", PinTypeToString(startPin->GetValueType()).c_str());
+                    ImGui::Separator();
+                    pinTooltip("Start Pin:", startPin, true);
+                    ImGui::Separator();
+                    pinTooltip("End Pin:", endPin, true);
+                    ImGui::EndTooltip();
+                }
                 ed::Resume();
             }
         }
@@ -2515,21 +2515,23 @@ void BluePrintUI::HandleCreateAction(uint32_t flag)
         if (auto canLinkResult = startPin->CanLinkTo(*endPin))
         {
             ed::Suspend();
-            ImGui::BeginTooltip();
-            ImGui::TextUnformatted("Valid Link"); ImGui::SameLine();
-            if (!canLinkResult.Reason().empty())
+            if (ImGui::BeginTooltip())
             {
-                ImGui::TextUnformatted(": "); ImGui::SameLine();
-                ImGui::Text("%s", canLinkResult.Reason().c_str());
+                ImGui::TextUnformatted("Valid Link"); ImGui::SameLine();
+                if (!canLinkResult.Reason().empty())
+                {
+                    ImGui::TextUnformatted(": "); ImGui::SameLine();
+                    ImGui::Text("%s", canLinkResult.Reason().c_str());
+                }
+                ImGui::Separator();
+                ImGui::TextUnformatted("From:");
+                ImGui::Bullet(); ImGui::Text("%" PRI_pin, FMT_pin(startPin));
+                ImGui::Bullet(); ImGui::Text("%" PRI_node, FMT_node(startPin->m_Node));
+                ImGui::TextUnformatted("To:");
+                ImGui::Bullet(); ImGui::Text("%" PRI_pin, FMT_pin(endPin));
+                ImGui::Bullet(); ImGui::Text("%" PRI_node, FMT_node(endPin->m_Node));
+                ImGui::EndTooltip();
             }
-            ImGui::Separator();
-            ImGui::TextUnformatted("From:");
-            ImGui::Bullet(); ImGui::Text("%" PRI_pin, FMT_pin(startPin));
-            ImGui::Bullet(); ImGui::Text("%" PRI_node, FMT_node(startPin->m_Node));
-            ImGui::TextUnformatted("To:");
-            ImGui::Bullet(); ImGui::Text("%" PRI_pin, FMT_pin(endPin));
-            ImGui::Bullet(); ImGui::Text("%" PRI_node, FMT_node(endPin->m_Node));
-            ImGui::EndTooltip();
             ed::Resume();
             if (linkBuilder->Accept())
             {
@@ -2561,10 +2563,12 @@ void BluePrintUI::HandleCreateAction(uint32_t flag)
         else
         {
             ed::Suspend();
-            ImGui::BeginTooltip();
-            ImGui::TextUnformatted("Invalid Link:"); ImGui::SameLine();
-            ImGui::Text("%s", canLinkResult.Reason().c_str());
-            ImGui::EndTooltip();
+            if (ImGui::BeginTooltip())
+            {
+                ImGui::TextUnformatted("Invalid Link:"); ImGui::SameLine();
+                ImGui::Text("%s", canLinkResult.Reason().c_str());
+                ImGui::EndTooltip();
+            }
             ed::Resume();
             linkBuilder->Reject();
         }

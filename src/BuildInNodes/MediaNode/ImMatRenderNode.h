@@ -323,20 +323,22 @@ struct MatRenderNode final : Node
                 if (region_y < 0.0f) { region_y = 0.0f; }
                 else if (region_y > m_image_height - region_sz) { region_y = m_image_height - region_sz; }
                 ed::Suspend();
-                ImGui::BeginTooltip();
-                ImGui::SameLine();
-                std::string child_title = "##Texture" + std::to_string((intptr_t)m_textureID);
-                ImGui::BeginChild(child_title.c_str(), ImVec2(272, 320));
+                if (ImGui::BeginTooltip())
                 {
-                    ImGui::TextUnformatted(m_Name.c_str());
-                    ImGui::Text(" Pos:(%d, %d)", (int)pos_x, (int)pos_y);
-                    ImGui::Text("Rect:(%d, %d, %d, %d)", (int)region_x, (int)region_y, (int)(region_x + region_sz), (int)(region_y + region_sz));
-                    ImVec2 uv0 = ImVec2((region_x) / m_image_width, (region_y) / m_image_height);
-                    ImVec2 uv1 = ImVec2((region_x + region_sz) / m_image_width, (region_y + region_sz) / m_image_height);
-                    ImGui::Image(m_textureID, ImVec2(region_sz * texture_zoom, region_sz * texture_zoom), uv0, uv1, tint_col, border_col);
+                    ImGui::SameLine();
+                    std::string child_title = "##Texture" + std::to_string((intptr_t)m_textureID);
+                    ImGui::BeginChild(child_title.c_str(), ImVec2(272, 320));
+                    {
+                        ImGui::TextUnformatted(m_Name.c_str());
+                        ImGui::Text(" Pos:(%d, %d)", (int)pos_x, (int)pos_y);
+                        ImGui::Text("Rect:(%d, %d, %d, %d)", (int)region_x, (int)region_y, (int)(region_x + region_sz), (int)(region_y + region_sz));
+                        ImVec2 uv0 = ImVec2((region_x) / m_image_width, (region_y) / m_image_height);
+                        ImVec2 uv1 = ImVec2((region_x + region_sz) / m_image_width, (region_y + region_sz) / m_image_height);
+                        ImGui::Image(m_textureID, ImVec2(region_sz * texture_zoom, region_sz * texture_zoom), uv0, uv1, tint_col, border_col);
+                    }
+                    ImGui::EndChild();
+                    ImGui::EndTooltip();
                 }
-                ImGui::EndChild();
-                ImGui::EndTooltip();
                 ed::Resume();
             }
         }

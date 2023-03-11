@@ -292,9 +292,11 @@ struct ColorCurveNode final : Node
                     if (mHistogramScale < 0.002)
                         mHistogramScale = 0.002;
                     need_update_scope = true;
-                    ImGui::BeginTooltip();
-                    ImGui::Text("Scale:%f", mHistogramScale);
-                    ImGui::EndTooltip();
+                    if (ImGui::BeginTooltip())
+                    {
+                        ImGui::Text("Scale:%f", mHistogramScale);
+                        ImGui::EndTooltip();
+                    }
                 }
                 else if (io.MouseWheel > FLT_EPSILON)
                 {
@@ -302,9 +304,11 @@ struct ColorCurveNode final : Node
                     if (mHistogramScale > 4.0f)
                         mHistogramScale = 4.0;
                     need_update_scope = true;
-                    ImGui::BeginTooltip();
-                    ImGui::Text("Scale:%f", mHistogramScale);
-                    ImGui::EndTooltip();
+                    if (ImGui::BeginTooltip())
+                    {
+                        ImGui::Text("Scale:%f", mHistogramScale);
+                        ImGui::EndTooltip();
+                    }
                 }
                 
                 int index;
