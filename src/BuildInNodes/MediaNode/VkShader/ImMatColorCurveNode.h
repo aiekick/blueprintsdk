@@ -355,7 +355,7 @@ struct ColorCurveNode final : Node
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.75, 0.75, 0.75, 0.75));
         ImGui::SetCursorScreenPos(pos + ImVec2(scope_view_size.x + 16, 0));
         bool edit_y = mEditIndex == 0;
-        if (ImGui::CheckButton(u8"\uff39", &edit_y))
+        if (ImGui::CheckButton(u8"\uff39", &edit_y, ImVec4(0.75, 0.75, 0.75, 1.0)))
         {
             if (edit_y)  mEditIndex = 0;
         }
@@ -370,7 +370,7 @@ struct ColorCurveNode final : Node
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.75, 0.0, 0.0, 0.75));
         ImGui::SetCursorScreenPos(pos + ImVec2(scope_view_size.x + 16, 24));
         bool edit_r = mEditIndex == 1;
-        if (ImGui::CheckButton(u8"\uff32", &edit_r))
+        if (ImGui::CheckButton(u8"\uff32", &edit_r, ImVec4(0.75, 0.0, 0.0, 1.0)))
         {
             if (edit_r) mEditIndex = 1; 
         }
@@ -385,7 +385,7 @@ struct ColorCurveNode final : Node
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0, 0.75, 0.0, 0.75));
         ImGui::SetCursorScreenPos(pos + ImVec2(scope_view_size.x + 16, 48));
         bool edit_g = mEditIndex == 2;
-        if (ImGui::CheckButton(u8"\uff27", &edit_g))
+        if (ImGui::CheckButton(u8"\uff27", &edit_g, ImVec4(0.0, 0.75, 0.0, 1.0)))
         {
             if (edit_g) mEditIndex = 2; 
         }
@@ -400,7 +400,7 @@ struct ColorCurveNode final : Node
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0, 0.0, 0.75, 0.75));
         ImGui::SetCursorScreenPos(pos + ImVec2(scope_view_size.x + 16, 72));
         bool edit_b = mEditIndex == 3;
-        if (ImGui::CheckButton(u8"\uff22", &edit_b))
+        if (ImGui::CheckButton(u8"\uff22", &edit_b, ImVec4(0.0, 0.0, 0.75, 1.0)))
         {
             if (edit_b) mEditIndex = 3;
         }

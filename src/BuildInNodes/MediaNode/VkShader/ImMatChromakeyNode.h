@@ -16,6 +16,7 @@ struct ChromaKeyNode final : Node
     ~ChromaKeyNode()
     {
         if (m_filter) { delete m_filter; m_filter = nullptr; }
+        ImGui::ClearMouseStraw();
     }
 
     void Reset(Context& context) override
@@ -75,6 +76,7 @@ struct ChromaKeyNode final : Node
     bool DrawCustomLayout(ImGuiContext * ctx, float zoom, ImVec2 origin, ImGui::ImCurveEdit::keys * key) override
     {
         ImGui::SetCurrentContext(ctx);
+        ImGuiIO& io = ImGui::GetIO();
         bool changed = false;
         ImGuiSliderFlags flags = ImGuiSliderFlags_NoInput;
         bool _alpha_only = m_alpha_only;
@@ -93,6 +95,18 @@ struct ChromaKeyNode final : Node
         ImGui::PopItemWidth();
         ImGui::SetNextItemWidth(200);
         ImGui::ColorPicker4("KeyColor##ChromaKey", (float *)&_chromaColor, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_AlphaBar);
+        ImGui::SameLine();
+        if (ImGui::CheckButton(u8"\ue3b8" "##color_pick##ChromaKey", &m_color_straw, ImVec4(0.5, 0.0, 0.0, 1.0)))
+        {
+            if (m_color_straw) io.MouseType = 1;
+            else { io.MouseType = 0; io.MouseStrawed = false; }
+        }
+        ImGui::ShowTooltipOnHover("Color Straw");
+        ImVec4 straw_color;
+        if (ImGui::GetMouseStraw(straw_color))
+        {
+            _chromaColor.r = straw_color.x; _chromaColor.g = straw_color.y; _chromaColor.b = straw_color.z; _chromaColor.a = straw_color.w;
+        }
         if (_lumaMask != m_lumaMask) { m_lumaMask = _lumaMask; changed = true; }
         if (_alphaCutoffMin != m_alphaCutoffMin) { m_alphaCutoffMin = _alphaCutoffMin; changed = true; }
         if (_alphaScale != m_alphaScale) { m_alphaScale = _alphaScale; changed = true; }
@@ -207,6 +221,7 @@ private:
     ImDataType m_mat_data_type  {IM_DT_UNDEFINED};
     int m_device            {-1};
     ImGui::ChromaKey_vulkan * m_filter {nullptr};
+    bool m_color_straw          {false};
     bool  m_alpha_only          {false};
     float m_lumaMask            {10.0f};
     ImPixel m_chromaColor       {0.0f, 1.0f, 0.0f, 1.0f};

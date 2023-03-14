@@ -3667,13 +3667,13 @@ void BluePrintUI::ShowShortToolbar(bool vertical, bool* show)
         if (!vertical) { ImGui::SameLine(); ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); ImGui::SameLine(); }
         else ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
         string info_button_title = string(ICON_MD_INFO_OUTLINE) + "##info_tooltips";
-        ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips);
+        ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         ImGui::ShowTooltipOnHover("Show Info in tooltips");
         // Show Thumbnails
         //if (!vertical) { ImGui::SameLine(); ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical); ImGui::SameLine(); }
         //else ImGui::SeparatorEx(ImGuiSeparatorFlags_Horizontal);
         //string thumbnail_button_title = string(ICON_THUMBNAIL) + "##thumbnails";
-        //ImGui::CheckButton(thumbnail_button_title.c_str(), &m_isShowThumbnails);
+        //ImGui::CheckButton(thumbnail_button_title.c_str(), &m_isShowThumbnails, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         //ImGui::ShowTooltipOnHover("Show Thumbnails");
     }
     ImGui::End();
@@ -3785,11 +3785,11 @@ void BluePrintUI::ShowToolbar(bool* show)
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
         ImGui::SameLine();
         string info_button_title = string(ICON_MD_INFO_OUTLINE) + "##info_tooltips";
-        ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips);
+        ImGui::CheckButton(info_button_title.c_str(), &m_isShowInfoTooltips, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         ImGui::ShowTooltipOnHover("Show Info in tooltips");
         ImGui::SameLine();
         string thumbnail_button_title = string(ICON_THUMBNAIL) + "##thumbnails";
-        ImGui::CheckButton(thumbnail_button_title.c_str(), &m_isShowThumbnails);
+        ImGui::CheckButton(thumbnail_button_title.c_str(), &m_isShowThumbnails, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         ImGui::ShowTooltipOnHover("Show Thumbnails");
         ImGui::SameLine();
         ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
