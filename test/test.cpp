@@ -6,16 +6,7 @@
 static std::string ini_file = "test_blueprint.ini";
 static std::string bluepoint_file = "test_bp.json";
 
-void Application_GetWindowProperties(ApplicationWindowProperty& property)
-{
-    property.name = "BlueprintSDK Test";
-    property.docking = false;
-    property.resizable = false;
-    property.full_size = true;
-    property.auto_merge = false;
-}
-
-void Application_SetupContext(ImGuiContext* ctx)
+static void BlueprintTest_SetupContext(ImGuiContext* ctx)
 {
     if (!ctx)
         return;
@@ -45,7 +36,7 @@ void Application_SetupContext(ImGuiContext* ctx)
 #endif
 }
 
-void Application_Initialize(void** handle)
+static void BlueprintTest_Initialize(void** handle)
 {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.IniFilename = ini_file.c_str();
@@ -79,7 +70,7 @@ void Application_Initialize(void** handle)
 #endif
 }
 
-void Application_Finalize(void** handle)
+static void BlueprintTest_Finalize(void** handle)
 {
     BluePrint::BluePrintUI * UI = (BluePrint::BluePrintUI *)*handle;
     if (!UI)
@@ -88,12 +79,7 @@ void Application_Finalize(void** handle)
     delete UI;
 }
 
-void Application_DropFromSystem(std::vector<std::string>& drops)
-{
-
-}
-
-bool Application_Frame(void * handle, bool app_will_quit)
+static bool BlueprintTest_Frame(void * handle, bool app_will_quit)
 {
     BluePrint::BluePrintUI * UI = (BluePrint::BluePrintUI *)handle;
     if (!UI)
@@ -102,4 +88,17 @@ bool Application_Frame(void * handle, bool app_will_quit)
 	ImGuiFileDialog::Instance()->ManageGPUThumbnails();
 #endif
     return UI->Frame() || app_will_quit;
+}
+
+void Application_Setup(ApplicationWindowProperty& property)
+{
+    property.name = "BlueprintSDK Test";
+    property.docking = false;
+    property.resizable = false;
+    property.full_size = true;
+    property.auto_merge = false;
+    property.application.Application_SetupContext = BlueprintTest_SetupContext;
+    property.application.Application_Initialize = BlueprintTest_Initialize;
+    property.application.Application_Finalize = BlueprintTest_Finalize;
+    property.application.Application_Frame = BlueprintTest_Frame;
 }
