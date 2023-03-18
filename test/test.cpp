@@ -6,7 +6,7 @@
 static std::string ini_file = "test_blueprint.ini";
 static std::string bluepoint_file = "test_bp.json";
 
-static void BlueprintTest_SetupContext(ImGuiContext* ctx)
+static void BlueprintTest_SetupContext(ImGuiContext* ctx, bool in_splash)
 {
     if (!ctx)
         return;
