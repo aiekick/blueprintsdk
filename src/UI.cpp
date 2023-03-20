@@ -2027,14 +2027,14 @@ void BluePrintUI::DrawInfoTooltip()
             //if (m_Document->m_Blueprint.IsExecuting())
             {
                 ImGui::Separator();
-                ImGui::Bullet(); ImGui::TextUnformatted("       Hits:"); ImGui::SameLine(); ImGui::Text("%s", std::to_string(hoveredNode->m_Hits).c_str());
+                ImGui::Bullet(); ImGui::TextUnformatted("      Hits:"); ImGui::SameLine(); ImGui::Text("%s", std::to_string(hoveredNode->m_Hits).c_str());
                 std::ostringstream oss;
                 oss << std::setprecision(hoveredNode->m_Tick > 1000 ? 6 : 3) << (hoveredNode->m_Tick > 1000000 ? hoveredNode->m_Tick / 1000000.0 :
                                         hoveredNode->m_Tick > 1000 ? hoveredNode->m_Tick / 1000.0 :
                                         hoveredNode->m_Tick);
                 std::string consuming_text = oss.str() + (hoveredNode->m_Tick > 1000000 ? "s" : hoveredNode->m_Tick > 1000 ? "ms" : "us");
-                ImGui::Bullet(); ImGui::TextUnformatted("  Consuming:"); ImGui::SameLine(); ImGui::Text("%s", consuming_text.c_str());
-                ImGui::Bullet(); ImGui::TextUnformatted("  Node Time:"); ImGui::SameLine(); ImGui::Text("%.3fms", hoveredNode->m_NodeTimeMs);
+                ImGui::Bullet(); ImGui::TextUnformatted(" Consuming:"); ImGui::SameLine(); ImGui::Text("%s", consuming_text.c_str());
+                ImGui::Bullet(); ImGui::TextUnformatted(" Node Time:"); ImGui::SameLine(); ImGui::Text("%.3fms", hoveredNode->m_NodeTimeMs);
             }
             ImGui::EndTooltip();
         }
