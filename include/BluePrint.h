@@ -392,13 +392,11 @@ private:
 # define VERSION_MINOR(v)   ((v & 0x00FF0000) >> 16)
 # define VERSION_PATCH(v)   ((v&0x0000FF00)>>8)
 # define VERSION_BUILT(v)   (v&0x000000FF)
-# define MAJOR  1
-# define MINOR  14
-# define PATCH  8
-# define BUILT  1
-
-// Please Set CMakeList.txt IMGUI_BP_SDK_VERSION_STRING also
-# define VERSION_BLUEPRINT  ((MAJOR << 24) | (MINOR << 16) | (PATCH << 8) | BUILT)
+# define VERSION_BLUEPRINT  ((IMGUI_BP_SDK_VERSION_MAJOR << 24) | (IMGUI_BP_SDK_VERSION_MINOR << 16) | (IMGUI_BP_SDK_VERSION_PATCH << 8) | IMGUI_BP_SDK_VERSION_BUILD)
+namespace BluePrint
+{
+IMGUI_API void GetVersion(int& major, int& minor, int& patch, int& build);
+} // namespace BluePrint
 
 # define BP_NODE(type, node_version, node_type, node_style, node_catalog) \
     static ::BluePrint::NodeTypeInfo GetStaticTypeInfo() \

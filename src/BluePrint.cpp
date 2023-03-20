@@ -8,6 +8,14 @@ namespace ed = ax::NodeEditor;
 
 namespace BluePrint
 {
+// Version
+void GetVersion(int& major, int& minor, int& patch, int& build)
+{
+    major = IMGUI_BP_SDK_VERSION_MAJOR;
+    minor = IMGUI_BP_SDK_VERSION_MINOR;
+    patch = IMGUI_BP_SDK_VERSION_PATCH;
+    build = IMGUI_BP_SDK_VERSION_BUILD;
+}
 // -----------------------------
 // -------[ IDGenerator ]-------
 // -----------------------------
