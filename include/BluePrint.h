@@ -16,6 +16,7 @@
 #include <span.hpp>
 #include <imgui.h>
 #include <imgui_helper.h>
+#include <version.h>
 
 #define BP_ERR_NONE          0
 #define BP_ERR_GENERAL      -1
@@ -406,7 +407,9 @@ IMGUI_API void GetVersion(int& major, int& minor, int& patch, int& build);
             fnv1a_hash_32(#type + string("*") + node_catalog), \
             #type, \
             #type, \
+            "CodeWin", \
             node_version, \
+            VERSION_BLUEPRINT, \
             node_type, \
             node_style, \
             node_catalog, \
@@ -427,7 +430,9 @@ IMGUI_API void GetVersion(int& major, int& minor, int& patch, int& build);
             fnv1a_hash_32(#type + string("*") + node_catalog), \
             #type, \
             name, \
+            "CodeWin", \
             node_version, \
+            VERSION_BLUEPRINT, \
             node_type, \
             node_style, \
             node_catalog, \
@@ -446,7 +451,7 @@ IMGUI_API void GetVersion(int& major, int& minor, int& patch, int& build);
 #define EXPORT
 #endif
 
-# define BP_NODE_DYNAMIC(type, node_version, node_type, node_style, node_catalog) \
+# define BP_NODE_DYNAMIC(type, author, node_version, node_type, node_style, node_catalog) \
     extern "C" EXPORT int32_t version() { \
         return VERSION_BLUEPRINT; \
     } \
@@ -457,7 +462,9 @@ IMGUI_API void GetVersion(int& major, int& minor, int& patch, int& build);
             BluePrint::fnv1a_hash_32(#type + string("*") + node_catalog), \
             #type, \
             #type, \
+            #author, \
             node_version, \
+            VERSION_BLUEPRINT, \
             node_type, \
             node_style, \
             node_catalog, \

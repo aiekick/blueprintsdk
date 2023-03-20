@@ -73,11 +73,17 @@ struct NodeTypeInfo
     {
         m_ID = id; m_NodeTypeName = type_name; m_Name = name; m_Version = version; m_Type = type; m_Style = style; m_Catalog = catalog; m_Factory = factory;
     }
+    NodeTypeInfo(ID_TYPE id, std::string type_name, std::string name, std::string author, VERSION_TYPE version, VERSION_TYPE sdk_version, NodeType type, NodeStyle style, std::string catalog, Factory factory)
+    {
+        m_ID = id; m_NodeTypeName = type_name; m_Name = name; m_Author = author; m_Version = version; m_SDK_Version = sdk_version; m_Type = type; m_Style = style; m_Catalog = catalog; m_Factory = factory;
+    }
 
     ID_TYPE         m_ID;
     std::string     m_NodeTypeName;
     std::string     m_Name;
-    VERSION_TYPE    m_Version;
+    std::string     m_Author;
+    VERSION_TYPE    m_Version {0};
+    VERSION_TYPE    m_SDK_Version {0};
     NodeType        m_Type;
     NodeStyle       m_Style;
     std::string     m_Catalog;
@@ -203,6 +209,8 @@ struct IMGUI_API Node
 
     virtual NodeType        GetType() const;
     virtual VERSION_TYPE    GetVersion() const;
+    virtual VERSION_TYPE    GetSDKVersion() const;
+    virtual std::string     GetAuthor() const;
     virtual ID_TYPE         GetTypeID() const;
     virtual NodeStyle       GetStyle() const;
     virtual std::string     GetCatalog() const;

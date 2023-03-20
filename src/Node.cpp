@@ -306,7 +306,7 @@ ID_TYPE NodeRegistry::RegisterNodeType(std::string Path, BP* blueprint)
     int32_t version = dlobject->get_version();
     if (version < VERSION_BLUEPRINT)
     {
-        LOGW("[RegisterNodeType] Warring Node BluePrint Version(%d.%d.%d.%d) less then App BluePrint Version(%d.%d.%d.%d)", 
+        LOGW("[RegisterNodeType] Warring Node BluePrint Version(%d.%d.%d.%d) less then App BluePrint Version(%d.%d.%d.%d)\n", 
                 VERSION_MAJOR(version), VERSION_MINOR(version), VERSION_PATCH(version), VERSION_BUILT(version),
                 VERSION_MAJOR(VERSION_BLUEPRINT), VERSION_MINOR(VERSION_BLUEPRINT), VERSION_PATCH(VERSION_BLUEPRINT), VERSION_BUILT(VERSION_BLUEPRINT));
     }
@@ -506,6 +506,16 @@ NodeType Node::GetType() const
 VERSION_TYPE Node::GetVersion() const
 {
     return GetTypeInfo().m_Version;
+}
+
+VERSION_TYPE Node::GetSDKVersion() const
+{
+    return GetTypeInfo().m_SDK_Version;
+}
+
+std::string Node::GetAuthor() const
+{
+    return GetTypeInfo().m_Author;
 }
 
 NodeStyle Node::GetStyle() const

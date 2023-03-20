@@ -1957,6 +1957,8 @@ void BluePrintUI::DrawInfoTooltip()
         auto nodeStyle = !isDummy ? hoveredNode->GetStyle() : ((DummyNode *)hoveredNode)->m_style;
         auto nodeCatalog = !isDummy ? hoveredNode->GetCatalog() : ((DummyNode *)hoveredNode)->m_catalog;
         auto nodeVersion = hoveredNode->GetVersion();
+        auto nodeSDKVersion = hoveredNode->GetSDKVersion();
+        auto nodeAuthor = hoveredNode->GetAuthor();
         ed::Suspend();
         if (hoveredNode->m_IconHovered >= 0 && ImGui::BeginTooltip())
         {
@@ -1996,14 +1998,16 @@ void BluePrintUI::DrawInfoTooltip()
                 ImGui::Separator();
             }
             ImGui::TextUnformatted("Node:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(nodeName));
-            ImGui::Bullet(); ImGui::TextUnformatted(" Node ID:"); ImGui::SameLine(); ImGui::Text("%u", hoveredNode->m_ID);
-            ImGui::Bullet(); ImGui::TextUnformatted(" Type ID:"); ImGui::SameLine(); ImGui::Text("0x%08" PRIX32, nodeTypeInfo.m_ID);
-            ImGui::Bullet(); ImGui::TextUnformatted("TypeName:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(nodeTypeName));
-            ImGui::Bullet(); ImGui::TextUnformatted(" Version:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(NodeVersionToString(nodeVersion)));
-            ImGui::Bullet(); ImGui::TextUnformatted("    Type:"); ImGui::SameLine(); ImGui::Text("%s", NodeTypeToString(nodeType).c_str());
-            ImGui::Bullet(); ImGui::TextUnformatted("   Style:"); ImGui::SameLine(); ImGui::Text("%s", NodeStyleToString(nodeStyle).c_str());
+            ImGui::Bullet(); ImGui::TextUnformatted("   Node ID:"); ImGui::SameLine(); ImGui::Text("%u", hoveredNode->m_ID);
+            ImGui::Bullet(); ImGui::TextUnformatted("   Type ID:"); ImGui::SameLine(); ImGui::Text("0x%08" PRIX32, nodeTypeInfo.m_ID);
+            ImGui::Bullet(); ImGui::TextUnformatted("  TypeName:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(nodeTypeName));
+            ImGui::Bullet(); ImGui::TextUnformatted("    Author:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(nodeAuthor));
+            ImGui::Bullet(); ImGui::TextUnformatted("   Version:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(NodeVersionToString(nodeVersion)));
+            ImGui::Bullet(); ImGui::TextUnformatted("SDKVersion:"); ImGui::SameLine(); ImGui::Text("%" PRI_sv, FMT_sv(NodeVersionToString(nodeSDKVersion)));
+            ImGui::Bullet(); ImGui::TextUnformatted("      Type:"); ImGui::SameLine(); ImGui::Text("%s", NodeTypeToString(nodeType).c_str());
+            ImGui::Bullet(); ImGui::TextUnformatted("     Style:"); ImGui::SameLine(); ImGui::Text("%s", NodeStyleToString(nodeStyle).c_str());
             
-            ImGui::Bullet(); ImGui::TextUnformatted(" Catalog:"); ImGui::SameLine();
+            ImGui::Bullet(); ImGui::TextUnformatted("   Catalog:"); ImGui::SameLine();
             auto catalogs = BluePrint::GetCatalogInfo(nodeCatalog);
             for (auto catalog : catalogs)
             {
@@ -2011,10 +2015,10 @@ void BluePrintUI::DrawInfoTooltip()
             }
             ImGui::TextUnformatted("");
             
-            ImGui::Bullet(); ImGui::TextUnformatted("   Z-Pos:"); ImGui::SameLine(); ImGui::Text("%.1f", ed::GetNodeZPosition(hoveredNode->m_ID));
+            ImGui::Bullet(); ImGui::TextUnformatted("     Z-Pos:"); ImGui::SameLine(); ImGui::Text("%.1f", ed::GetNodeZPosition(hoveredNode->m_ID));
             if (hoveredNode->m_GroupID != 0)
             {
-                ImGui::Bullet(); ImGui::TextUnformatted(" Grouped:"); ImGui::SameLine(); ImGui::Text("0x%08" PRIX32, hoveredNode->m_GroupID);
+                ImGui::Bullet(); ImGui::TextUnformatted("   Grouped:"); ImGui::SameLine(); ImGui::Text("0x%08" PRIX32, hoveredNode->m_GroupID);
             }
             else
             {
@@ -2023,14 +2027,14 @@ void BluePrintUI::DrawInfoTooltip()
             //if (m_Document->m_Blueprint.IsExecuting())
             {
                 ImGui::Separator();
-                ImGui::Bullet(); ImGui::TextUnformatted("     Hits:"); ImGui::SameLine(); ImGui::Text("%s", std::to_string(hoveredNode->m_Hits).c_str());
+                ImGui::Bullet(); ImGui::TextUnformatted("       Hits:"); ImGui::SameLine(); ImGui::Text("%s", std::to_string(hoveredNode->m_Hits).c_str());
                 std::ostringstream oss;
                 oss << std::setprecision(hoveredNode->m_Tick > 1000 ? 6 : 3) << (hoveredNode->m_Tick > 1000000 ? hoveredNode->m_Tick / 1000000.0 :
                                         hoveredNode->m_Tick > 1000 ? hoveredNode->m_Tick / 1000.0 :
                                         hoveredNode->m_Tick);
                 std::string consuming_text = oss.str() + (hoveredNode->m_Tick > 1000000 ? "s" : hoveredNode->m_Tick > 1000 ? "ms" : "us");
-                ImGui::Bullet(); ImGui::TextUnformatted("Consuming:"); ImGui::SameLine(); ImGui::Text("%s", consuming_text.c_str());
-                ImGui::Bullet(); ImGui::TextUnformatted("Node Time:"); ImGui::SameLine(); ImGui::Text("%.3fms", hoveredNode->m_NodeTimeMs);
+                ImGui::Bullet(); ImGui::TextUnformatted("  Consuming:"); ImGui::SameLine(); ImGui::Text("%s", consuming_text.c_str());
+                ImGui::Bullet(); ImGui::TextUnformatted("  Node Time:"); ImGui::SameLine(); ImGui::Text("%.3fms", hoveredNode->m_NodeTimeMs);
             }
             ImGui::EndTooltip();
         }
