@@ -178,10 +178,10 @@ struct SDLAudioRenderingNode final : Node
         if (m_view_type == 0) ImGui::Dummy(ImVec2(preview_width, 20));
         for (int c = 0; c < m_audio_channels; c++)
         {
-            char buf[10];
+            char buf[17];
             if (m_view_type == 0)
             {
-                snprintf(buf, 10, "##huvr%d", c);
+                snprintf(buf, sizeof(buf), "##huvr%d", c);
                 if (c < m_channel_levels.size())
                 {
                     ImGui::UvMeter(buf, ImVec2(preview_width, 15), &m_channel_levels[c], 0, 96, preview_width*2, &m_channel_stack[c], &m_channel_count[c]);
@@ -189,7 +189,7 @@ struct SDLAudioRenderingNode final : Node
             }
             else
             {
-                snprintf(buf, 10, "##wave%d", c);
+                snprintf(buf, sizeof(buf), "##wave%d", c);
                 if ( c < m_channel_wave_data.size() && m_channel_wave_data[c])
                 {
                     ImGui::PushStyleColor(ImGuiCol_PlotLines, ImVec4(0.f, 1.f,0.f, 1.f));

@@ -97,7 +97,7 @@ struct AudioEqualizerNode final : Node
         snprintf(abuffersrcArgs, sizeof(abuffersrcArgs), "sample_rate=%d:sample_fmt=%d:channel_layout=%llu:time_base=%d/%d",
                  sampleRate, sampleFormat, channelLayout, 1, sampleRate);
 #else
-        char chlytDescBuff[256] = {0};
+        char chlytDescBuff[128] = {0};
         av_channel_layout_describe(&chlyt, chlytDescBuff, sizeof(chlytDescBuff));
         snprintf(abuffersrcArgs, sizeof(abuffersrcArgs), "sample_rate=%d:sample_fmt=%d:channel_layout=%s:time_base=%d/%d",
                  sampleRate, sampleFormat, chlytDescBuff, 1, sampleRate);
