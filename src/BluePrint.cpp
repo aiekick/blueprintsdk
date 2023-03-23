@@ -21,7 +21,7 @@ void GetVersion(int& major, int& minor, int& patch, int& build)
 // -----------------------------
 ID_TYPE IDGenerator::GenerateID()
 {
-    return m_State ++;//= ImGui::get_current_time_long(); // TODO::Dicky
+    return m_State ++;//= ImGui::get_current_time_long(); // TODO::Dicky add better Unique ID generator
 }
 
 void IDGenerator::SetState(ID_TYPE state)

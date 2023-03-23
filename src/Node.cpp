@@ -696,30 +696,30 @@ int Node::Load(const imgui_json::value& value)
     string nodeVersion;
     if (imgui_json::GetTo<imgui_json::string>(value, "version", nodeVersion)) // optional
     {
-        //TODO::Dicky need check?
+        //TODO::Dicky need check Node version?
     }
 
     string nodeType;
     if (imgui_json::GetTo<imgui_json::string>(value, "type", nodeType)) // optional
     {
-        //TODO::Dicky need check?
+        //TODO::Dicky need check node typr?
     }
     
     string nodeStyle;
     if (imgui_json::GetTo<imgui_json::string>(value, "style", nodeStyle)) // optional
     {
-        //TODO::Dicky need check?
+        //TODO::Dicky need check node style?
     }
 
     string nodeCatalog;
     if (imgui_json::GetTo<imgui_json::string>(value, "catalog", nodeCatalog)) // optional
     {
-        //TODO::Dicky need check?
+        //TODO::Dicky need check node catalog?
     }
 
     if (!imgui_json::GetTo<imgui_json::number>(value, "group_id", m_GroupID)) // optional
     {
-        //TODO::Dicky need check?
+        //TODO::Dicky need check node group id?
     }
 
     const imgui_json::array* inputPinsArray = nullptr;

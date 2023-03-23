@@ -3216,7 +3216,7 @@ bool BluePrintUI::Edit_Unlink()
 
 bool BluePrintUI::Edit_Setting()
 {
-    return false; // TODO::Dicky
+    return false; // TODO::Dicky add BluePrintUI Edit_Setting
 }
 
 bool BluePrintUI::Edit_Insert(ID_TYPE id)
@@ -3274,12 +3274,12 @@ bool BluePrintUI::View_ZoomToSelection()
 
 bool BluePrintUI::View_NavigateBackward()
 {
-    return false; // TODO::Dicky
+    return false; // TODO::Dicky add BluePrintUI View_NavigateBackward
 }
 
 bool BluePrintUI::View_NavigateForward()
 {
-    return false; // TODO::Dicky
+    return false; // TODO::Dicky add BluePrintUI View_NavigateForward
 }
 
 bool BluePrintUI::Blueprint_Stop()
