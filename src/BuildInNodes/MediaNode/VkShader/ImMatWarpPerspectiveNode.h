@@ -66,7 +66,7 @@ struct MatWarpPerspectiveNode final : Node
             src_corners[2] = m_warp_br * ImVec2(mat_in.w, mat_in.h);
             src_corners[3] = m_warp_bl * ImVec2(mat_in.w, mat_in.h);
             m_matrix = ImGui::getPerspectiveTransform(src_corners, dst_corners);
-            m_NodeTimeMs = m_transform->filter(mat_in, im_RGB, m_matrix, m_interpolation_mode, ImPixel(0, 0, 0, 0));
+            m_NodeTimeMs = m_transform->warp(mat_in, im_RGB, m_matrix, m_interpolation_mode, ImPixel(0, 0, 0, 0));
             m_MatOut.SetValue(im_RGB);
         }
         return m_Exit;

@@ -8,6 +8,7 @@
 #endif
 #if IMGUI_VULKAN_SHADER
 #include <ImVulkanShader.h>
+#include <ColorConvert_vulkan.h>
 #endif
 #if IMGUI_ICONS
 #include <icons.h>
