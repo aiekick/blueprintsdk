@@ -437,7 +437,7 @@ struct MediaSourceNode final : Node
         int64_t time_stamp = stream->m_frame->best_effort_timestamp;
         double current_video_pts = (time_stamp == AV_NOPTS_VALUE) ? NAN : time_stamp * av_q2d(tb);
         
-        int out_w = tmp_frame->width;
+        int out_w = tmp_frame->linesize[0] / (desc->comp[0].step > 0 ? desc->comp[0].step : 1);
         int out_h = tmp_frame->height;
         int UV_shift_w = ISYUV420P(tmp_frame->format) || ISYUV422P(tmp_frame->format) ? 1 : 0;
         int UV_shift_h = ISYUV420P(tmp_frame->format) || ISNV12(tmp_frame->format) ? 1 : 0;
