@@ -354,6 +354,7 @@ private:
     void                DrawInfoTooltip();
     void                ShowDialogs();
     void                FileDialogs();
+    void                HandleAutoLink(Node *node, vector<std::pair<Pin *, Pin *>>& relink_pairs);
     void                HandleCreateAction(uint32_t flag = BluePrintFlag::BluePrintFlag_All);
     void                HandleDestroyAction();
     void                HandleContextMenuAction(uint32_t flag = BluePrintFlag::BluePrintFlag_All);

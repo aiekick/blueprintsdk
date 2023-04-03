@@ -2600,6 +2600,53 @@ void BluePrintUI::HandleCreateAction(uint32_t flag)
     }
 }
 
+void BluePrintUI::HandleAutoLink(Node *node, vector<std::pair<Pin *, Pin *>>& relink_pairs)
+{
+    // need mark re-link pairs
+    auto in_flow_pin = node->GetAutoLinkInputFlowPin();
+    auto in_data_pin = node->GetAutoLinkInputDataPin();
+    auto out_flow_pin = node->GetAutoLinkOutputFlowPin();
+    auto out_data_pin = node->GetAutoLinkOutputDataPin();
+    // Check flow pin relink pair 
+    if (in_flow_pin && out_flow_pin &&
+        in_flow_pin->m_LinkFrom.size() > 0 &&
+        out_flow_pin->m_LinkPin)
+    {
+        for (auto from_pin : in_flow_pin->m_LinkFrom)
+        {
+            std::pair<Pin *, Pin *> re_link;
+            auto pin = m_Document->m_Blueprint.GetPinFromID(from_pin);
+            if (pin)
+            {
+                std::pair<Pin *, Pin *> re_link(pin, out_flow_pin->m_LinkPin);
+                relink_pairs.push_back(re_link);
+            }
+        }
+    }
+    // Check data pin relink pair 
+    if (in_data_pin.size() > 0 && out_data_pin.size() > 0 && in_data_pin.size() == out_data_pin.size())
+    {
+        for (int i = 0; i < in_data_pin.size(); i++)
+        {
+            auto in_pin = in_data_pin[i];
+            auto out_pin = out_data_pin[i];
+            if (in_pin->m_LinkPin && out_pin->m_LinkFrom.size() > 0)
+            {
+                for (auto from_pin : out_pin->m_LinkFrom)
+                {
+                    std::pair<Pin *, Pin *> re_link;
+                    auto pin = m_Document->m_Blueprint.GetPinFromID(from_pin);
+                    if (pin)
+                    {
+                        std::pair<Pin *, Pin *> re_link(pin, in_pin->m_LinkPin);
+                        relink_pairs.push_back(re_link);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void BluePrintUI::HandleDestroyAction()
 {
     if (!m_Document)
@@ -2609,8 +2656,8 @@ void BluePrintUI::HandleDestroyAction()
         return;
     auto deferredTransaction = m_Document->GetDeferredUndoTransaction("Destroy Action");
     vector<Node*> nodesToDelete;
-    vector<std::pair<Pin *, Pin *>> relink_pairs;
     uint32_t brokenLinkCount = 0;
+    vector<std::pair<Pin *, Pin *>> relink_pairs;
     // Process all nodes marked for deletion
     while (auto nodeDeleter = itemDeleter.QueryDeletedNode())
     {
@@ -2626,49 +2673,7 @@ void BluePrintUI::HandleDestroyAction()
                 auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_NODE_DELETED, m_Document->m_Name, m_UserHandle);
                 if (ret == BP_CBR_AutoLink)
                 {
-                    // need mark re-link pairs
-                    auto in_flow_pin = node->GetAutoLinkInputFlowPin();
-                    auto in_data_pin = node->GetAutoLinkInputDataPin();
-                    auto out_flow_pin = node->GetAutoLinkOutputFlowPin();
-                    auto out_data_pin = node->GetAutoLinkOutputDataPin();
-                    // Check flow pin relink pair 
-                    if (in_flow_pin && out_flow_pin &&
-                        in_flow_pin->m_LinkFrom.size() > 0 &&
-                        out_flow_pin->m_LinkPin)
-                    {
-                        for (auto from_pin : in_flow_pin->m_LinkFrom)
-                        {
-                            std::pair<Pin *, Pin *> re_link;
-                            auto pin = m_Document->m_Blueprint.GetPinFromID(from_pin);
-                            if (pin)
-                            {
-                                std::pair<Pin *, Pin *> re_link(pin, out_flow_pin->m_LinkPin);
-                                relink_pairs.push_back(re_link);
-                            }
-                        }
-                    }
-                    // Check data pin relink pair 
-                    if (in_data_pin.size() > 0 && out_data_pin.size() > 0 && in_data_pin.size() == out_data_pin.size())
-                    {
-                        for (int i = 0; i < in_data_pin.size(); i++)
-                        {
-                            auto in_pin = in_data_pin[i];
-                            auto out_pin = out_data_pin[i];
-                            if (in_pin->m_LinkPin && out_pin->m_LinkFrom.size() > 0)
-                            {
-                                for (auto from_pin : out_pin->m_LinkFrom)
-                                {
-                                    std::pair<Pin *, Pin *> re_link;
-                                    auto pin = m_Document->m_Blueprint.GetPinFromID(from_pin);
-                                    if (pin)
-                                    {
-                                        std::pair<Pin *, Pin *> re_link(pin, in_pin->m_LinkPin);
-                                        relink_pairs.push_back(re_link);
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    HandleAutoLink(node, relink_pairs);
                 }
             }
             // Queue nodes for deletion. We need to serve links first to avoid crash.
@@ -2705,16 +2710,21 @@ void BluePrintUI::HandleDestroyAction()
         LOGI("[HandleDestroyAction] %" PRI_node, FMT_node(node));
         m_Document->m_Blueprint.DeleteNode(node);
     }
-    // Check if we have re-link pin
-    for (auto pair : relink_pairs)
-    {
-        pair.first->LinkTo(*pair.second);
-    }
+
     if (!nodesToDelete.empty() || brokenLinkCount)
     {
         LOGI("[HandleDestroyAction] %" PRIu32 " node%s deleted, %" PRIu32 " link%s broken",
             static_cast<uint32_t>(nodesToDelete.size()), nodesToDelete.size() != 1 ? "s" : "",
             brokenLinkCount, brokenLinkCount != 1 ? "s" : "");
+    }
+    // Check if we have re-link pin
+    for (auto pair : relink_pairs)
+    {
+        pair.first->LinkTo(*pair.second);
+        if (m_CallBacks.BluePrintOnChanged)
+        {
+            auto ret = m_CallBacks.BluePrintOnChanged(BP_CB_Link, m_Document->m_Name, m_UserHandle);
+        }
     }
 }
 
@@ -3679,6 +3689,8 @@ void BluePrintUI::ShowShortToolbar(bool vertical, bool* show)
         //string thumbnail_button_title = string(ICON_THUMBNAIL) + "##thumbnails";
         //ImGui::CheckButton(thumbnail_button_title.c_str(), &m_isShowThumbnails, ImGui::GetStyleColorVec4(ImGuiCol_ButtonActive));
         //ImGui::ShowTooltipOnHover("Show Thumbnails");
+        // show debug info
+        //if (!vertical) { ImGui::SameLine(); ImGui::Text("%f (%f,%f)", ed::GetCurrentZoom(), ed::GetCurrentOrigin().x, ed::GetCurrentOrigin().y); }
     }
     ImGui::End();
     ImGui::PopStyleVar(1);
