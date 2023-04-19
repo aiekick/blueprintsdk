@@ -633,7 +633,7 @@ private:
     ImGui::ColorCurve_vulkan *  m_filter {nullptr};
     ImGui::ImMat                mMat_histogram;
     ImGui::ImMat                mMat_curve;
-    float                       mHistogramScale {0.005};
+    float                       mHistogramScale {0.05};
     bool                        mHistogramLog {false};
     int                                     mEditIndex {0};
     float                                   mTension {0};
